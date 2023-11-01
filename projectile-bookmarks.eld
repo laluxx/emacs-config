@@ -1,0 +1,1 @@
+("~/" "~/.config/emacs/elpaca/repos/rainbow-mode/" "~/xos/games/spline/" "~/xos/games/slicer/" "~/Desktop/pulls/dotfiles/" "~/.config/emacs/elpaca/repos/lsp-mode/" "~/.config/emacs/elpaca/repos/doom-modeline/" "~/Desktop/test/dotfiles/dotfiles-daviwil/")
