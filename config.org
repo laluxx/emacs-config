@@ -27,6 +27,10 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
 
 (use-package all-the-icons-dired
   :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
+
+(use-package all-the-icons-ibuffer
+  :after all-the-icons
+  :hook (ibuffer-mode . (lambda () (all-the-icons-ibuffer-mode 1))))
 #+end_src
 
 ** BACKUP 
@@ -588,6 +592,20 @@ Vterm is a terminal emulator within Emacs.  The 'shell-file-name' setting sets t
 
 
 * New config
+** Filetree
+#+begin_src emacs-lisp
+;; (use-package filetree)
+
+;; (use-package direx)
+
+;; (use-package dirvish
+;;   :config 
+;   (dirvish-override-dired-mode))
+
+(use-package selectric-mode)
+
+
+#+end_src
 ** Amx
 The =amx= package enhances the minibuffer experience, by tracking the
 history of commands and ranking them automagically.
@@ -876,10 +894,28 @@ Emacs Dashboard is an extensible startup screen showing you recent files, bookma
 #+end_src
 *** Cursor
 #+begin_src emacs-lisp
-;; (setq scroll-step 23) ;; keyboard scroll one line at a time
-;; (setq scroll-conservatively 10000)
-;; (setq auto-window-vscroll nil)
-;; (setq scroll-margin 5)
+(setq scroll-step 23) ;; keyboard scroll one line at a time
+(setq scroll-conservatively 10000)
+(setq auto-window-vscroll nil)
+
+(setq hscroll-margin 2
+      hscroll-step 1
+      ;; Emacs spends too much effort recentering the screen if you scroll the
+      ;; cursor more than N lines past window edges (where N is the settings of
+      ;; `scroll-conservatively'). This is especially slow in larger files
+      ;; during large-scale scrolling commands. If kept over 100, the window is
+      ;; never automatically recentered. The default (0) triggers this too
+      ;; aggressively, so I've set it to 10 to recenter if scrolling too far
+      ;; off-screen.
+      scroll-conservatively 10
+      scroll-margin 0
+      scroll-preserve-screen-position t
+      ;; Reduce cursor lag by a tiny bit by not auto-adjusting `window-vscroll'
+      ;; for tall lines.
+      auto-window-vscroll nil
+      ;; mouse
+      mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
+      mouse-wheel-scroll-amount-horizontal 2)
 #+end_src
 ** Double buffering
 #+begin_src emacs-lisp
@@ -1380,12 +1416,12 @@ changes, local to the current buffer."
 #+end_src
 ** Find header
 #+begin_src emacs-lisp
-(defun laluxx/find-header ()
-  (interactive)
-  (let* ((cmd "rg --files /usr/include --follow --hidden -g \"*.h\"")
-         (headers (split-string (shell-command-to-string cmd) "\n" t)))
-    (ivy-read "Choose header: " headers
-              :action (lambda (x) (find-file-other-window x)))))
+;; (defun laluxx/find-header ()
+;;   (interactive)
+;;   (let* ((cmd "rg --files /usr/include --follow --hidden -g \"*.h\"")
+;;          (headers (split-string (shell-command-to-string cmd) "\n" t)))
+;;     (ivy-read "Choose header: " headers
+;;               :action (lambda (x) (find-file-other-window x)))))
 #+end_src
 ** File jump
 #+begin_src emacs-lisp

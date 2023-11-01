@@ -1,0 +1,15 @@
+* Nature Theme
+
+** Dashboard
+[[./images/nature-dashboard.png]]
+
+** Org Mode
+[[./images/nature-org.png]]
+
+* Wildcherry Theme
+
+** Dashboard
+[[./images/wildcherry-dashboard.png]]
+
+** Org Mode
+[[./images/wildcherry-org.png]]
