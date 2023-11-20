@@ -60,7 +60,7 @@
 ;; Expands to: (elpaca evil (use-package evil :demand t))
 (use-package evil
     :init      ;; tweak evil's configuration before loading it
-    (setq evil-want-integration t  ;; This is optional since it's already set to t by default.
+    (setq evil-want-integration t  ;; optional since it's already set to t by default.
           evil-want-keybinding nil
           evil-vsplit-window-right t
           evil-split-window-below t
@@ -77,7 +77,7 @@
   (add-to-list 'evil-collection-mode-list 'help) ;; evilify help mode
   (evil-collection-init))
 
-(use-package evil-tutor)
+;; (use-package evil-tutor)
 
 ;; Using RETURN to follow links in Org/Evil 
 ;; Unmap keys in 'evil-maps if not done, (setq org-return-follows-link t) will not work
@@ -87,6 +87,12 @@
   (define-key evil-motion-state-map (kbd "TAB") nil))
 ;; Setting RETURN key in org-mode to follow links
   (setq org-return-follows-link  t)
+
+(use-package evil-commentary
+  :ensure t
+  :after evil
+  :config
+  (evil-commentary-mode))
 
 (with-eval-after-load 'evil
   (define-key evil-normal-state-map (kbd "C-8") 'swiper-isearch-thing-at-point))
@@ -268,44 +274,6 @@
                  (make-local-variable 'auto-hscroll-mode)
                  (setq auto-hscroll-mode nil)))))
 
-(use-package toc-org
-    :commands toc-org-enable
-    :init (add-hook 'org-mode-hook 'toc-org-enable))
-
-(add-hook 'org-mode-hook 'org-indent-mode)
-(use-package org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-
-(eval-after-load 'org-indent '(diminish 'org-indent-mode))
-
-(custom-set-faces
- '(org-level-1 ((t (:inherit outline-1 :height 1.7))))
- '(org-level-2 ((t (:inherit outline-2 :height 1.6))))
- '(org-level-3 ((t (:inherit outline-3 :height 1.5))))
- '(org-level-4 ((t (:inherit outline-4 :height 1.4))))
- '(org-level-5 ((t (:inherit outline-5 :height 1.3))))
- '(org-level-6 ((t (:inherit outline-5 :height 1.2))))
- '(org-level-7 ((t (:inherit outline-5 :height 1.1)))))
-
-(require 'org-tempo)
-
-;; (defun my-org-cycle-or-move-right ()
-;;   (interactive)
-;;   (if (and (bolp) (org-at-heading-p))
-;;       (org-cycle)
-;;     (forward-char 1)))
-
-;; (defun my-org-close-or-move-left ()
-;;   (interactive)
-;;   (if (and (bolp) (org-at-heading-p))
-;;       (outline-hide-subtree)
-;;     (backward-char 1)))
-
-;; (use-package org
-;;   :hook (org-mode . (lambda ()
-;;                       (define-key org-mode-map (kbd "l") 'my-org-cycle-or-move-right)
-;;                       (define-key org-mode-map (kbd "h") 'my-org-close-or-move-left))))
-
 (use-package projectile
   :config
   (projectile-mode 1))
@@ -322,9 +290,9 @@
 (global-auto-revert-mode t)  ;; Automatically show changes if the file has changed
 (global-display-line-numbers-mode 1) ;; Display line numbers
 (global-visual-line-mode t)  ;; Enable truncated lines
-(menu-bar-mode -1)           ;; Disable the menu bar 
-(scroll-bar-mode -1)         ;; Disable the scroll bar
-(tool-bar-mode -1)           ;; Disable the tool bar
+;; (menu-bar-mode -1)           ;; Disable the menu bar 
+;; (scroll-bar-mode -1)         ;; Disable the scroll bar
+;; (tool-bar-mode -1)           ;; Disable the tool bar
 (setq org-edit-src-content-indentation 0) ;; Set src block automatic indent to 0 instead of 2.
 
 (setq completing-read-function 'ivy-completing-read)
@@ -387,8 +355,6 @@
 
 (use-package sudo-edit)
 
-(use-package tldr)
-
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
@@ -396,15 +362,59 @@
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
-;; (use-package filetree)
+(defun my-org-mode-setup ()
+  (display-line-numbers-mode -1))
 
-;; (use-package direx)
+(add-hook 'org-mode-hook 'my-org-mode-setup)
 
-;; (use-package dirvish
-;;   :config 
-;   (dirvish-override-dired-mode))
+(use-package toc-org
+    :commands toc-org-enable
+    :init (add-hook 'org-mode-hook 'toc-org-enable))
 
-(use-package selectric-mode)
+(add-hook 'org-mode-hook 'org-indent-mode)
+(use-package org-bullets)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+(eval-after-load 'org-indent '(diminish 'org-indent-mode))
+
+(custom-set-faces
+ '(org-level-1 ((t (:inherit outline-1 :height 1.7))))
+ '(org-level-2 ((t (:inherit outline-2 :height 1.6))))
+ '(org-level-3 ((t (:inherit outline-3 :height 1.5))))
+ '(org-level-4 ((t (:inherit outline-4 :height 1.4))))
+ '(org-level-5 ((t (:inherit outline-5 :height 1.3))))
+ '(org-level-6 ((t (:inherit outline-5 :height 1.2))))
+ '(org-level-7 ((t (:inherit outline-5 :height 1.1)))))
+
+(require 'org-tempo)
+
+(defun my-org-cycle-or-move-right ()
+  (interactive)
+  (if (and (bolp) (org-at-heading-p))
+      (org-cycle)
+    (evil-forward-char 1)))
+
+(defun my-org-close-or-move-left ()
+  (interactive)
+  (if (and (bolp) (org-at-heading-p))
+      (outline-hide-subtree)
+    (evil-backward-char 1)))
+
+(add-hook 'org-mode-hook
+          (lambda ()
+            (evil-define-key 'normal org-mode-map
+              (kbd "l") 'my-org-cycle-or-move-right)
+            (evil-define-key 'normal org-mode-map
+              (kbd "h") 'my-org-close-or-move-left)))
+
+(use-package undo-tree
+  :ensure t
+  :init
+  (global-undo-tree-mode)
+  :config
+  (setq undo-tree-auto-save-history nil)
+  ;; Additional undo-tree configurations can go here
+)
 
 (use-package amx
   :ensure t
@@ -564,39 +574,43 @@ However, don't toggle if which-key is currently displayed."
   :ensure t
   :config (treemacs-set-scope-type 'Tabs))
 
-(setq package-selected-packages '(lsp-mode yasnippet lsp-treemacs helm-lsp
-    projectile hydra flycheck company avy  helm-xref dap-mode))
+;; (setq package-selected-packages '(lsp-mode yasnippet lsp-treemacs
+;;     projectile hydra flycheck company avy dap-mode))
 
-(when (cl-find-if-not #'package-installed-p package-selected-packages)
-  (package-refresh-contents)
-  (mapc #'package-install package-selected-packages))
+;; (when (cl-find-if-not #'package-installed-p package-selected-packages)
+;;   (package-refresh-contents)
+;;   (mapc #'package-install package-selected-packages))
 
-;; sample `helm' configuration use https://github.com/emacs-helm/helm/ for details
-(helm-mode)
-(require 'helm-xref)
-;; (define-key global-map [remap find-file] #'helm-find-files)
-;; (define-key global-map [remap execute-extended-command] #'helm-M-x)
-;; (define-key global-map [remap switch-to-buffer] #'helm-mini)
+;; ;; Helm configuration removed
 
-;; (which-key-mode)
+;; ;; (which-key-mode)
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
 
-(setq gc-cons-threshold (* 100 1024 1024)
-      read-process-output-max (* 1024 1024)
-      treemacs-space-between-root-nodes nil
-      company-idle-delay 0.0
-      company-minimum-prefix-length 1
-      lsp-idle-delay 0.1)  ;; clangd is fast
+;; (setq gc-cons-threshold (* 100 1024 1024)
+;;       read-process-output-max (* 1024 1024)
+;;       treemacs-space-between-root-nodes nil
+;;       company-idle-delay 0.0
+;;       company-minimum-prefix-length 1
+;;       lsp-idle-delay 0.1)  ;; clangd is fast
 
-(with-eval-after-load 'lsp-mode
-  ;; (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
-  (require 'dap-cpptools)
-  (yas-global-mode))
+;; (with-eval-after-load 'lsp-mode
+;;   ;; (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
+;;   (require 'dap-cpptools)
+;;   (yas-global-mode))
 
-(with-eval-after-load 'helm
-  (define-key helm-map (kbd "C-j") 'helm-next-line)
-  (define-key helm-map (kbd "C-k") 'helm-previous-line))
+(use-package lsp-mode
+  :hook ((c-mode . lsp)
+         (c++-mode . lsp))
+  :config
+  (setq lsp-idle-delay 0.1)  ;; clangd is fast
+
+  ;; Disable the LSP headerline (breadcrumb)
+  (setq lsp-headerline-breadcrumb-enable nil))
+
+;; (with-eval-after-load 'helm
+;;   (define-key helm-map (kbd "C-j") 'helm-next-line)
+;;   (define-key helm-map (kbd "C-k") 'helm-previous-line))
 
 (use-package which-key
   :init
@@ -653,9 +667,10 @@ However, don't toggle if which-key is currently displayed."
   ;; Ensure dashboard is in evil normal mode
   (add-hook 'dashboard-mode-hook 'evil-normal-state)
 
-  ;; Map j to widget-forward and k to widget-backward for evil-normal-state
   (evil-define-key 'normal dashboard-mode-map (kbd "j") 'widget-forward)
-  (evil-define-key 'normal dashboard-mode-map (kbd "k") 'widget-backward))
+  (evil-define-key 'normal dashboard-mode-map (kbd "k") 'widget-backward)
+  (evil-define-key 'normal dashboard-mode-map (kbd "h") 'widget-backward)
+  (evil-define-key 'normal dashboard-mode-map (kbd "l") 'dashboard-return))
 
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
 (setq mouse-wheel-progressive-speed nil) ;; don"t accelerate scrolling
@@ -699,8 +714,14 @@ However, don't toggle if which-key is currently displayed."
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
 
-(require 'theme-magic)
+;;(require 'theme-magic)
 ;;(theme-magic-export-theme-mode)
+
+(use-package theme-magic
+  :ensure t)
+  ;;:config
+  ;; Enable theme-magic for supported terminals
+  ;; (theme-magic-export-theme-mode t))
 
 (use-package ewal
   :ensure t
@@ -719,7 +740,7 @@ However, don't toggle if which-key is currently displayed."
         ewal-use-built-in-on-failure-p t
         ewal-built-in-palette "sexy-material")
   :config
-  (load-theme 'ewal-doom-vibrant t))
+  (load-theme 'ewal-doom-one t))
 
 ;; (add-to-list 'default-frame-alist '(alpha-background . 85)) ; For hardcoded alpha
 
@@ -774,10 +795,11 @@ However, don't toggle if which-key is currently displayed."
   
   ;; set up 'SPC' as the global leader key
   (general-create-definer laluxx/leader-keys
-    :states '(normal insert visual emacs)
+    :states '(normal ;; insert
+		     visual emacs)
     :keymaps 'override
-    :prefix "SPC" ;; set leader
-    :global-prefix "M-SPC") ;; access leader in insert mode
+    :prefix "SPC") ;; set leader
+    ;; :global-prefix "M-SPC") ;; access leader in insert mode
 
   (laluxx/leader-keys
     "SPC" '(counsel-M-x :wk "Counsel M-x")
@@ -845,7 +867,7 @@ However, don't toggle if which-key is currently displayed."
     "f r" '(counsel-recentf :wk "Find recent files")
     "f u" '(sudo-edit-find-file :wk "Sudo find file")
     "f f" '(counsel-find-file :wk "Find file")
-    "f s" '(helm-lsp-workspace-symbol :wk "Find symbol")
+    ;; "f s" '(helm-lsp-workspace-symbol :wk "Find symbol")
     "f h" '(laluxx/find-header :wk "Find header")
     "f U" '(sudo-edit :wk "Sudo edit file"))
 
@@ -911,7 +933,7 @@ However, don't toggle if which-key is currently displayed."
     "h l" '(view-lossage :wk "Display recent keystrokes and the commands run")
     "h L" '(describe-language-environment :wk "Describe language environment")
     "h m" '(describe-mode :wk "Describe mode")
-    "h s" '(helm-lsp-workspace-symbol :wk "Symbol")
+    ;; "h s" '(helm-lsp-workspace-symbol :wk "Symbol")
     "h r" '(:ignore t :wk "Reload")
     "h r r" '((lambda () (interactive)
                 (load-file "~/.config/emacs/init.el")
@@ -970,6 +992,7 @@ However, don't toggle if which-key is currently displayed."
     "t o" '(org-mode :wk "Toggle org mode")
     "t r" '(rainbow-mode :wk "Toggle rainbow mode")
     "t t" '(visual-line-mode :wk "Toggle truncated lines")
+    "t h" '(laluxx/toggle-hl-line-mode :wk "Toggle hl-line-mode")
     "t v" '(vterm-toggle :wk "Toggle vterm"))
 
   (laluxx/leader-keys
@@ -991,6 +1014,41 @@ However, don't toggle if which-key is currently displayed."
     "w K" '(buf-move-up :wk "Buffer move up")
     "w L" '(buf-move-right :wk "Buffer move right"))
   )
+
+(defun laluxx/toggle-hl-line-mode ()
+  "Toggle highlighting of the current line."
+  (interactive)
+  (if hl-line-mode
+      (hl-line-mode -1)
+    (hl-line-mode 1)))
+
+(defun laluxx/cycle-line-numbers ()
+  "Cycle between line number modes: absolute, relative, none."
+  (interactive)
+  (cond
+   ;; If line numbers are currently displayed
+   ((eq display-line-numbers t)
+    (setq display-line-numbers 'relative)
+    (message "Relative line numbers enabled"))
+
+   ;; If relative line numbers are currently displayed
+   ((eq display-line-numbers 'relative)
+    (setq display-line-numbers nil)
+    (message "Line numbers disabled"))
+
+   ;; If no line numbers are currently displayed
+   (t
+    (setq display-line-numbers t)
+    (message "Absolute line numbers enabled"))))
+
+(defun my/undo-tree-visualize ()
+  "Custom undo-tree visualization that replaces the current buffer."
+  (interactive)
+  (let ((current-buffer (current-buffer)))
+    (undo-tree-visualize)
+    (when (get-buffer "*undo-tree*")
+      (switch-to-buffer "*undo-tree*")
+      (kill-buffer current-buffer))))
 
 (defun laluxx/mark-word (&optional arg allow-extend)
   "Mark the whole word at point. 
@@ -1046,33 +1104,7 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
     (setq laluxx/window-configuration (current-window-configuration))
     (delete-other-windows)))
 
-(global-unset-key (kbd "M-<space>"))
-(global-set-key (kbd "M-<space>") 'laluxx/window-single-toggle)
-
-;; (defun laluxx/org-move-to-begin-src ()
-;;   "Move cursor to the line below #+begin_src."
-;;   (interactive)
-;;   (search-backward "#+begin_src")
-;;   (forward-line 1))
-
-;; (defun laluxx/org-move-to-end-src ()
-;;   "Move cursor to the line above #+end_src."
-;;   (interactive)
-;;   (search-forward "#+end_src")
-;;   (forward-line -1))
-
-;; (defun laluxx/setup-org-evil-bindings ()
-;;   (evil-define-key 'visual org-mode-map (kbd "C-k") 'laluxx/org-move-to-begin-src)
-;;   (evil-define-key 'visual org-mode-map (kbd "C-j") 'laluxx/org-move-to-end-src)
-;;   (evil-define-key 'visual-line org-mode-map (kbd "C-k") 'laluxx/org-move-to-begin-src)
-;;   (evil-define-key 'visual-line org-mode-map (kbd "C-j") 'laluxx/org-move-to-end-src)
-;;   (evil-define-key 'block org-mode-map (kbd "C-k") 'laluxx/org-move-to-begin-src)
-;;   (evil-define-key 'block org-mode-map (kbd "C-j") 'laluxx/org-move-to-end-src))
-
-;; (add-hook 'org-mode-hook 'laluxx/setup-org-evil-bindings)
-
-
-
+(add-hook 'after-init-hook (lambda () (global-set-key (kbd "M-SPC") 'laluxx/window-single-toggle)))
 
 (defun laluxx/org-move-to-begin-src ()
   "Move cursor to the line below #+begin_src."
@@ -1105,14 +1137,23 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 (defvar laluxx/excluded-themes 
   '(whiteboard light-blue wombat wheatgrass tsdh-light tsdh-dark tango tango-dark modus-operandi misterioso monoj-dark light-blue leuven leuven-dark adwaita
 	       deeper-blue dichromacy doom-bluloco-light doom-acario-light doom-ayu-light doom-feather-light doom-gruvbox-light doom-nord-light doom-oksolar-light
-	       doom-one-light doom-opera-light doom-solarized-light) ;; ... add other light theme names here ...
+	       doom-one-light doom-opera-light doom-solarized-light) ;; add other ugly theme here ...
   "List of themes that should be excluded from laluxx/load-theme.")
 
 (defun laluxx/load-theme ()
-  "Load a theme, but exclude light themes based on laluxx/excluded-themes list."
+  "Load a theme, excluding those in laluxx/excluded-themes. Disable current theme only if a new one is chosen."
   (interactive)
-  (let ((available-dark-themes (seq-difference (custom-available-themes) laluxx/excluded-themes)))
-    (load-theme (intern (ivy-completing-read "Load dark theme: " (mapcar 'symbol-name available-dark-themes))) t)))
+  ;; Get the list of available dark themes
+  (let ((available-dark-themes (seq-difference (custom-available-themes) laluxx/excluded-themes))
+        (selected-theme nil))
+    ;; Let the user select a theme
+    (setq selected-theme (intern (ivy-completing-read "Load dark theme: " (mapcar 'symbol-name available-dark-themes))))
+
+    ;; Disable all enabled themes only if a new theme is selected
+    (when (and selected-theme (not (member selected-theme custom-enabled-themes)))
+      (mapc #'disable-theme custom-enabled-themes)
+      ;; Load the selected theme
+      (load-theme selected-theme t))))
 
 (defun laluxx/diff-buffer-with-file (&optional arg)
   "Compare buffer to its file, else run `vc-diff'.

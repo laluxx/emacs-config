@@ -1,1 +1,1 @@
-("~/.config/emacs/" "~/" "~/xos/games/spline/" "~/.config/emacs/elpaca/repos/rainbow-mode/" "~/Desktop/pulls/dotfiles/" "~/Desktop/test/emacs/doomemacs/" "~/xos/games/slicer/" "~/.config/emacs/elpaca/repos/lsp-mode/" "~/.config/emacs/elpaca/repos/doom-modeline/" "~/Desktop/test/dotfiles/dotfiles-daviwil/")
+("~/" "~/.config/emacs/" "~/xos/games/slicer/" "~/xos/games/spline/" "~/Desktop/pulls/dotfiles/" "~/Desktop/test/emacs/configuring-emacs/" "~/Desktop/test/emacs/doomemacs/" "~/Desktop/test/dotfiles/dotfiles-daviwil/")
