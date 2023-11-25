@@ -188,6 +188,22 @@
 
 (use-package magit)
 
+;; thanks DOOM
+(defun +ivy-format-function-line-or-arrow (cands)
+  "Transform CANDS into a string for minibuffer.
+Uses an arrow in terminal and standard formatting in a GUI."
+  (if (display-graphic-p)
+      (ivy-format-function-line cands)  ; GUI Emacs
+    (ivy--format-function-generic
+     (lambda (str)
+       (ivy--add-face (concat " " str "\n") 'ivy-current-match))  ; Selected candidate
+     (lambda (str)
+       (concat "  " str "\n"))  ; Other candidates
+     cands
+     "")))
+
+
+
 (use-package ivy
   :ensure t
   :bind
@@ -200,12 +216,15 @@
   (ivy-use-selectable-prompt t)
   :config
   (ivy-mode 1)
+  (setq ivy-format-functions-alist '((t . +ivy-format-function-line-or-arrow)))
+
   (setq ivy-sort-functions-alist
         '((t . ivy--prefix-sort-recentf))) ;; prioritize recent items
   (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
   (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)
   (define-key ivy-minibuffer-map (kbd "<up>") 'ivy-previous-line-or-history)
   (define-key ivy-minibuffer-map (kbd "<down>") 'ivy-next-line-or-history))
+
 
 
 (use-package counsel
@@ -362,6 +381,25 @@
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
+(use-package solaire-mode
+  :ensure t
+  :config
+  (solaire-global-mode +1)
+)
+
+(use-package vundo
+  :if (> emacs-major-version 27)
+  :defer t
+  :config
+  (setq vundo-glyph-alist vundo-unicode-symbols
+        vundo-compact-display t)
+  (define-key vundo-mode-map (kbd "q") #'vundo-quit)
+
+  ;; Customize vundo-mode
+  (add-hook 'vundo-mode-hook
+            (lambda ()
+              (display-line-numbers-mode -1))))
+
 (defun my-org-mode-setup ()
   (display-line-numbers-mode -1))
 
@@ -426,34 +464,6 @@
   (amx-show-key-bindings nil)
   :config
   (amx-mode 1))
-
-;; (defun edwina-toggle-mode-based-on-window-count ()
-;;   "Toggle edwina-mode based on window count.
-;; Enable if there are two or more windows, disable if there's only one."
-;;   (if (= 1 (count-windows))
-;;       (when edwina-mode (edwina-mode -1))
-;;     (unless edwina-mode (edwina-mode 1))))
-
-
-(defun edwina-toggle-mode-based-on-window-count ()
-  "Toggle edwina-mode based on window count.
-Enable if there are two or more windows, disable if there's only one.
-However, don't toggle if which-key is currently displayed."
-  (let ((which-key-buffer (get-buffer which-key-buffer-name)))
-    (if (and which-key-buffer (get-buffer-window which-key-buffer))
-        nil ;; Do nothing if which-key is displayed
-      (if (= 1 (count-windows))
-          (when edwina-mode (edwina-mode -1))
-        (unless edwina-mode (edwina-mode 1))))))
-
-(add-hook 'window-configuration-change-hook 'edwina-toggle-mode-based-on-window-count)
-
-(use-package edwina
-  :ensure t
-  :config
-  (setq display-buffer-base-action '(display-buffer-below-selected))
-  (edwina-setup-dwm-keys)
-  (define-key edwina-mode-map (kbd "M-q") 'delete-window))
 
 (define-key global-map [remap dired] 'counsel-dired)
 (global-set-key [remap describe-variable] 'counsel-describe-variable)
@@ -612,6 +622,41 @@ However, don't toggle if which-key is currently displayed."
 ;;   (define-key helm-map (kbd "C-j") 'helm-next-line)
 ;;   (define-key helm-map (kbd "C-k") 'helm-previous-line))
 
+(use-package dashboard
+  :ensure t 
+  :init
+  (setq initial-buffer-choice 'dashboard-open)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
+  (setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
+  ;; (setq dashboard-startup-banner "~/.config/emacs/images/dtmacs-logo.png")
+  (setq dashboard-startup-banner "~/xos/emacs/dashboard/xos-logo.png") ;; logo
+  (setq dashboard-center-content t) ;; set to 't' for centered content
+  (setq dashboard-items '((recents . 5)
+                          (agenda . 5 )
+                          (bookmarks . 3)
+                          (projects . 3)
+                          (registers . 3)))
+  :custom 
+  (dashboard-modify-heading-icons '((recents . "file-text")
+				    (bookmarks . "book")))
+  :config
+  (dashboard-setup-startup-hook)
+
+  ;; disable solaire-mode
+  (add-hook 'dashboard-mode-hook
+            (lambda ()
+              (solaire-mode -1)))
+  
+  ;; Ensure dashboard is in evil normal mode
+  (add-hook 'dashboard-mode-hook 'evil-normal-state)
+
+  (evil-define-key 'normal dashboard-mode-map (kbd "j") 'widget-forward)
+  (evil-define-key 'normal dashboard-mode-map (kbd "k") 'widget-backward)
+  (evil-define-key 'normal dashboard-mode-map (kbd "h") 'widget-backward)
+  (evil-define-key 'normal dashboard-mode-map (kbd "l") 'dashboard-return))
+
 (use-package which-key
   :init
     (which-key-mode 1)
@@ -642,35 +687,39 @@ However, don't toggle if which-key is currently displayed."
 
 (advice-add 'which-key--show-popup :after 'laluxx/hide-which-key-mode-line-and-line-numbers)
 
-(use-package dashboard
-  :ensure t 
-  :init
-  (setq initial-buffer-choice 'dashboard-open)
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
-  (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
-  (setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
-  ;; (setq dashboard-startup-banner "~/.config/emacs/images/dtmacs-logo.png")
-  (setq dashboard-startup-banner "~/xos/emacs/dashboard/xos-logo.png") ;; logo
-  (setq dashboard-center-content t) ;; set to 't' for centered content
-  (setq dashboard-items '((recents . 5)
-                          (agenda . 5 )
-                          (bookmarks . 3)
-                          (projects . 3)
-                          (registers . 3)))
-  :custom 
-  (dashboard-modify-heading-icons '((recents . "file-text")
-				    (bookmarks . "book")))
+(use-package edwina
+  :ensure f
   :config
-  (dashboard-setup-startup-hook)
-  
-  ;; Ensure dashboard is in evil normal mode
-  (add-hook 'dashboard-mode-hook 'evil-normal-state)
+  (setq display-buffer-base-action '(display-buffer-below-selected))
+  (edwina-setup-dwm-keys)
+  (define-key edwina-mode-map (kbd "M-q") 'delete-window))
 
-  (evil-define-key 'normal dashboard-mode-map (kbd "j") 'widget-forward)
-  (evil-define-key 'normal dashboard-mode-map (kbd "k") 'widget-backward)
-  (evil-define-key 'normal dashboard-mode-map (kbd "h") 'widget-backward)
-  (evil-define-key 'normal dashboard-mode-map (kbd "l") 'dashboard-return))
+
+;; (defun edwina-toggle-mode-based-on-window-count ()
+;;   "Toggle edwina-mode based on window count.
+;; Enable if there are two or more windows, disable if there's only one.
+;; However, don't toggle if which-key is currently displayed."
+;;   (let ((which-key-buffer (get-buffer which-key-buffer-name)))
+;;     (if (and which-key-buffer (get-buffer-window which-key-buffer))
+;;         nil ;; Do nothing if which-key is displayed
+;;       (if (= 1 (count-windows))
+;;           (when edwina-mode (edwina-mode -1))
+;;         (unless edwina-mode (edwina-mode 1))))))
+
+(defun edwina-toggle-mode-based-on-window-count ()
+  "Toggle edwina-mode based on window count.
+Enable if there are two or more windows, disable if there's only one.
+However, don't toggle if which-key is currently displayed."
+  (when (and (featurep 'edwina)  ;; Check if edwina is loaded
+             (boundp 'which-key-buffer-name))  ;; Check if which-key-buffer-name is defined
+    (let ((which-key-buffer (get-buffer " *which-key*")))  ;; Access the which-key buffer directly
+      (if (and which-key-buffer (get-buffer-window which-key-buffer))
+          nil ;; Do nothing if which-key is displayed
+        (if (= 1 (count-windows))
+            (when edwina-mode (edwina-mode -1))
+          (unless edwina-mode (edwina-mode 1)))))))
+
+(add-hook 'window-configuration-change-hook 'edwina-toggle-mode-based-on-window-count)
 
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
 (setq mouse-wheel-progressive-speed nil) ;; don"t accelerate scrolling
@@ -1137,7 +1186,7 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 (defvar laluxx/excluded-themes 
   '(whiteboard light-blue wombat wheatgrass tsdh-light tsdh-dark tango tango-dark modus-operandi misterioso monoj-dark light-blue leuven leuven-dark adwaita
 	       deeper-blue dichromacy doom-bluloco-light doom-acario-light doom-ayu-light doom-feather-light doom-gruvbox-light doom-nord-light doom-oksolar-light
-	       doom-one-light doom-opera-light doom-solarized-light) ;; add other ugly theme here ...
+	       doom-one-light doom-opera-light doom-solarized-light doom-flatwhite doom-earl-grey) ;; add other ugly theme here ...
   "List of themes that should be excluded from laluxx/load-theme.")
 
 (defun laluxx/load-theme ()

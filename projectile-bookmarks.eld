@@ -1,1 +1,1 @@
-("~/" "~/.config/emacs/" "~/xos/games/slicer/" "~/xos/games/spline/" "~/Desktop/pulls/dotfiles/" "~/Desktop/test/emacs/configuring-emacs/" "~/Desktop/test/emacs/doomemacs/" "~/Desktop/test/dotfiles/dotfiles-daviwil/")
+("~/.config/emacs/" "~/" "~/xos/games/spline/" "~/xos/games/slicer/" "~/Desktop/pulls/dotfiles/" "~/Desktop/test/emacs/configuring-emacs/" "~/Desktop/test/emacs/doomemacs/" "~/Desktop/test/dotfiles/dotfiles-daviwil/")
