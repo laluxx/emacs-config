@@ -297,8 +297,8 @@ Uses an arrow in terminal and standard formatting in a GUI."
   :config
   (projectile-mode 1))
 
-(delete-selection-mode 1)    ;; You can select text and delete it by typing.
-(electric-indent-mode -1)    ;; Turn off the weird indenting that Emacs does by default.
+(delete-selection-mode 1)
+(electric-indent-mode -1)
 (electric-pair-mode 1)       ;; Turns on automatic parens pairing
 ;; The following prevents <> from auto-pairing when electric-pair-mode is on.
 ;; Otherwise, org-tempo is broken when you try to <s TAB...
@@ -306,9 +306,11 @@ Uses an arrow in terminal and standard formatting in a GUI."
            (setq-local electric-pair-inhibit-predicate
                    `(lambda (c)
                   (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
+
 (global-auto-revert-mode t)  ;; Automatically show changes if the file has changed
-(global-display-line-numbers-mode 1) ;; Display line numbers
-(global-visual-line-mode t)  ;; Enable truncated lines
+(global-display-line-numbers-mode 1)
+;; (global-visual-line-mode t)  ;; Enable visual lines
+(setq-default truncate-lines t) ;; Enable truncated lines
 ;; (menu-bar-mode -1)           ;; Disable the menu bar 
 ;; (scroll-bar-mode -1)         ;; Disable the scroll bar
 ;; (tool-bar-mode -1)           ;; Disable the tool bar
@@ -380,6 +382,19 @@ Uses an arrow in terminal and standard formatting in a GUI."
 ;; and `package-pinned-packages`. Most users will not need or want to do this.
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
+
+;; Set a very high garbage collection threshold to reduce frequency of garbage collection
+(setq gc-cons-threshold (* 500 1024 1024))  ; 500MB
+
+;; Adjust gc-cons-percentage to a higher value
+(setq gc-cons-percentage 0.7)
+
+;; Optional: Use gcmh package for more dynamic management
+(use-package gcmh
+  :ensure t
+  :config
+  (setq gcmh-high-cons-threshold (* 500 1024 1024))  ; 500MB
+  (gcmh-mode 1))
 
 (use-package solaire-mode
   :ensure t
@@ -988,8 +1003,7 @@ However, don't toggle if which-key is currently displayed."
                 (load-file "~/.config/emacs/init.el")
                 (ignore (elpaca-process-queues)))
               :wk "Reload emacs config")
-    ;; "h t" '(counsel-load-theme :wk "Load theme")
-    "h t" '(laluxx/load-theme :wk "Load theme")
+    "h t" '(laluxx/load-dark-theme :wk "Load theme")
     "h T" '(laluxx/wal-set :wk "Wal set")
     "h v" '(describe-variable :wk "Describe variable")
     "h w" '(where-is :wk "Prints keybinding for command if set")
@@ -1040,7 +1054,7 @@ However, don't toggle if which-key is currently displayed."
     "t n" '(neotree-toggle :wk "Toggle neotree file viewer")
     "t o" '(org-mode :wk "Toggle org mode")
     "t r" '(rainbow-mode :wk "Toggle rainbow mode")
-    "t t" '(visual-line-mode :wk "Toggle truncated lines")
+    "t t" '(toggle-truncate-lines :wk "Toggle truncated lines")
     "t h" '(laluxx/toggle-hl-line-mode :wk "Toggle hl-line-mode")
     "t v" '(vterm-toggle :wk "Toggle vterm"))
 
@@ -1063,6 +1077,13 @@ However, don't toggle if which-key is currently displayed."
     "w K" '(buf-move-up :wk "Buffer move up")
     "w L" '(buf-move-right :wk "Buffer move right"))
   )
+
+(defun laluxx/split-and-open-dired ()
+  "Split the window vertically and open dired in the new window."
+  (interactive)
+  (split-window-right)       ;; Split the window vertically
+  (other-window 1)           ;; Move to the new window
+  (dired nil))               ;; Open dired
 
 (defun laluxx/toggle-hl-line-mode ()
   "Toggle highlighting of the current line."
@@ -1183,26 +1204,53 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 
 (add-hook 'org-mode-hook 'laluxx/setup-org-evil-bindings)
 
-(defvar laluxx/excluded-themes 
-  '(whiteboard light-blue wombat wheatgrass tsdh-light tsdh-dark tango tango-dark modus-operandi misterioso monoj-dark light-blue leuven leuven-dark adwaita
-	       deeper-blue dichromacy doom-bluloco-light doom-acario-light doom-ayu-light doom-feather-light doom-gruvbox-light doom-nord-light doom-oksolar-light
-	       doom-one-light doom-opera-light doom-solarized-light doom-flatwhite doom-earl-grey) ;; add other ugly theme here ...
-  "List of themes that should be excluded from laluxx/load-theme.")
+(defvar laluxx/light-themes
+  '(doom-one-light doom-tomorrow-day doom-flatwhite doom-homage-white doom-plain whiteboard tsdh-light tango modus-operandi
+		   leuven adwaita dichromacy  doom-bluloco-light doom-acario-light doom-ayu-light doom-feather-light doom-gruvbox-light
+		   doom-nord-light doom-oksolar-light doom-opera-light doom-solarized-light doom-earl-grey )
+  "List of light themes.")
 
-(defun laluxx/load-theme ()
-  "Load a theme, excluding those in laluxx/excluded-themes. Disable current theme only if a new one is chosen."
+(defvar laluxx/ugly-themes
+  '(wombat wheatgrass tsdh-dark tango-dark misterioso leuven-dark
+	   deeper-blue doom-acario-dark doom-homage-black doom-ir-black doom-meltbus doom-oksolar-dark)
+  "List of themes that are considered ugly.")
+
+(defun laluxx/load-theme-generic (theme-list prompt)
+  "Load a theme from THEME-LIST, with preview. Revert to original theme if canceled."
+  (let ((original-theme (car custom-enabled-themes))
+        selected-theme)
+    (ivy-read prompt (mapcar 'symbol-name theme-list)
+              :preselect (symbol-name original-theme)
+              :update-fn (lambda ()
+                           (let ((current-selection (intern (ivy-state-current ivy-last))))
+                             (when (not (equal current-selection original-theme))
+                               (mapc #'disable-theme custom-enabled-themes)
+                               (load-theme current-selection t))))
+              :action (lambda (theme)
+                        (setq selected-theme (intern theme))
+                        (mapc #'disable-theme custom-enabled-themes)
+                        (load-theme selected-theme t))
+              :unwind (lambda ()
+                        (unless selected-theme
+                          (mapc #'disable-theme custom-enabled-themes)
+                          (load-theme original-theme t))))))
+
+
+(defun laluxx/load-dark-theme ()
+  "Load a dark theme, excluding light and ugly themes."
   (interactive)
-  ;; Get the list of available dark themes
-  (let ((available-dark-themes (seq-difference (custom-available-themes) laluxx/excluded-themes))
-        (selected-theme nil))
-    ;; Let the user select a theme
-    (setq selected-theme (intern (ivy-completing-read "Load dark theme: " (mapcar 'symbol-name available-dark-themes))))
+  (laluxx/load-theme-generic (seq-difference (custom-available-themes) (append laluxx/light-themes laluxx/ugly-themes))
+                             "Load dark theme: "))
 
-    ;; Disable all enabled themes only if a new theme is selected
-    (when (and selected-theme (not (member selected-theme custom-enabled-themes)))
-      (mapc #'disable-theme custom-enabled-themes)
-      ;; Load the selected theme
-      (load-theme selected-theme t))))
+(defun laluxx/load-light-theme ()
+  "Load a light theme."
+  (interactive)
+  (laluxx/load-theme-generic laluxx/light-themes "Load light theme: "))
+
+(defun laluxx/load-ugly-theme ()
+  "Load an ugly theme."
+  (interactive)
+  (laluxx/load-theme-generic laluxx/ugly-themes "Load ugly theme: "))
 
 (defun laluxx/diff-buffer-with-file (&optional arg)
   "Compare buffer to its file, else run `vc-diff'.
