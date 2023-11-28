@@ -1,9 +1,3 @@
-* Default
-** spline
- - path :: ~/xos/games/spline
-* No Perspective
-** spline
- - path :: ~/xos/games/spline
 * No Tab
-** spline
- - path :: ~/xos/games/spline
+** emacs
+ - path :: ~/.config/emacs

@@ -22,13 +22,12 @@
 ;; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ;;; Commentary:
-;; The widget document is not easy to understand. I think the
-;; quick way to use widget is learning from examples. So I wrote
-;; this library to help others understand and use widget quickly.
+;; The widget document is not easy to understand.  I think the
+;; quick way to use widget is learning from examples.
+;; So I wrote this library to help others understand and use widget quickly.
 ;;
-;; I'm not expert at widget, so there may be something wrong in the
-;; code. If you found it, please let me know.
-;;
+;; I'm not expert at widget, so there may be something wrong in the code.
+;; If you found it, please let me know.
 
 ;;; Add New Page:
 ;; You can test you widget definition by add it as a new page to

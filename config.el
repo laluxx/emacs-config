@@ -1,8 +1,7 @@
 (add-to-list 'load-path "~/.config/emacs/scripts/")
-
-(require 'elpaca-setup)  ;; The Elpaca Package Manager
-(require 'buffer-move)   ;; Buffer-move for better window management
-(require 'app-launchers) ;; Use emacs as a run launcher like dmenu (experimental)
+(require 'elpaca-setup)    ;; The Elpaca Package Manager
+;; (require 'app-launchers)   ;; Use emacs as a run launcher like dmenu (experimental)
+(require 'pulsing-cursor) ;; Pulse a cursor
 
 (use-package all-the-icons
   :ensure t
@@ -57,7 +56,8 @@
   (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
   (evil-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file))
 
-;; Expands to: (elpaca evil (use-package evil :demand t))
+(add-hook 'dired-mode-hook (lambda () (display-line-numbers-mode 0)))
+
 (use-package evil
     :init      ;; tweak evil's configuration before loading it
     (setq evil-want-integration t  ;; optional since it's already set to t by default.
@@ -95,7 +95,10 @@
   (evil-commentary-mode))
 
 (with-eval-after-load 'evil
-  (define-key evil-normal-state-map (kbd "C-8") 'swiper-isearch-thing-at-point))
+  (define-key evil-normal-state-map (kbd "C-8") 'swiper-isearch-thing-at-point)
+  (define-key evil-normal-state-map (kbd "g r") 'deadgrep)
+  (define-key evil-normal-state-map (kbd "DEL") 'evil-delete-backward-char-and-join)
+)
 
 (with-eval-after-load 'evil
   (define-key evil-insert-state-map (kbd "C-h") 'evil-backward-char)
@@ -108,36 +111,6 @@
   (define-key evil-insert-state-map (kbd "C-x") 'kill-region)
   (define-key evil-insert-state-map (kbd "C-z") 'undo)
   (define-key evil-insert-state-map (kbd "C-y") 'undo-redo))
-
-(use-package elfeed
-  :config
-  (setq elfeed-search-feed-face ":foreground #ffffff :weight bold"
-        elfeed-feeds (quote
-                       (("https://www.reddit.com/r/linux.rss" reddit linux)
-                        ("https://www.reddit.com/r/commandline.rss" reddit commandline)
-                        ("https://www.reddit.com/r/distrotube.rss" reddit distrotube)
-                        ("https://www.reddit.com/r/emacs.rss" reddit emacs)
-                        ("https://www.gamingonlinux.com/article_rss.php" gaming linux)
-                        ("https://hackaday.com/blog/feed/" hackaday linux)
-                        ("https://opensource.com/feed" opensource linux)
-                        ("https://linux.softpedia.com/backend.xml" softpedia linux)
-                        ("https://itsfoss.com/feed/" itsfoss linux)
-                        ("https://www.zdnet.com/topic/linux/rss.xml" zdnet linux)
-                        ("https://www.phoronix.com/rss.php" phoronix linux)
-                        ("http://feeds.feedburner.com/d0od" omgubuntu linux)
-                        ("https://www.computerworld.com/index.rss" computerworld linux)
-                        ("https://www.networkworld.com/category/linux/index.rss" networkworld linux)
-                        ("https://www.techrepublic.com/rssfeeds/topic/open-source/" techrepublic linux)
-                        ("https://betanews.com/feed" betanews linux)
-                        ("http://lxer.com/module/newswire/headlines.rss" lxer linux)
-                        ("https://distrowatch.com/news/dwd.xml" distrowatch linux)))))
- 
-
-(use-package elfeed-goodies
-  :init
-  (elfeed-goodies/setup)
-  :config
-  (setq elfeed-goodies/entry-pane-size 0.5))
 
 (use-package flycheck
   :ensure t
@@ -215,7 +188,7 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (enable-recursive-minibuffers t)
   (ivy-use-selectable-prompt t)
   :config
-  (ivy-mode 1)
+  (ivy-mode 0) ;; TODO maybe delete this
   (setq ivy-format-functions-alist '((t . +ivy-format-function-line-or-arrow)))
 
   (setq ivy-sort-functions-alist
@@ -232,6 +205,7 @@ Uses an arrow in terminal and standard formatting in a GUI."
   :after ivy
   :config 
   (counsel-mode 1)
+  (define-key counsel-mode-map [remap find-file] nil)
   (setq ivy-initial-inputs-alist nil)) ;; removes starting ^ regex in M-x
 
 (use-package ivy-rich
@@ -272,9 +246,6 @@ Uses an arrow in terminal and standard formatting in a GUI."
     (ivy-read "Choose header: " headers
               :action (lambda (x) (find-file-other-window x))
               :caller 'laluxx/find-header)))
-
-(use-package haskell-mode)
-(use-package lua-mode)
 
 (use-package neotree
   :config
@@ -347,11 +318,6 @@ Uses an arrow in terminal and standard formatting in a GUI."
         eshell-destroy-buffer-when-process-dies t
         eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
 
-(use-package vterm
-:config
-(setq shell-file-name "/bin/sh"
-      vterm-max-scrollback 5000))
-
 (use-package vterm-toggle
   :after vterm
   :config
@@ -382,6 +348,49 @@ Uses an arrow in terminal and standard formatting in a GUI."
 ;; and `package-pinned-packages`. Most users will not need or want to do this.
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
+
+(use-package olivetti
+  :config
+  ;; text width
+  (setq olivetti-body-width 80)
+)
+
+(add-to-list 'display-buffer-alist
+             '("\\*WoMan.*\\*" . (display-buffer-pop-up-window)))
+
+(add-hook 'woman-mode-hook
+          (lambda ()
+            (display-line-numbers-mode -1)
+            (olivetti-mode 1)))
+
+(use-package deadgrep
+  :ensure t
+  :config
+  (setq deadgrep--search-type 'regexp)  ;; Default search type to regular expressions
+
+  (custom-set-faces
+   '(deadgrep-filename-face ((t (:inherit org-level-1))))
+   '(deadgrep-match-face ((t (:inherit font-lock-constant-face)))))
+
+(add-hook 'deadgrep-mode-hook
+          (lambda ()
+            (display-line-numbers-mode 0)
+            ;; Set keybindings when evil-mode is active
+            (when (bound-and-true-p evil-mode)
+              (evil-define-key 'normal deadgrep-mode-map (kbd "j") 'deadgrep-forward)
+              (evil-define-key 'normal deadgrep-mode-map (kbd "k") 'deadgrep-backward)
+              (evil-define-key 'normal deadgrep-mode-map (kbd "C-j") 'deadgrep-forward-match)
+              (evil-define-key 'normal deadgrep-mode-map (kbd "C-k") 'deadgrep-backward-match)
+              (evil-define-key 'normal deadgrep-mode-map (kbd "n") 'deadgrep-forward-filename)
+              (evil-define-key 'normal deadgrep-mode-map (kbd "N") 'deadgrep-backward-filename))))
+)
+
+(use-package vterm
+:config
+(setq shell-file-name "/bin/sh"
+      vterm-max-scrollback 5000)
+(add-hook 'vterm-mode-hook (lambda () (display-line-numbers-mode 0)))
+)
 
 ;; Set a very high garbage collection threshold to reduce frequency of garbage collection
 (setq gc-cons-threshold (* 500 1024 1024))  ; 500MB
@@ -414,51 +423,6 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (add-hook 'vundo-mode-hook
             (lambda ()
               (display-line-numbers-mode -1))))
-
-(defun my-org-mode-setup ()
-  (display-line-numbers-mode -1))
-
-(add-hook 'org-mode-hook 'my-org-mode-setup)
-
-(use-package toc-org
-    :commands toc-org-enable
-    :init (add-hook 'org-mode-hook 'toc-org-enable))
-
-(add-hook 'org-mode-hook 'org-indent-mode)
-(use-package org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-
-(eval-after-load 'org-indent '(diminish 'org-indent-mode))
-
-(custom-set-faces
- '(org-level-1 ((t (:inherit outline-1 :height 1.7))))
- '(org-level-2 ((t (:inherit outline-2 :height 1.6))))
- '(org-level-3 ((t (:inherit outline-3 :height 1.5))))
- '(org-level-4 ((t (:inherit outline-4 :height 1.4))))
- '(org-level-5 ((t (:inherit outline-5 :height 1.3))))
- '(org-level-6 ((t (:inherit outline-5 :height 1.2))))
- '(org-level-7 ((t (:inherit outline-5 :height 1.1)))))
-
-(require 'org-tempo)
-
-(defun my-org-cycle-or-move-right ()
-  (interactive)
-  (if (and (bolp) (org-at-heading-p))
-      (org-cycle)
-    (evil-forward-char 1)))
-
-(defun my-org-close-or-move-left ()
-  (interactive)
-  (if (and (bolp) (org-at-heading-p))
-      (outline-hide-subtree)
-    (evil-backward-char 1)))
-
-(add-hook 'org-mode-hook
-          (lambda ()
-            (evil-define-key 'normal org-mode-map
-              (kbd "l") 'my-org-cycle-or-move-right)
-            (evil-define-key 'normal org-mode-map
-              (kbd "h") 'my-org-close-or-move-left)))
 
 (use-package undo-tree
   :ensure t
@@ -644,7 +608,7 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
   (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
-  (setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
+  ;; (setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
   ;; (setq dashboard-startup-banner "~/.config/emacs/images/dtmacs-logo.png")
   (setq dashboard-startup-banner "~/xos/emacs/dashboard/xos-logo.png") ;; logo
   (setq dashboard-center-content t) ;; set to 't' for centered content
@@ -736,6 +700,83 @@ However, don't toggle if which-key is currently displayed."
 
 (add-hook 'window-configuration-change-hook 'edwina-toggle-mode-based-on-window-count)
 
+(use-package toc-org ;; Table of contents
+    :commands toc-org-enable
+    ;; :init (add-hook 'org-mode-hook 'toc-org-enable)
+)
+
+;; Remove "Ind" from showing in the modeline.
+(eval-after-load 'org-indent '(diminish 'org-indent-mode))
+(setq org-confirm-babel-evaluate nil) ;; Dont Bother  
+
+
+(add-hook 'org-mode-hook
+          (lambda ()
+            (toc-org-enable)  ;; Enable Table of Contents
+            (display-line-numbers-mode -1)  ;; Disable line numbers
+            (evil-define-key 'normal org-mode-map (kbd "RET") 'org-ctrl-c-ctrl-c)))
+
+(add-hook 'org-mode-hook 'org-indent-mode)
+(use-package org-bullets)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+(custom-set-faces
+ '(org-level-1 ((t (:inherit outline-1 :height 1.7))))
+ '(org-level-2 ((t (:inherit outline-2 :height 1.6))))
+ '(org-level-3 ((t (:inherit outline-3 :height 1.5))))
+ '(org-level-4 ((t (:inherit outline-4 :height 1.4))))
+ '(org-level-5 ((t (:inherit outline-5 :height 1.3))))
+ '(org-level-6 ((t (:inherit outline-5 :height 1.2))))
+ '(org-level-7 ((t (:inherit outline-5 :height 1.1)))))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((ruby . t)
+   ;; other languages if needed
+   ))
+
+(require 'org-tempo)
+
+(defun my-org-cycle-or-move-right ()
+  (interactive)
+  (if (and (bolp) (org-at-heading-p))
+      (org-cycle)
+    (evil-forward-char 1)))
+
+(defun my-org-close-or-move-left ()
+  (interactive)
+  (if (and (bolp) (org-at-heading-p))
+      (outline-hide-subtree)
+    (evil-backward-char 1)))
+
+(add-hook 'org-mode-hook
+          (lambda ()
+            (evil-define-key 'normal org-mode-map
+              (kbd "l") 'my-org-cycle-or-move-right)
+            (evil-define-key 'normal org-mode-map
+              (kbd "h") 'my-org-close-or-move-left)))
+
+(use-package ruby-electric
+  :ensure t
+  :hook (ruby-mode . ruby-electric-mode))
+
+(use-package robe
+  :ensure t
+  :defer t
+  :hook (ruby-mode . robe-mode)
+  :init
+  ;; Optional: Keybindings for robe mode
+  (eval-after-load 'robe
+    '(progn
+       (define-key robe-mode-map (kbd "C-c C-d") 'robe-doc)
+       (define-key robe-mode-map (kbd "C-c C-j") 'robe-jump)
+       (define-key robe-mode-map (kbd "C-c C-r") 'robe-rails-refresh)))
+  :config
+  ;; Start robe server automatically
+  (defadvice inf-ruby-console-auto (before activate-rvm-for-robe activate)
+    (rvm-activate-corresponding-ruby))
+)
+
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
 (setq mouse-wheel-progressive-speed nil) ;; don"t accelerate scrolling
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
@@ -804,7 +845,8 @@ However, don't toggle if which-key is currently displayed."
         ewal-use-built-in-on-failure-p t
         ewal-built-in-palette "sexy-material")
   :config
-  (load-theme 'ewal-doom-one t))
+  ;; (load-theme 'ewal-doom-one t)
+)
 
 ;; (add-to-list 'default-frame-alist '(alpha-background . 85)) ; For hardcoded alpha
 
@@ -867,7 +909,7 @@ However, don't toggle if which-key is currently displayed."
 
   (laluxx/leader-keys
     "SPC" '(counsel-M-x :wk "Counsel M-x")
-    "." '(find-file :wk "Find file")
+    "." '(counsel-find-file :wk "Find file")
     "=" '(perspective-map :wk "Perspective") ;; Lists all the perspective keybindings
     "TAB TAB" '(comment-line :wk "Comment lines")
     "u" '(universal-argument :wk "Universal argument"))
@@ -895,6 +937,7 @@ However, don't toggle if which-key is currently displayed."
     "d" '(:ignore t :wk "Dired")
     "d d" '(dired :wk "Open dired")
     "d j" '(dired-jump :wk "Dired jump to current")
+    "d J" '(laluxx/dired-split-jump :wk "Dired split jump ")
     "d n" '(neotree-dir :wk "Open directory in neotree")
     "d i" '(laluxx/diff-buffer-with-file :wk "Diff buffer with file")
     "d p" '(peep-dired :wk "Peep-dired"))
@@ -994,6 +1037,7 @@ However, don't toggle if which-key is currently displayed."
     "h i" '(info :wk "Info")
     "h I" '(describe-input-method :wk "Describe input method")
     "h k" '(describe-key :wk "Describe key")
+    "h K" '(counsel-descbinds :wk "Describe keybinds")
     "h l" '(view-lossage :wk "Display recent keystrokes and the commands run")
     "h L" '(describe-language-environment :wk "Describe language environment")
     "h m" '(describe-mode :wk "Describe mode")
@@ -1006,7 +1050,7 @@ However, don't toggle if which-key is currently displayed."
     "h t" '(laluxx/load-dark-theme :wk "Load theme")
     "h T" '(laluxx/wal-set :wk "Wal set")
     "h v" '(describe-variable :wk "Describe variable")
-    "h w" '(where-is :wk "Prints keybinding for command if set")
+    "h w" '(woman :wk "Woman")
     "h x" '(describe-command :wk "Display full documentation for command"))
 
   (laluxx/leader-keys
@@ -1044,6 +1088,7 @@ However, don't toggle if which-key is currently displayed."
     "s m" '(man :wk "Man pages")
     "s t" '(tldr :wk "Lookup TLDR docs for a command")
     "s i" '(counsel-imenu :wk "Counsel imenu")
+    "s u" '(vundo :wk "Visual undo")
     "s w" '(woman :wk "Similar to man but doesn't require man"))
 
   (laluxx/leader-keys
@@ -1056,10 +1101,11 @@ However, don't toggle if which-key is currently displayed."
     "t r" '(rainbow-mode :wk "Toggle rainbow mode")
     "t t" '(toggle-truncate-lines :wk "Toggle truncated lines")
     "t h" '(laluxx/toggle-hl-line-mode :wk "Toggle hl-line-mode")
-    "t v" '(vterm-toggle :wk "Toggle vterm"))
+    "v" '(vterm-toggle :wk "Toggle vterm"))
 
   (laluxx/leader-keys
     "w" '(:ignore t :wk "Windows")
+    "w i" '(where-is :wk "Where is ?")
     ;; Window splits
     "w c" '(evil-window-delete :wk "Close window")
     "w n" '(evil-window-new :wk "New window")
@@ -1078,7 +1124,7 @@ However, don't toggle if which-key is currently displayed."
     "w L" '(buf-move-right :wk "Buffer move right"))
   )
 
-(defun laluxx/split-and-open-dired ()
+(defun laluxx/dired-split-jump ()
   "Split the window vertically and open dired in the new window."
   (interactive)
   (split-window-right)       ;; Split the window vertically
@@ -1215,6 +1261,25 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 	   deeper-blue doom-acario-dark doom-homage-black doom-ir-black doom-meltbus doom-oksolar-dark)
   "List of themes that are considered ugly.")
 
+(defvar laluxx/current-theme nil
+  "The current theme used in the Emacs session.")
+
+;; (defun laluxx/save-current-theme ()
+;;   "Save the current theme name as a string to a file."
+;;   (when laluxx/current-theme
+;;     (with-temp-file "~/.config/emacs/static-variables"
+;;       (insert (symbol-name laluxx/current-theme)))))
+
+
+(defun laluxx/save-current-theme ()
+  "Save the current theme name and its background color as a string to a file."
+  (when laluxx/current-theme
+    (let ((background-color (face-attribute 'default :background)))
+      (with-temp-file "~/.config/emacs/static-variables"
+        (insert (format "%s\n%s" (symbol-name laluxx/current-theme) background-color))))))
+
+
+
 (defun laluxx/load-theme-generic (theme-list prompt)
   "Load a theme from THEME-LIST, with preview. Revert to original theme if canceled."
   (let ((original-theme (car custom-enabled-themes))
@@ -1223,17 +1288,47 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
               :preselect (symbol-name original-theme)
               :update-fn (lambda ()
                            (let ((current-selection (intern (ivy-state-current ivy-last))))
-                             (when (not (equal current-selection original-theme))
+                             (when (and current-selection
+                                        (not (equal current-selection original-theme)))
                                (mapc #'disable-theme custom-enabled-themes)
-                               (load-theme current-selection t))))
+                               (load-theme current-selection t)
+                               (update-pulsing-cursor-color)))) ;; Preview theme
               :action (lambda (theme)
                         (setq selected-theme (intern theme))
-                        (mapc #'disable-theme custom-enabled-themes)
-                        (load-theme selected-theme t))
+                        (when selected-theme
+                          (setq laluxx/current-theme selected-theme) ;; Update current theme
+                          (mapc #'disable-theme custom-enabled-themes)
+                          (load-theme selected-theme t)
+                          (update-pulsing-cursor-color)
+                          (laluxx/save-current-theme))) ;; Save current theme
               :unwind (lambda ()
                         (unless selected-theme
                           (mapc #'disable-theme custom-enabled-themes)
-                          (load-theme original-theme t))))))
+                          (when original-theme
+                            (load-theme original-theme t)
+                            (setq laluxx/current-theme original-theme)
+                            (laluxx/save-current-theme)
+                            (update-pulsing-cursor-color))))))) ;; Revert to original theme
+
+
+
+(defun laluxx/load-saved-theme ()
+  "Load the saved theme from the file."
+  (when (file-exists-p "~/.config/emacs/static-variables")
+    (with-temp-buffer
+      (insert-file-contents "~/.config/emacs/static-variables")
+      (goto-char (point-min)) ;; Move to the beginning of the buffer
+      (let ((theme-name (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+        (setq laluxx/current-theme (intern theme-name))
+        (load-theme laluxx/current-theme t)
+        (update-pulsing-cursor-color)))))
+
+
+
+(with-eval-after-load 'doom-themes
+  (with-eval-after-load 'ewal
+    (laluxx/load-saved-theme)))
+
 
 
 (defun laluxx/load-dark-theme ()
@@ -1290,10 +1385,7 @@ changes, local to the current buffer."
 (defun laluxx/wal-set ()
   (interactive)
   (let* ((default-directory "~/xos/wallpapers/static")
-         (theme-directory "~/xos/theme")
-         (pywal-scripts-directory "~/xos/pywal-scripts")
          (image-files (directory-files-recursively default-directory "\\.\\(png\\|jpg\\|jpeg\\|webp\\)$"))
-         (current-buffer-name (buffer-name))
          (wm-name (string-trim (shell-command-to-string "wmctrl -m | awk 'NR==1 {print $2}'"))))
     (ivy-read "Choose wallpaper: "
               image-files
@@ -1301,22 +1393,11 @@ changes, local to the current buffer."
                         (when (and (not (string-empty-p wallpaper))
                                    (file-exists-p wallpaper))
                           (let ((abs-wallpaper (expand-file-name wallpaper)))
-                            (shell-command-to-string (concat "wal -i " abs-wallpaper))
-                            (with-temp-file (concat theme-directory "/.wallpaper")
-                              (insert abs-wallpaper))
-                            (shell-command-to-string "theme pywal --no-random")
-                            (dolist (script '("xmonad-dark-wal.py" "nvim-wal.py" "nvim-wal-dark.py"))
-                              (shell-command-to-string (concat "python3 " pywal-scripts-directory "/" script)))
-                            (cond
-                             ((string-equal wm-name "LG3D") (shell-command-to-string "xmonad --restart"))
-                             ((string-equal wm-name "dwm") (shell-command-to-string "xdotool key super+F5")))
-                            (shell-command-to-string "dashboard-wal-gen")
-                            ;; Start picom
-                            (start-process "picom" nil "picom")
-                            ;; If the current buffer was the dashboard, refresh it
-                            (when (equal current-buffer-name "*dashboard*")
-                              (run-at-time "0.5 sec" nil 'open-dashboard))
-                            (run-at-time "1 sec" nil 'spaceline-compile)))))))
+                            (shell-command-to-string (concat "wal -i " abs-wallpaper)))
+                          (shell-command-to-string "dashboard-wal-gen")
+                          (cond
+                           ((string-equal wm-name "LG3D") (shell-command-to-string "xmonad --restart"))
+                           ((string-equal wm-name "dwm") (shell-command-to-string "xdotool key super+F5"))))))))
 
 (defun laluxx/wal-set-animated ()
   "Set an animated wallpaper and configure theme based on it."
@@ -1486,5 +1567,9 @@ changes, local to the current buffer."
     "~/.cache/wal/colors"
     '(change)
     (lambda (event)
-      (load-theme 'ewal-doom-vibrant t)
-      (enable-theme 'ewal-doom-vibrant)))))
+      (mapc #'disable-theme custom-enabled-themes) ;; Disable all currently enabled themes
+      (load-theme 'ewal-doom-one t)
+      (enable-theme 'ewal-doom-one)
+      (update-pulsing-cursor-color)
+      (setq laluxx/current-theme 'ewal-doom-one) ;; Set the current theme variable
+      (laluxx/save-current-theme)))))

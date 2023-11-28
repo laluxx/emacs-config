@@ -1,1 +1,1 @@
-("~/" "~/xos/games/slicer/" "~/.config/emacs/" "~/Desktop/pulls/dotfiles/" "~/xos/games/spline/" "~/Desktop/test/dotfiles/dotfiles-daviwil/")
+("~/.config/emacs/" "~/Desktop/test/comp/compositor/" "~/" "~/Desktop/test/comp/xcompmgr-simple/" "~/xos/packages/picomx/" "~/xos/projects/slicer/" "~/Desktop/test/emacs/doomemacs/" "~/Desktop/pulls/dotfiles/" "~/xos/suckless/dwm/")
