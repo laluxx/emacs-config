@@ -1,1 +1,1 @@
-("~/.config/emacs/" "~/Desktop/test/comp/compositor/" "~/" "~/Desktop/test/comp/xcompmgr-simple/" "~/xos/packages/picomx/" "~/xos/projects/slicer/" "~/Desktop/test/emacs/doomemacs/" "~/Desktop/pulls/dotfiles/" "~/xos/suckless/dwm/")
+("~/.config/emacs/" "~/xos/projects/rust/fuz/" "~/" "~/xos/projects/slicer/" "~/xos/projects/rsh/" "~/xos/suckless/dwm/" "~/Desktop/test/comp/compositor/" "~/Desktop/test/comp/xcompmgr-simple/" "~/xos/packages/picomx/" "~/Desktop/test/emacs/doomemacs/" "~/Desktop/pulls/dotfiles/" "~/Desktop/test/backup/emacs/")

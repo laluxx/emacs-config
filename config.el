@@ -1,7 +1,12 @@
+(defvar pulse-cursor nil
+  "Determine if the cursor should pulse.")
+
+
 (add-to-list 'load-path "~/.config/emacs/scripts/")
 (require 'elpaca-setup)    ;; The Elpaca Package Manager
 ;; (require 'app-launchers)   ;; Use emacs as a run launcher like dmenu (experimental)
-(require 'pulsing-cursor) ;; Pulse a cursor
+(if pulse-cursor
+(require 'pulsing-cursor)) ;; Pulse a cursor
 
 (use-package all-the-icons
   :ensure t
@@ -94,13 +99,18 @@
   :config
   (evil-commentary-mode))
 
+(keyboard-translate ?\C-i ?\H-i)
+
 (with-eval-after-load 'evil
   (define-key evil-normal-state-map (kbd "C-8") 'swiper-isearch-thing-at-point)
   (define-key evil-normal-state-map (kbd "g r") 'deadgrep)
   (define-key evil-normal-state-map (kbd "DEL") 'evil-delete-backward-char-and-join)
+  (define-key evil-normal-state-map (kbd "H-i") 'laluxx/iedit-insert)
+  ;; (define-key evil-normal-state-map (kbd "C-i") 'laluxx/iedit-insert)
 )
 
 (with-eval-after-load 'evil
+  (define-key evil-insert-state-map [escape] 'laluxx/escape-and-quit-iedit)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-backward-char)
   (define-key evil-insert-state-map (kbd "C-j") 'evil-next-line)
   (define-key evil-insert-state-map (kbd "C-k") 'evil-previous-line)
@@ -188,7 +198,7 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (enable-recursive-minibuffers t)
   (ivy-use-selectable-prompt t)
   :config
-  (ivy-mode 0) ;; TODO maybe delete this
+  (ivy-mode 1) ;; TODO maybe delete this
   (setq ivy-format-functions-alist '((t . +ivy-format-function-line-or-arrow)))
 
   (setq ivy-sort-functions-alist
@@ -348,6 +358,9 @@ Uses an arrow in terminal and standard formatting in a GUI."
 ;; and `package-pinned-packages`. Most users will not need or want to do this.
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
+
+(use-package iedit
+  :ensure t)
 
 (use-package olivetti
   :config
@@ -756,6 +769,22 @@ However, don't toggle if which-key is currently displayed."
             (evil-define-key 'normal org-mode-map
               (kbd "h") 'my-org-close-or-move-left)))
 
+;; (use-package tree-sitter-langs
+;;   :ensure t)
+
+
+;; (use-package tree-sitter
+;;   :config
+;;   (require 'tree-sitter-langs)
+;;   (global-tree-sitter-mode)
+;;   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+(use-package rust-mode
+  :ensure t
+  :mode "\\.rs\\'"
+  :config
+  (setq rust-format-on-save t))
+
 (use-package ruby-electric
   :ensure t
   :hook (ruby-mode . ruby-electric-mode))
@@ -805,6 +834,9 @@ However, don't toggle if which-key is currently displayed."
       mouse-wheel-scroll-amount-horizontal 2)
 
 (setq double-buffering t)
+
+(use-package ef-themes
+  :ensure t)
 
 (add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
 
@@ -971,7 +1003,8 @@ However, don't toggle if which-key is currently displayed."
     "f j" '(laluxx/file-jump :wk "Jump to a file")
     ;; "f l" '(counsel-locate :wk "Locate a file")
     "f l" '(find-library :wk "Locate a file")
-    "f r" '(counsel-recentf :wk "Find recent files")
+    "f r" '(counsel-recentf :wk "File recent")
+    "f R" '(laluxx/counsel-recentf-split :wk "File recent split")
     "f u" '(sudo-edit-find-file :wk "Sudo find file")
     "f f" '(counsel-find-file :wk "Find file")
     ;; "f s" '(helm-lsp-workspace-symbol :wk "Find symbol")
@@ -1124,6 +1157,46 @@ However, don't toggle if which-key is currently displayed."
     "w L" '(buf-move-right :wk "Buffer move right"))
   )
 
+(defun laluxx/iedit-insert()
+  "Activate iedit-mode, switch to insert mode and go to the end of the current word."
+  (interactive)
+  (iedit-mode)
+  (evil-insert-state)
+  (forward-word))
+
+(defun laluxx/escape-and-quit-iedit ()
+  "Switch to normal state, then quit iedit-mode if active."
+  (interactive)
+  (evil-force-normal-state)
+  (when (bound-and-true-p iedit-mode)
+    (iedit--quit)))
+
+;; TODO
+(defun laluxx/counsel-fonts ()
+  "Display a list of fonts, with each font name styled in its own font."
+  (interactive)
+  (let ((fonts (font-family-list))
+        (formatted-fonts '()))
+    (dolist (font fonts)
+      (push (propertize font 'face `(:family ,font)) formatted-fonts))
+    (ivy-read "Choose a font: " (nreverse formatted-fonts)
+              :action (lambda (selection)
+                        (message "You selected: %s" selection)))))
+
+
+
+
+
+
+(defun laluxx/counsel-recentf-split ()
+  "Open a recent file in a new window to the right."
+  (interactive)
+  (ivy-read "Recentf: " recentf-list
+            :action (lambda (f)
+                      (with-selected-window (split-window-right)
+                        (find-file f)))
+            :caller 'counsel-recentf))
+
 (defun laluxx/dired-split-jump ()
   "Split the window vertically and open dired in the new window."
   (interactive)
@@ -1253,7 +1326,8 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 (defvar laluxx/light-themes
   '(doom-one-light doom-tomorrow-day doom-flatwhite doom-homage-white doom-plain whiteboard tsdh-light tango modus-operandi
 		   leuven adwaita dichromacy  doom-bluloco-light doom-acario-light doom-ayu-light doom-feather-light doom-gruvbox-light
-		   doom-nord-light doom-oksolar-light doom-opera-light doom-solarized-light doom-earl-grey )
+		   doom-nord-light doom-oksolar-light doom-opera-light doom-solarized-light doom-earl-grey ef-cyprus ef-day ef-deuteranopia-light
+		   ef-duo-light ef-elea-light ef-frost ef-kassio ef-light ef-maris-light ef-melissa-light ef-spring ef-summer ef-trio-light ef-tritanopia-light)
   "List of light themes.")
 
 (defvar laluxx/ugly-themes
@@ -1263,13 +1337,6 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 
 (defvar laluxx/current-theme nil
   "The current theme used in the Emacs session.")
-
-;; (defun laluxx/save-current-theme ()
-;;   "Save the current theme name as a string to a file."
-;;   (when laluxx/current-theme
-;;     (with-temp-file "~/.config/emacs/static-variables"
-;;       (insert (symbol-name laluxx/current-theme)))))
-
 
 (defun laluxx/save-current-theme ()
   "Save the current theme name and its background color as a string to a file."
@@ -1292,15 +1359,17 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
                                         (not (equal current-selection original-theme)))
                                (mapc #'disable-theme custom-enabled-themes)
                                (load-theme current-selection t)
-                               (update-pulsing-cursor-color)))) ;; Preview theme
+			       (if pulse-cursor
+				   (update-pulsing-cursor-color))))) ;; Preview theme
               :action (lambda (theme)
                         (setq selected-theme (intern theme))
                         (when selected-theme
                           (setq laluxx/current-theme selected-theme) ;; Update current theme
                           (mapc #'disable-theme custom-enabled-themes)
                           (load-theme selected-theme t)
-                          (update-pulsing-cursor-color)
-                          (laluxx/save-current-theme))) ;; Save current theme
+                          (laluxx/save-current-theme))
+			(if pulse-cursor
+                            (update-pulsing-cursor-color))) ;; Save current theme
               :unwind (lambda ()
                         (unless selected-theme
                           (mapc #'disable-theme custom-enabled-themes)
@@ -1308,7 +1377,8 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
                             (load-theme original-theme t)
                             (setq laluxx/current-theme original-theme)
                             (laluxx/save-current-theme)
-                            (update-pulsing-cursor-color))))))) ;; Revert to original theme
+			    (if pulse-cursor
+                            (update-pulsing-cursor-color)))))))) ;; Revert to original theme
 
 
 
@@ -1321,7 +1391,8 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
       (let ((theme-name (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
         (setq laluxx/current-theme (intern theme-name))
         (load-theme laluxx/current-theme t)
-        (update-pulsing-cursor-color)))))
+	(if pulse-cursor
+        (update-pulsing-cursor-color))))))
 
 
 
@@ -1570,6 +1641,7 @@ changes, local to the current buffer."
       (mapc #'disable-theme custom-enabled-themes) ;; Disable all currently enabled themes
       (load-theme 'ewal-doom-one t)
       (enable-theme 'ewal-doom-one)
-      (update-pulsing-cursor-color)
+      (if pulse-cursor
+      (update-pulsing-cursor-color))
       (setq laluxx/current-theme 'ewal-doom-one) ;; Set the current theme variable
       (laluxx/save-current-theme)))))

@@ -4,3 +4,5 @@ ff main.c
 ls
 clear 
 xos-website-server 
+gcc answer.c -o answer
+./answer 
