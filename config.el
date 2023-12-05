@@ -8,6 +8,182 @@
 (if pulse-cursor
 (require 'pulsing-cursor)) ;; Pulse a cursor
 
+;;this stuff should happen early TODO
+;;; Reasonable defaults for interactive sessions
+
+;;; Runtime optimizations
+;; PERF: A second, case-insensitive pass over `auto-mode-alist' is time wasted.
+(setq auto-mode-case-fold nil)
+
+;; PERF: Disable bidirectional text scanning for a modest performance boost.
+;;   I've set this to `nil' in the past, but the `bidi-display-reordering's docs
+;;   say that is an undefined state and suggest this to be just as good:
+(setq-default bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right)
+
+;; PERF: Disabling BPA makes redisplay faster, but might produce incorrect
+;;   reordering of bidirectional text with embedded parentheses (and other
+;;   bracket characters whose 'paired-bracket' Unicode property is non-nil).
+(setq bidi-inhibit-bpa t)  ; Emacs 27+ only
+
+;; Reduce rendering/line scan work for Emacs by not rendering cursors or regions
+;; in non-focused windows.
+(setq-default cursor-in-non-selected-windows nil)
+(setq highlight-nonselected-windows nil)
+
+;; More performant rapid scrolling over unfontified regions. May cause brief
+;; spells of inaccurate syntax highlighting right after scrolling, which should
+;; quickly self-correct.
+(setq fast-but-imprecise-scrolling t)
+
+;; Emacs "updates" its ui more often than it needs to, so slow it down slightly
+;; (setq idle-update-delay 1.0)  ; default is 0.5
+
+;; Font compacting can be terribly expensive, especially for rendering icon
+;; fonts on Windows. Whether disabling it has a notable affect on Linux and Mac
+;; hasn't been determined, but do it anyway, just in case. This increases memory
+;; usage, however!
+(setq inhibit-compacting-font-caches t)
+
+
+;; PGTK builds only: this timeout adds latency to frame operations, like
+;; `make-frame-invisible', which are frequently called without a guard because
+;; it's inexpensive in non-PGTK builds. Lowering the timeout from the default
+;; 0.1 should make childframes and packages that manipulate them (like `lsp-ui',
+;; `company-box', and `posframe') feel much snappier. See emacs-lsp/lsp-ui#613.
+(when (boundp 'pgtk-wait-for-event-timeout)
+  (setq pgtk-wait-for-event-timeout 0.001))
+
+;; Increase how much is read from processes in a single chunk (default is 4kb).
+;; This could further increased where needed (like LSP TODO).
+(setq read-process-output-max (* 64 1024))  ; 64kb
+
+;; Introduced in Emacs HEAD (b2f8c9f), this inhibits fontification while
+;; receiving input, which should help a little with scrolling performance.
+;; (setq redisplay-skip-fontification-on-input t)
+
+;;; Encodings
+;; Contrary to what many Emacs users have in their configs, you don't need more
+;; than this to make UTF-8 the default coding system:
+(set-language-environment "UTF-8")
+
+;; Don't prompt for confirmation when we create a new file or buffer (assume the
+;; user knows what they're doing).
+(setq confirm-nonexistent-file-or-buffer nil)
+
+;; Don't resize the frames in steps; it looks weird, especially in tiling window
+;; managers, where it can leave unseemly gaps.
+(setq frame-resize-pixelwise t)
+
+;; A simple frame title
+(setq frame-title-format '("%b – imaks")
+      icon-title-format frame-title-format)
+
+;; Try to keep the cursor out of the read-only portions of the minibuffer.
+;; (setq minibuffer-prompt-properties '(read-only t intangible t cursor-intangible t face minibuffer-prompt))
+;; (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+;; Explicitly define a width to reduce the cost of on-the-fly computation
+(setq-default display-line-numbers-width 3)
+
+;; Resolve symlinks when opening files, so that any operations are conducted
+;; from the file's true directory (like `find-file').
+(setq find-file-visit-truename t
+      vc-follow-symlinks t)
+
+;; Disable the warning "X and Y are the same file". It's fine to ignore this
+;; warning as it will redirect you to the existing buffer anyway.
+(setq find-file-suppress-same-file-warnings t)
+
+;; Create missing directories when we open a file that doesn't exist under a
+;; directory tree that may not exist.
+(defun create-missing-directories ()
+  "Automatically create missing directories when creating new files."
+  (let ((parent-directory (file-name-directory buffer-file-name)))
+    (when (and (not (file-remote-p buffer-file-name))
+               (not (file-directory-p parent-directory))
+               (y-or-n-p (format "Directory `%s' does not exist! Create it?"
+                                 parent-directory)))
+      (make-directory parent-directory 'parents)
+      t)))
+
+(add-hook 'find-file-not-found-functions 'create-missing-directories)
+
+
+
+
+;; Don't generate backups or lockfiles. While auto-save maintains a copy so long
+;; as a buffer is unsaved, backups create copies once, when the file is first
+;; written, and never again until it is killed and reopened. This is better
+;; suited to version control, and I don't want world-readable copies of
+;; potentially sensitive material floating around our filesystem.
+(setq create-lockfiles nil
+      make-backup-files nil
+      ;; But in case the user does enable it, some sensible defaults:
+      version-control t     ; number each backup file
+      backup-by-copying t   ; instead of renaming current file (clobbers links)
+      delete-old-versions t ; clean up after itself
+      kept-old-versions 5
+      kept-new-versions 5
+      backup-directory-alist (list (cons "." (expand-file-name "backup/" "~/.config/emacs/")))
+      tramp-backup-directory-alist backup-directory-alist)
+
+(defun shut-up-autosave-a (fn &rest args)
+  "If a file has autosaved data, `after-find-file' will pause for 1 second to
+tell you about it. Very annoying. This prevents that."
+  (cl-letf (((symbol-function 'sit-for) #'ignore))
+    (apply fn args)))
+
+(advice-add 'after-find-file :around #'shut-up-autosave-a)
+
+;;
+;;; Formatting
+
+;; Favor spaces over tabs. Pls dun h8, but I think spaces (and 4 of them) is a
+;; more consistent default than 8-space tabs. It can be changed on a per-mode
+;; basis anyway (and is, where tabs are the canonical style, like go-mode).
+(setq-default indent-tabs-mode nil
+              tab-width 4)
+
+;; An archaic default in the age of widescreen 4k displays? I disagree (same here).
+;; We stillfrequently split our terminals and editor frames, or have them side-by-side,
+;; using up more of that newly available horizontal real-estate.
+(setq-default fill-column 80)
+
+;; This was a widespread practice in the days of typewriters. I actually prefer
+;; it when writing prose with monospace fonts, but it is obsolete otherwise.
+(setq sentence-end-double-space nil)
+
+;; The POSIX standard defines a line is "a sequence of zero or more non-newline
+;; characters followed by a terminating newline", so files should end in a
+;; newline. Windows doesn't respect this (because it's Windows), but we should,
+;; since programmers' tools tend to be POSIX compliant (and no big deal if not).
+(setq require-final-newline t)
+
+;; Default to soft line-wrapping in text modes. It is more sensibile for text
+;; modes, even if hard wrapping is more performant.
+(add-hook 'text-mode-hook #'visual-line-mode)
+
+;;
+;;; Clipboard / kill-ring
+
+;; Cull duplicates in the kill ring to reduce bloat and make the kill ring
+;; easier to peruse (with `counsel-yank-pop' or `helm-show-kill-ring'.
+(setq kill-do-not-save-duplicates t)
+
+;;
+;;; Extra file extensions to support
+
+(nconc
+ auto-mode-alist
+ '(("/LICENSE\\'" . text-mode)
+   ("\\.log\\'" . text-mode)
+   ("rc\\'" . conf-mode)
+   ("\\.\\(?:hex\\|nes\\)\\'" . hexl-mode)))
+
+
+(global-auto-revert-mode t) ;; Automatically show changes if the file has changed
+
 (use-package all-the-icons
   :ensure t
   :if (display-graphic-p))
@@ -19,7 +195,7 @@
   :after all-the-icons
   :hook (ibuffer-mode . (lambda () (all-the-icons-ibuffer-mode 1))))
 
-(setq backup-directory-alist '((".*" . "~/.local/share/Trash/files")))
+;; (setq backup-directory-alist '((".*" . "~/.local/share/Trash/files")))
 
 (use-package company
   :defer 2
@@ -122,6 +298,9 @@
   (define-key evil-insert-state-map (kbd "C-z") 'undo)
   (define-key evil-insert-state-map (kbd "C-y") 'undo-redo))
 
+(with-eval-after-load 'evil
+  (define-key evil-visual-state-map (kbd "|") 'shell-command-on-region))
+
 (use-package flycheck
   :ensure t
   :defer t
@@ -198,7 +377,7 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (enable-recursive-minibuffers t)
   (ivy-use-selectable-prompt t)
   :config
-  (ivy-mode 1) ;; TODO maybe delete this
+  (ivy-mode 1) ;; TODO don't use ivy on keychords like (C-x C-f)
   (setq ivy-format-functions-alist '((t . +ivy-format-function-line-or-arrow)))
 
   (setq ivy-sort-functions-alist
@@ -212,15 +391,21 @@ Uses an arrow in terminal and standard formatting in a GUI."
 
 (use-package counsel
   :ensure t
-  :after ivy
+  ;; :after ivy
   :config 
   (counsel-mode 1)
+
+  ;; Integrate `helpful` with `counsel`
+  (setq counsel-describe-function-function #'helpful-callable)
+  (setq counsel-describe-variable-function #'helpful-variable)
+
+
   (define-key counsel-mode-map [remap find-file] nil)
   (setq ivy-initial-inputs-alist nil)) ;; removes starting ^ regex in M-x
 
 (use-package ivy-rich
   :ensure t
-  :after ivy
+  ;; :after ivy
   :config
   (ivy-rich-mode 1))
 
@@ -288,7 +473,6 @@ Uses an arrow in terminal and standard formatting in a GUI."
                    `(lambda (c)
                   (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
 
-(global-auto-revert-mode t)  ;; Automatically show changes if the file has changed
 (global-display-line-numbers-mode 1)
 ;; (global-visual-line-mode t)  ;; Enable visual lines
 (setq-default truncate-lines t) ;; Enable truncated lines
@@ -296,11 +480,9 @@ Uses an arrow in terminal and standard formatting in a GUI."
 ;; (scroll-bar-mode -1)         ;; Disable the scroll bar
 ;; (tool-bar-mode -1)           ;; Disable the tool bar
 (setq org-edit-src-content-indentation 0) ;; Set src block automatic indent to 0 instead of 2.
-
 (setq completing-read-function 'ivy-completing-read)
 (setq use-dialog-box nil)
 (setq use-short-answers t)
-
 (global-set-key [escape] 'keyboard-escape-quit)
 
 (use-package eshell-toggle
@@ -358,6 +540,27 @@ Uses an arrow in terminal and standard formatting in a GUI."
 ;; and `package-pinned-packages`. Most users will not need or want to do this.
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
+
+(use-package helpful
+  :ensure t
+  :bind
+  (("C-h f" . helpful-callable)   ; Replace `describe-function`
+   ("C-h v" . helpful-variable)   ; Replace `describe-variable`
+   ("C-h k" . helpful-key)        ; Replace `describe-key`
+   ("C-h C" . helpful-command)    ; Additional command for describing commands
+   ("C-h F" . helpful-function))  ; Additional command for describing functions
+  :custom
+  (helpful-max-buffers 10 "Limit the number of helpful buffers to avoid clutter")
+  :config
+  (setq helpful-switch-buffer-function 'pop-to-buffer)
+  ;; Hook for customizing helpful-mode
+  :hook (helpful-mode . (lambda ()
+                          ;; Disable line numbers
+                          (display-line-numbers-mode -1)
+                          ;; Enable olivetti-mode
+                          (olivetti-mode 1)
+                          ;; Set olivetti width
+                          (olivetti-set-width 70))))
 
 (use-package iedit
   :ensure t)
@@ -609,10 +812,6 @@ Uses an arrow in terminal and standard formatting in a GUI."
 
   ;; Disable the LSP headerline (breadcrumb)
   (setq lsp-headerline-breadcrumb-enable nil))
-
-;; (with-eval-after-load 'helm
-;;   (define-key helm-map (kbd "C-j") 'helm-next-line)
-;;   (define-key helm-map (kbd "C-k") 'helm-previous-line))
 
 (use-package dashboard
   :ensure t 
@@ -954,7 +1153,7 @@ However, don't toggle if which-key is currently displayed."
     "b d" '(bookmark-delete :wk "Delete bookmark")
     "b i" '(ibuffer :wk "Ibuffer")
     "b k" '(kill-current-buffer :wk "Kill current buffer")
-    "b K" '(kill-some-buffers :wk "Kill multiple buffers")
+    "b K" '(laluxx/kill-current-buffer-and-window :wk "Kill buffer and window")
     "b l" '(list-bookmarks :wk "List bookmarks")
     "b m" '(bookmark-set :wk "Set bookmark")
     "b n" '(next-buffer :wk "Next buffer")
@@ -1007,6 +1206,7 @@ However, don't toggle if which-key is currently displayed."
     "f R" '(laluxx/counsel-recentf-split :wk "File recent split")
     "f u" '(sudo-edit-find-file :wk "Sudo find file")
     "f f" '(counsel-find-file :wk "Find file")
+    "f F" '(laluxx/file-jump :wk "Find file split")
     ;; "f s" '(helm-lsp-workspace-symbol :wk "Find symbol")
     "f h" '(laluxx/find-header :wk "Find header")
     "f U" '(sudo-edit :wk "Sudo edit file"))
@@ -1064,12 +1264,13 @@ However, don't toggle if which-key is currently displayed."
     "h d t" '(view-emacs-todo :wk "View Emacs todo")
     "h d w" '(describe-no-warranty :wk "Describe no warranty")
     "h e" '(view-echo-area-messages :wk "View echo area messages")
-    "h f" '(describe-function :wk "Describe function")
+    "h f" '(describe-function :wk "Describe function") 
     "h F" '(describe-face :wk "Describe face")
     "h g" '(describe-gnu-project :wk "Describe GNU Project")
     "h i" '(info :wk "Info")
     "h I" '(describe-input-method :wk "Describe input method")
-    "h k" '(describe-key :wk "Describe key")
+    "h p" '(helpful-at-point :wk "Helpful at point")
+    "h k" '(helpful-key :wk "Describe key")
     "h K" '(counsel-descbinds :wk "Describe keybinds")
     "h l" '(view-lossage :wk "Display recent keystrokes and the commands run")
     "h L" '(describe-language-environment :wk "Describe language environment")
@@ -1127,10 +1328,11 @@ However, don't toggle if which-key is currently displayed."
   (laluxx/leader-keys
     "t" '(:ignore t :wk "Toggle")
     "t e" '(eshell-toggle :wk "Toggle eshell")
+    "t m" '(laluxx/toggle-modeline :wk "Toggle modeline")
     "t f" '(flycheck-mode :wk "Toggle flycheck")
     "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
     "t n" '(neotree-toggle :wk "Toggle neotree file viewer")
-    "t o" '(org-mode :wk "Toggle org mode")
+    "t o" '(org-mode :wk "Toggle org mode") ;; TODO Toggle opacity
     "t r" '(rainbow-mode :wk "Toggle rainbow mode")
     "t t" '(toggle-truncate-lines :wk "Toggle truncated lines")
     "t h" '(laluxx/toggle-hl-line-mode :wk "Toggle hl-line-mode")
@@ -1156,6 +1358,39 @@ However, don't toggle if which-key is currently displayed."
     "w K" '(buf-move-up :wk "Buffer move up")
     "w L" '(buf-move-right :wk "Buffer move right"))
   )
+
+(defun laluxx/kill-current-buffer-and-window ()
+  "Kill the current buffer and close the window if there are other windows in the frame."
+  (interactive)
+  (let ((current-window (selected-window))
+        (buffer-to-kill (current-buffer)))
+    ;; Kill the current buffer
+    (kill-buffer buffer-to-kill)
+    ;; Close the window if there are other windows available
+    (unless (one-window-p)
+      (delete-window current-window))))
+
+(defun laluxx/toggle-modeline ()
+  "Toggle the modeline on and off."
+  (interactive)
+  (setq mode-line-format
+        (if (equal mode-line-format nil)
+            (default-value 'mode-line-format)
+          nil))
+  (force-mode-line-update)
+  ;; If you're using a window system, refresh the frame as well
+  (when (display-graphic-p)
+    (redraw-frame (selected-frame))))
+
+(defun laluxx/find-TODOs ()
+  "Search for TODOs using deadgrep."
+  (interactive)
+  (deadgrep "TODO"))
+
+(defun laluxx/find-NOTES ()
+  "Search for NOTE using deadgrep."
+  (interactive)
+  (deadgrep "NOTE"))
 
 (defun laluxx/iedit-insert()
   "Activate iedit-mode, switch to insert mode and go to the end of the current word."
@@ -1229,15 +1464,6 @@ However, don't toggle if which-key is currently displayed."
    (t
     (setq display-line-numbers t)
     (message "Absolute line numbers enabled"))))
-
-(defun my/undo-tree-visualize ()
-  "Custom undo-tree visualization that replaces the current buffer."
-  (interactive)
-  (let ((current-buffer (current-buffer)))
-    (undo-tree-visualize)
-    (when (get-buffer "*undo-tree*")
-      (switch-to-buffer "*undo-tree*")
-      (kill-buffer current-buffer))))
 
 (defun laluxx/mark-word (&optional arg allow-extend)
   "Mark the whole word at point. 

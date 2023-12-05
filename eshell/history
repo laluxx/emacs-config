@@ -6,3 +6,7 @@ clear
 xos-website-server 
 gcc answer.c -o answer
 ./answer 
+ll
+pcmanfm 
+ls
+lsd
