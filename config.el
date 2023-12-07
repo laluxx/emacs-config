@@ -240,13 +240,20 @@ tell you about it. Very annoying. This prevents that."
 (add-hook 'dired-mode-hook (lambda () (display-line-numbers-mode 0)))
 
 (use-package evil
-    :init      ;; tweak evil's configuration before loading it
-    (setq evil-want-integration t  ;; optional since it's already set to t by default.
-          evil-want-keybinding nil
-          evil-vsplit-window-right t
-          evil-split-window-below t
-          evil-undo-system 'undo-redo)  ;; Adds vim-like C-r redo functionality
-    (evil-mode))
+  :init
+  (setq evil-want-integration t
+        evil-want-keybinding nil
+        evil-vsplit-window-right t
+        evil-split-window-below t
+        evil-undo-system 'undo-redo)
+  (evil-mode))
+
+;; Set the cursor to a solid block for both normal and insert modes
+(setq evil-normal-state-cursor '(box))
+(setq evil-insert-state-cursor '(box))
+
+
+
 
 (use-package evil-collection
   :after evil
@@ -258,7 +265,6 @@ tell you about it. Very annoying. This prevents that."
   (add-to-list 'evil-collection-mode-list 'help) ;; evilify help mode
   (evil-collection-init))
 
-;; (use-package evil-tutor)
 
 ;; Using RETURN to follow links in Org/Evil 
 ;; Unmap keys in 'evil-maps if not done, (setq org-return-follows-link t) will not work
@@ -290,7 +296,7 @@ tell you about it. Very annoying. This prevents that."
   (define-key evil-insert-state-map (kbd "C-h") 'evil-backward-char)
   (define-key evil-insert-state-map (kbd "C-j") 'evil-next-line)
   (define-key evil-insert-state-map (kbd "C-k") 'evil-previous-line)
-  (define-key evil-insert-state-map (kbd "C-l") 'evil-forward-char)
+  (define-key evil-insert-state-map (kbd "C-l") 'forward-char)
   (define-key evil-insert-state-map (kbd "C-v") 'yank)
   (define-key evil-insert-state-map (kbd "C-s") 'save-buffer)
   (define-key evil-insert-state-map (kbd "C-c") 'kill-ring-save)
@@ -1005,6 +1011,64 @@ However, don't toggle if which-key is currently displayed."
     (rvm-activate-corresponding-ruby))
 )
 
+(blink-cursor-mode -1)
+(defvar laluxx/original-cursor-color nil
+  "Variable to store the original cursor color.")
+
+(defun laluxx/update-cursor-colors ()
+  "Update cursor colors based on the current theme."
+  (setq laluxx/original-cursor-color (face-background 'cursor)) ; Save the original cursor color
+  (put 'cursor 'laluxx/evil-emacs-color (face-foreground 'warning)))
+
+(defun laluxx/emacs-mode-cursor-color ()
+  "Set cursor color for Emacs mode."
+  (unless laluxx/original-cursor-color
+    (setq laluxx/original-cursor-color (face-background 'cursor))) ; Save the original color if not already saved
+  (evil-set-cursor-color (get 'cursor 'laluxx/evil-emacs-color)))
+
+(defun laluxx/reset-cursor-color ()
+  "Restore the original cursor color."
+  (when laluxx/original-cursor-color
+    (evil-set-cursor-color laluxx/original-cursor-color)))
+
+;; Hooks for entering and exiting Emacs mode
+(add-hook 'evil-emacs-state-entry-hook 'laluxx/emacs-mode-cursor-color)
+(add-hook 'evil-emacs-state-exit-hook 'laluxx/reset-cursor-color)
+
+;; Hook to update cursor colors after theme load
+(add-hook 'after-load-theme-hook 'laluxx/update-cursor-colors)
+
+;; Update cursor colors immediately in case a theme is already loaded
+(laluxx/update-cursor-colors)
+
+
+
+
+
+
+(defvar normal-mode-cursor-color nil "cursor color for normal mode.")
+
+(defun save-default-cursor-color ()
+  (setq normal-mode-cursor-color (face-background 'cursor)))
+
+(defun set-evil-insert-cursor-color ()
+  (let ((color (face-foreground 'font-lock-constant-face)))
+    (setq evil-insert-state-cursor `(box ,color))))
+
+;; Function to restore the cursor color for normal mode
+(defun restore-normal-mode-cursor-color ()
+  (when normal-mode-cursor-color
+    (setq evil-normal-state-cursor `(box ,normal-mode-cursor-color))
+    ;; HACK Force a refresh of the cursor in case it's not updated correctly the first time
+    (unless (equal (face-background 'cursor) normal-mode-cursor-color)
+      (set-cursor-color normal-mode-cursor-color))))
+
+
+(add-hook 'evil-normal-state-entry-hook 'restore-normal-mode-cursor-color)
+(add-hook 'emacs-startup-hook (lambda ()
+                                (save-default-cursor-color)
+                                (set-evil-insert-cursor-color)))
+
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
 (setq mouse-wheel-progressive-speed nil) ;; don"t accelerate scrolling
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
@@ -1207,8 +1271,9 @@ However, don't toggle if which-key is currently displayed."
     "f u" '(sudo-edit-find-file :wk "Sudo find file")
     "f f" '(counsel-find-file :wk "Find file")
     "f F" '(laluxx/file-jump :wk "Find file split")
-    ;; "f s" '(helm-lsp-workspace-symbol :wk "Find symbol")
     "f h" '(laluxx/find-header :wk "Find header")
+    "f t" '(laluxx/find-TODOs :wk "Find TODOs")
+    "f n" '(laluxx/find-NOTES :wk "Find NOTES")
     "f U" '(sudo-edit :wk "Sudo edit file"))
 
   (laluxx/leader-keys
@@ -1358,6 +1423,36 @@ However, don't toggle if which-key is currently displayed."
     "w K" '(buf-move-up :wk "Buffer move up")
     "w L" '(buf-move-right :wk "Buffer move right"))
   )
+
+(defvar my-modeline-mode-line-format
+  '(:eval (let* ((evil-state (cond ((evil-normal-state-p) '("NORMAL" . "green"))
+                                   ((evil-insert-state-p) '("INSERT" . "blue"))
+                                   ((evil-visual-state-p) '("VISUAL" . "orange"))
+                                   ((evil-replace-state-p) '("REPLACE" . "red"))
+                                   ((evil-emacs-state-p) '("EMACS" . "purple"))
+                                   (t '("UNKNOWN" . "grey"))))
+            (evil-state-name (car evil-state))
+            (evil-state-color (cdr evil-state)))
+            (concat (propertize (format " %s " evil-state-name) 'face `(:background ,evil-state-color))
+                    " %b [%m] Line %l")))
+  "Custom modeline format with EVIL mode indicator.")
+
+(defun my-modeline-refresh ()
+  "Refresh the modeline in all buffers."
+  (setq-default mode-line-format (if my-modeline-mode my-modeline-mode-line-format))
+  (dolist (buffer (buffer-list))
+    (with-current-buffer buffer
+      (force-mode-line-update))))
+
+(define-minor-mode my-modeline-mode
+  "A minor mode for a custom modeline."
+  :init-value nil
+  :global true
+  :lighter " My-Modeline"
+  :group 'my-custom-modeline
+  (my-modeline-refresh))
+
+(provide 'my-modeline-mode)
 
 (defun laluxx/kill-current-buffer-and-window ()
   "Kill the current buffer and close the window if there are other windows in the frame."
@@ -1585,7 +1680,7 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
                                         (not (equal current-selection original-theme)))
                                (mapc #'disable-theme custom-enabled-themes)
                                (load-theme current-selection t)
-			       (if pulse-cursor
+			                   (if pulse-cursor
 				   (update-pulsing-cursor-color))))) ;; Preview theme
               :action (lambda (theme)
                         (setq selected-theme (intern theme))
@@ -1594,17 +1689,18 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
                           (mapc #'disable-theme custom-enabled-themes)
                           (load-theme selected-theme t)
                           (laluxx/save-current-theme))
-			(if pulse-cursor
+			            (if pulse-cursor
                             (update-pulsing-cursor-color))) ;; Save current theme
               :unwind (lambda ()
                         (unless selected-theme
                           (mapc #'disable-theme custom-enabled-themes)
                           (when original-theme
                             (load-theme original-theme t)
+                            (laluxx/update-cursor-colors) ;; Update cursor colors
                             (setq laluxx/current-theme original-theme)
                             (laluxx/save-current-theme)
-			    (if pulse-cursor
-                            (update-pulsing-cursor-color)))))))) ;; Revert to original theme
+			                (if pulse-cursor
+                                (update-pulsing-cursor-color)))))))) ;; Revert to original theme
 
 
 
@@ -1617,8 +1713,9 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
       (let ((theme-name (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
         (setq laluxx/current-theme (intern theme-name))
         (load-theme laluxx/current-theme t)
-	(if pulse-cursor
-        (update-pulsing-cursor-color))))))
+        (laluxx/update-cursor-colors) ;; Update cursor colors
+	    (if pulse-cursor
+            (update-pulsing-cursor-color))))))
 
 
 
@@ -1643,6 +1740,8 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
   "Load an ugly theme."
   (interactive)
   (laluxx/load-theme-generic laluxx/ugly-themes "Load ugly theme: "))
+
+
 
 (defun laluxx/diff-buffer-with-file (&optional arg)
   "Compare buffer to its file, else run `vc-diff'.
