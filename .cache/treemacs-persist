@@ -1,3 +1,15 @@
 * No Tab
 ** emacs
  - path :: ~/.config/emacs
+* Tab config.org
+** emacs
+ - path :: ~/.config/emacs
+* Tab  *company-box-12583088doc*
+** ded
+ - path :: ~/Desktop/test/ded
+* Tab  *company-box-12583088*
+** ded
+ - path :: ~/Desktop/test/ded
+* Tab main.py
+** anyline
+ - path :: ~/xos/projects/anyline

@@ -6,7 +6,45 @@ clear
 xos-website-server 
 gcc answer.c -o answer
 ./answer 
-ll
 pcmanfm 
 ls
 lsd
+git add .
+git commit -m update
+git push
+Compressing objects: 100% (5/5), done.
+ls
+s
+ls
+ls
+clear 
+ls
+ls 
+ls
+..
+ls
+sh
+t
+ls
+cargo run
+cargo run --release
+ls
+ls
+ls -la
+if
+()
+vim
+ls
+ls -la
+ll
+ls
+ll
+ls
+exa
+lsd
+lf
+ls
+ll
+v
+vi
+vim

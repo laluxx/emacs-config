@@ -1,8 +1,19 @@
 #+TITLE: GNU Emacs Config
 #+AUTHOR: laluxx 
 #+DESCRIPTION: Emacs config.
+TODO C-a to appen at the end of the paragraph.
+TODO shift+0 to go at the beginning of the paragraph.
+TODO open markdown files already rendered (keybind to edit them as text).
+TODO Toggle emacs scrolling function.
+TODO copy buffer,
+TODO olivetti mode and disable line number when entering messages buffer.
+TODO uncomment then eval region.
+TODO paste and immediate. 
+TODO enable flyspell in org buffer even tho its annoying, maybe add some words that he skip checking.
+TODO make eval region (SPC e r) move the point back like yanking does
+TODO map backspace in normal mode to hungry delete 
 * Sourcing the scripts
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defvar pulse-cursor nil
   "Determine if the cursor should pulse.")
 
@@ -13,14 +24,11 @@
 (if pulse-cursor
 (require 'pulsing-cursor)) ;; Pulse a cursor 
 
-
 #+end_src
 
 * DOOM
 ** Start
-#+begin_src emacs-lisp
-
-;;this stuff should happen early TODO
+#+BEGIN_SRC emacs-lisp
 ;;; Reasonable defaults for interactive sessions
 
 ;;; Runtime optimizations
@@ -79,8 +87,9 @@
 ;; than this to make UTF-8 the default coding system:
 (set-language-environment "UTF-8")
 #+end_src
+
 ** UI
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 ;; Don't prompt for confirmation when we create a new file or buffer (assume the
 ;; user knows what they're doing).
 (setq confirm-nonexistent-file-or-buffer nil)
@@ -101,7 +110,7 @@
 (setq-default display-line-numbers-width 3)
 #+end_src
 ** Editor 
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 ;; Resolve symlinks when opening files, so that any operations are conducted
 ;; from the file's true directory (like `find-file').
 (setq find-file-visit-truename t
@@ -202,15 +211,38 @@ tell you about it. Very annoying. This prevents that."
 #+end_src
     
 * CONFIG
+** Disable GNU message
+#+begin_src emacs-lisp
+(defun display-startup-echo-area-message ()
+  (message ""))
+#+end_src
+** All-the-icons-completion
+#+begin_src emacs-lisp
+(use-package all-the-icons-completion
+  :ensure t
+  :init
+  (all-the-icons-completion-mode)
+  :config
+  ;; Ensure the icons are applied to completion framework
+  (add-hook 'after-init-hook 'all-the-icons-completion-mode))
+
+(defun my/customize-completion-buffer-appearance ()
+  "Customize appearance of completion buffers: disable line numbers and hide the modeline."
+  (when (derived-mode-p 'completion-list-mode)
+    ;; Disable line numbers
+    (display-line-numbers-mode -1)
+    ;; Hide the modeline
+    (setq mode-line-format nil)))
+
+(add-hook 'completion-list-mode-hook 'my/customize-completion-buffer-appearance)
+#+end_src
 ** All the icons
 This is an icon set that can be used with dashboard, dired, ibuffer and other Emacs programs.
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package all-the-icons
   :ensure t
   :if (display-graphic-p))
 
-(use-package all-the-icons-dired
-  :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
 
 (use-package all-the-icons-ibuffer
   :after all-the-icons
@@ -222,41 +254,24 @@ By default, Emacs creates automatic backups of files in their original directori
 such "file.el" and the backup "file.el~".  This leads to a lot of clutter.
 so let's tell Emacs to put all backups that it creates in the =TRASH= directory.
 
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 ;; (setq backup-directory-alist '((".*" . "~/.local/share/Trash/files")))
-#+end_src
-
-** Company
-[[https://company-mode.github.io/][Company]] is a text completion framework for Emacs.
-  The name stands for "complete anything".
-  Completion will start automatically after you type a few letters
-#+begin_src emacs-lisp
-(use-package company
-  :defer 2
-  :diminish
-  :custom
-  (company-begin-commands '(self-insert-command))
-  (company-idle-delay .1)
-  (company-minimum-prefix-length 2)
-  (company-show-numbers t)
-  (company-tooltip-align-annotations 't)
-  (global-company-mode t))
-
-(use-package company-box
-  :after company
-  :diminish
-  :hook (company-mode . company-box-mode))
 #+end_src
 
 ** DIMINISH
 Add ':diminish' to any use-package block to hide that particular mode in the modeline.
 
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package diminish)
 #+end_src
 
 ** DIRED
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
+
+(use-package all-the-icons-dired
+  :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
+
+
 (use-package dired-open
   :config
   (setq dired-open-extensions '(("gif" . "sxiv")
@@ -281,13 +296,26 @@ Add ':diminish' to any use-package block to hide that particular mode in the mod
 
 (add-hook 'dired-mode-hook (lambda () (display-line-numbers-mode 0)))
 
+
+
+
+(use-package diredfl
+  :ensure t
+  :config (diredfl-global-mode t))
+
+(with-eval-after-load 'diredfl
+  (set-face-attribute 'diredfl-date-time nil
+                      :foreground "#303244"  ;; Slightly lighter/darker than the background
+                      :weight 'normal))
+
+
+
 #+end_src
 
 ** EVIL MODE
 *** Conf
-[[https://github.com/emacs-evil/evil][Evil]] is an extensible vim layer for Emacs.
-Because...let's face it. The Vim keybindings are just plain better.
-#+begin_src emacs-lisp
+[[https://github.com/emacs-evil/evil][Evil]] the extensible vi layer for Emacs.
+#+BEGIN_SRC emacs-lisp
 (use-package evil
   :init
   (setq evil-want-integration t
@@ -298,11 +326,8 @@ Because...let's face it. The Vim keybindings are just plain better.
   (evil-mode))
 
 ;; Set the cursor to a solid block for both normal and insert modes
-(setq evil-normal-state-cursor '(box))
-(setq evil-insert-state-cursor '(box))
-
-
-
+;; (setq evil-normal-state-cursor '(box))
+;; (setq evil-insert-state-cursor '(box))
 
 (use-package evil-collection
   :after evil
@@ -329,9 +354,13 @@ Because...let's face it. The Vim keybindings are just plain better.
   :after evil
   :config
   (evil-commentary-mode))
+
+(add-hook 'evil-insert-state-entry-hook (lambda () (blink-cursor-mode 1)))
+(add-hook 'evil-emacs-state-entry-hook (lambda () (blink-cursor-mode 1)))
+(add-hook 'evil-normal-state-entry-hook (lambda () (blink-cursor-mode -1)))
 #+end_src
 *** Normal
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (keyboard-translate ?\C-i ?\H-i)
 
 (with-eval-after-load 'evil
@@ -343,7 +372,7 @@ Because...let's face it. The Vim keybindings are just plain better.
 )
 #+end_src
 *** Insert
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (with-eval-after-load 'evil
   (define-key evil-insert-state-map [escape] 'laluxx/escape-and-quit-iedit)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-backward-char)
@@ -355,10 +384,11 @@ Because...let's face it. The Vim keybindings are just plain better.
   (define-key evil-insert-state-map (kbd "C-c") 'kill-ring-save)
   (define-key evil-insert-state-map (kbd "C-x") 'kill-region)
   (define-key evil-insert-state-map (kbd "C-z") 'undo)
+  (define-key evil-insert-state-map (kbd "C-a") 'mark-page)
   (define-key evil-insert-state-map (kbd "C-y") 'undo-redo))
 #+end_src
 *** Visual
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (with-eval-after-load 'evil
   (define-key evil-visual-state-map (kbd "|") 'shell-command-on-region))
 #+end_src
@@ -368,7 +398,7 @@ Because...let's face it. The Vim keybindings are just plain better.
 Haskell works with flycheck as long as =haskell-ghc= or =haskell-stack-ghc= is installed.
 For more information on language support for flycheck, [[https://www.flycheck.org/en/latest/languages.html][read this]].
 
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :ensure t
   :defer t
@@ -377,46 +407,49 @@ For more information on language support for flycheck, [[https://www.flycheck.or
 #+end_src
 
 ** FONTS
-Defining the various fonts that Emacs will use.
-*** Setting the Font Face
-#+begin_src emacs-lisp
+Defining the various fonts used by Emacs.
+#+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil
-  :font "JetBrains Mono"
+  :font "JetBrains Mono NL Nerd Font"
   :height 110
-  :weight 'medium)
-(set-face-attribute 'variable-pitch nil
-  :font "Ubuntu"
-  :height 120
-  :weight 'medium)
+  :weight 'extrabold)
 (set-face-attribute 'fixed-pitch nil
-  :font "JetBrains Mono"
+  :font "JetBrains Mono Nerd Font"
   :height 110
-  :weight 'medium)
-;; Makes commented text and keywords italics.
-;; This is working in emacsclient but not emacs.
-;; Your font must have an italic face available.
-(set-face-attribute 'font-lock-comment-face nil
-  :slant 'italic)
-(set-face-attribute 'font-lock-keyword-face nil
-  :slant 'italic)
+  :weight 'bold)
+(set-face-attribute 'variable-pitch nil :font "Iosevka Aile" :weight 'light :height 1.3)
 
-;; This sets the default font on all graphical frames created after restarting Emacs.
-;; Does the same thing as 'set-face-attribute default' above, but emacsclient fonts
-;; are not right unless I also add this method of setting the default font.
-(add-to-list 'default-frame-alist '(font . "JetBrains Mono-11"))
+(defun my-set-italic-comments-and-keywords ()
+  (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+  (set-face-attribute 'font-lock-keyword-face nil :slant 'italic))
 
-;; Uncomment the following line if line spacing needs adjusting.
-(setq-default line-spacing 0.12)
+(add-hook 'prog-mode-hook 'my-set-italic-comments-and-keywords)
+
+;; (setq-default line-spacing 0.12)
+(setq-default line-spacing 0.0)
 #+end_src
 
-*** Zooming In/Out
-You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTRL plus the mouse wheel for zooming in/out.
-
-#+begin_src emacs-lisp
+Setting keybinds to zoom in and out
+#+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-=") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
+#+end_src
+
+MINIBUFFER FONTS
+#+begin_src emacs-lisp
+(custom-set-faces
+  '(minibuffer-prompt ((t (:family "JetBrains Mono NL ExtraBold" :height 120)))))
+#+end_src
+
+adding a function to minibuffer-setup-hook, which Emacs runs every time the minibuffer is entered
+#+begin_src emacs-lisp
+(defun set-minibuffer-font ()
+  "Set the font for the minibuffer."
+  (face-remap-add-relative 'default '(:family "JetBrains Mono NF ExtraBold" :height 100)))
+
+;; (add-hook 'minibuffer-setup-hook 'set-minibuffer-font) ;; Disabled the hook
 #+end_src
 
 ** GIT PROGRAMS
@@ -426,7 +459,7 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
 Then, while in normal mode, 'CTRL-j' and 'CTRL-k' to move backwards and forwards through the commits.
 
 
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package git-timemachine
   :after git-timemachine
   :hook (evil-normalize-keymaps . git-timemachine-hook)
@@ -439,17 +472,274 @@ Then, while in normal mode, 'CTRL-j' and 'CTRL-k' to move backwards and forwards
 *** Magit
 [[https://magit.vc/manual/][Magit]] is a full-featured git client for Emacs.
 
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package magit)
 
 #+end_src
 
-** Ivy
-+ Ivy, a generic completion mechanism for Emacs.
-+ Counsel, a collection of Ivy-enhanced versions of common Emacs commands.
-+ Ivy-rich allows us to add descriptions alongside the commands in M-x.
+** NEOTREE
+Neotree is a file tree viewer.  When you open neotree, it jumps to the current file thanks to neo-smart-open.  The neo-window-fixed-size setting makes the neotree width be adjustable.  NeoTree provides following themes: classic, ascii, arrow, icons, and nerd.  Theme can be config'd by setting "two" themes for neo-theme: one for the GUI and one for the terminal.  I like to use 'SPC t' for 'toggle' keybindings, so I have used 'SPC t n' for toggle-neotree.
 
+| COMMAND        | DESCRIPTION               | KEYBINDING |
+|----------------+---------------------------+------------|
+| neotree-toggle | /Toggle neotree/            | SPC t n    |
+| neotree- dir   | /Open directory in neotree/ | SPC d n    |
+
+#+BEGIN_SRC emacs-lisp
+(use-package neotree
+  :config
+  (setq neo-smart-open t
+        neo-show-hidden-files t
+        neo-window-width 55
+        neo-window-fixed-size nil
+        inhibit-compacting-font-caches t
+        projectile-switch-project-action 'neotree-projectile-action) 
+        ;; truncate long file names in neotree
+        (add-hook 'neo-after-create-hook
+           #'(lambda (_)
+               (with-current-buffer (get-buffer neo-buffer-name)
+                 (setq truncate-lines t)
+                 (setq word-wrap nil)
+                 (make-local-variable 'auto-hscroll-mode)
+                 (setq auto-hscroll-mode nil)))))
+
+#+end_src
+
+** PROJECTILE
+[[https://github.com/bbatsov/projectile][Projectile]] is a project interaction library for Emacs.
+
+#+BEGIN_SRC emacs-lisp
+(use-package projectile
+  :config
+  (projectile-mode 1))
+#+end_src
+
+** SANE DEFAULTS
+#+BEGIN_SRC emacs-lisp
+(delete-selection-mode 1)
+(electric-indent-mode -1)
+(electric-pair-mode 1)       ;; Turns on automatic parens pairing
+;; The following prevents <> from auto-pairing when electric-pair-mode is on.
+;; Otherwise, org-tempo is broken when you try to <s TAB...
+(add-hook 'org-mode-hook (lambda ()
+           (setq-local electric-pair-inhibit-predicate
+                   `(lambda (c)
+                  (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
+
+(global-display-line-numbers-mode 1)
+;; (global-visual-line-mode t)  ;; Enable visual lines
+(setq-default truncate-lines t) ;; Enable truncated lines
+;; (menu-bar-mode -1)           ;; Disable the menu bar 
+;; (scroll-bar-mode -1)         ;; Disable the scroll bar
+;; (tool-bar-mode -1)           ;; Disable the tool bar
+(setq org-edit-src-content-indentation 0) ;; Set src block automatic indent to 0 instead of 2.
+(setq completing-read-function 'ivy-completing-read)
+(setq use-dialog-box nil)
+(setq use-short-answers t)
+(global-set-key [escape] 'keyboard-escape-quit)
+#+end_src
+
+** SHELLS AND TERMINALS
+In my configs, all of my shells (bash, fish, zsh and the ESHELL) require my shell-color-scripts-git package to be installed.  On Arch Linux, you can install it from the AUR.  Otherwise, go to my shell-color-scripts repository on GitLab to get it.
+
+*** Eshell
+Eshell is an Emacs 'shell' that is written in Elisp.
+
+#+BEGIN_SRC emacs-lisp
+(use-package eshell-toggle
+  :custom
+  (eshell-toggle-size-fraction 3)
+  (eshell-toggle-use-projectile-root t)
+  (eshell-toggle-run-command nil)
+  (eshell-toggle-init-function #'eshell-toggle-init-ansi-term))
+
+  (use-package eshell-syntax-highlighting
+    :after esh-mode
+    :config
+    (eshell-syntax-highlighting-global-mode +1))
+
+  ;; eshell-syntax-highlighting -- adds fish/zsh-like syntax highlighting.
+  ;; eshell-rc-script -- your profile for eshell; like a bashrc for eshell.
+  ;; eshell-aliases-file -- sets an aliases file for the eshell.
+
+  (setq eshell-rc-script (concat user-emacs-directory "eshell/profile")
+        eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
+        eshell-history-size 5000
+        eshell-buffer-maximum-lines 5000
+        eshell-hist-ignoredups t
+        eshell-scroll-to-bottom-on-input t
+        eshell-destroy-buffer-when-process-dies t
+        eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
+#+end_src
+
+*** Vterm-Toggle 
+[[https://github.com/jixiuf/vterm-toggle][vterm-toggle]] toggles between the vterm buffer and whatever buffer you are editing.
+
+#+BEGIN_SRC emacs-lisp
+(use-package vterm-toggle
+  :after vterm
+  :config
+  ;; When running programs in Vterm and in 'normal' mode, make sure that ESC
+  ;; kills the program as it would in most standard terminal programs.
+  (evil-define-key 'normal vterm-mode-map (kbd "<escape>") 'vterm--self-insert)
+  (setq vterm-toggle-fullscreen-p nil)
+  (setq vterm-toggle-scope 'project)
+  (add-to-list 'display-buffer-alist
+               '((lambda (buffer-or-name _)
+                     (let ((buffer (get-buffer buffer-or-name)))
+                       (with-current-buffer buffer
+                         (or (equal major-mode 'vterm-mode)
+                             (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
+                  (display-buffer-reuse-window display-buffer-at-bottom)
+                  ;;(display-buffer-reuse-window display-buffer-in-direction)
+                  ;;display-buffer-in-direction/direction/dedicated is added in emacs27
+                  ;;(direction . bottom)
+                  ;;(dedicated . t) ;dedicated is supported in emacs27
+                  (reusable-frames . visible)
+                  (window-height . 0.4))))
+
+#+end_src
+
+** SUDO EDIT
+[[https://github.com/nflath/sudo-edit][sudo-edit]] gives us the ability to open files with sudo privileges or switch over to editing with sudo privileges if we initially opened the file without such privileges.
+
+#+BEGIN_SRC emacs-lisp
+(use-package sudo-edit)
+#+end_src
+
+* Completion
+** Corfu TODO
 #+begin_src emacs-lisp
+;; (use-package corfu
+;;   :ensure t
+;;   :custom
+;;   (corfu-cycle t)             ;; Allows cycling through candidates with TAB.
+;;   (corfu-auto t)              ;; Enable auto popup.
+;;   :init
+;;   (global-corfu-mode 1))      ;; Enable Corfu globally.
+#+end_src
+** Company rewrite
+#+begin_src emacs-lisp
+(use-package company
+  :ensure t)
+#+end_src
+** Company
+#+BEGIN_SRC emacs-lisp
+;; (use-package company
+;;   :defer 2
+;;   :diminish
+;;   :custom
+;;   (company-begin-commands '(self-insert-command))
+;;   (company-idle-delay .1)
+;;   (company-minimum-prefix-length 2)
+;;   (company-show-numbers t)
+;;   (company-tooltip-align-annotations 't)
+;;   (global-company-mode t))
+
+;; (use-package company-box
+;;   :after company
+;;   :diminish
+;;   :hook (company-mode . company-box-mode))
+
+
+;; (use-package company
+;;   :defer t
+;;   :bind (:map company-active-map
+;;          ("C-n" . company-select-next)
+;;          ("C-p" . company-select-previous)
+;;          ("<tab>" . company-complete-selection))
+;;   :hook (after-init . global-company-mode)
+;;   :init
+;;   (setq company-minimum-prefix-length 2
+;;         company-tooltip-limit 14
+;;         company-tooltip-align-annotations t
+;;         company-require-match 'never
+;;         company-global-modes '(not erc-mode circe-mode message-mode help-mode gud-mode vterm-mode)
+;;         company-frontends '(company-pseudo-tooltip-frontend company-echo-metadata-frontend)
+;;         company-backends '(company-capf)
+;;         company-auto-commit nil
+;;         company-dabbrev-other-buffers nil
+;;         company-dabbrev-ignore-case nil
+;;         company-dabbrev-downcase nil)
+;;   :config
+;;   ;; Add any additional configuration or hooks here
+;; )
+
+;; ;; Conditional loading for company-tng if required
+;; (use-package company-tng
+;;   :after company
+;;   :if (bound-and-true-p company-tng-mode)
+;;   :config
+;;   (add-hook 'global-company-mode-hook 'company-tng-mode))
+
+;; ;; If using Evil mode, configure company integration
+;; (when (featurep 'evil)
+;;   (add-hook 'company-mode-hook 'evil-normalize-keymaps)
+;;   ;; Define additional hooks or functions here as needed
+;; )
+
+;; ;; Company-box configuration, conditional on childframe availability
+;; (use-package company-box
+;;   :hook (company-mode . company-box-mode)
+;;   :if (display-graphic-p)
+;;   :config
+;;   (setq company-box-show-single-candidate t
+;;         company-box-backends-colors nil
+;;         company-box-tooltip-limit 50
+;;         ;; Add additional company-box configurations here
+;;         ;; ...
+;;   ))
+
+;; ;; Company-dict configuration
+;; (use-package company-dict
+;;   :defer t
+;;   :config
+;;   ;; Set your company-dict-dir and any other configurations here
+;;   )
+
+;; ;; Additional customization or packages can be added in a similar fashion
+#+end_src
+
+** Vertico 
+#+BEGIN_SRC emacs-lisp
+;; ;; Enable vertico
+;; (use-package vertico
+;;   :init
+;;   (vertico-mode)
+
+;;   ;; Different scroll margin
+;;   ;; (setq vertico-scroll-margin 0)
+
+;;   ;; Show more candidates
+;;   ;; (setq vertico-count 20)
+
+;;   ;; Grow and shrink the Vertico minibuffer
+;;   ;; (setq vertico-resize t)
+
+;;   ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+;;   ;; (setq vertico-cycle t)
+;;   )
+
+;; ;; Persist history over Emacs restarts. Vertico sorts by history position.
+;; ;;(use-package savehist
+;; ;;  :init
+;; ;;  (savehist-mode))
+
+;; ;; A few more useful configurations...
+
+;; ;; Optionally use the `orderless' completion style.
+;; (use-package orderless
+;;   :init
+;;   ;; Configure a custom style dispatcher (see the Consult wiki)
+;;   ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
+;;   ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+;;   (setq completion-styles '(orderless basic)
+;;         completion-category-defaults nil
+;;         completion-category-overrides '((file (styles partial-completion)))))
+
+#+end_src
+** Ivy
+#+BEGIN_SRC emacs-lisp
 ;; thanks DOOM
 (defun +ivy-format-function-line-or-arrow (cands)
   "Transform CANDS into a string for minibuffer.
@@ -463,8 +753,6 @@ Uses an arrow in terminal and standard formatting in a GUI."
        (concat "  " str "\n"))  ; Other candidates
      cands
      "")))
-
-
 
 (use-package ivy
   :ensure t
@@ -543,138 +831,8 @@ Uses an arrow in terminal and standard formatting in a GUI."
               :caller 'laluxx/find-header)))
 #+end_src
 
-** NEOTREE
-Neotree is a file tree viewer.  When you open neotree, it jumps to the current file thanks to neo-smart-open.  The neo-window-fixed-size setting makes the neotree width be adjustable.  NeoTree provides following themes: classic, ascii, arrow, icons, and nerd.  Theme can be config'd by setting "two" themes for neo-theme: one for the GUI and one for the terminal.  I like to use 'SPC t' for 'toggle' keybindings, so I have used 'SPC t n' for toggle-neotree.
-
-| COMMAND        | DESCRIPTION               | KEYBINDING |
-|----------------+---------------------------+------------|
-| neotree-toggle | /Toggle neotree/            | SPC t n    |
-| neotree- dir   | /Open directory in neotree/ | SPC d n    |
-
-#+BEGIN_SRC emacs-lisp
-(use-package neotree
-  :config
-  (setq neo-smart-open t
-        neo-show-hidden-files t
-        neo-window-width 55
-        neo-window-fixed-size nil
-        inhibit-compacting-font-caches t
-        projectile-switch-project-action 'neotree-projectile-action) 
-        ;; truncate long file names in neotree
-        (add-hook 'neo-after-create-hook
-           #'(lambda (_)
-               (with-current-buffer (get-buffer neo-buffer-name)
-                 (setq truncate-lines t)
-                 (setq word-wrap nil)
-                 (make-local-variable 'auto-hscroll-mode)
-                 (setq auto-hscroll-mode nil)))))
-
-#+end_src
-
-** PROJECTILE
-[[https://github.com/bbatsov/projectile][Projectile]] is a project interaction library for Emacs.
-
-#+begin_src emacs-lisp
-(use-package projectile
-  :config
-  (projectile-mode 1))
-#+end_src
-
-** SANE DEFAULTS
-#+begin_src emacs-lisp
-(delete-selection-mode 1)
-(electric-indent-mode -1)
-(electric-pair-mode 1)       ;; Turns on automatic parens pairing
-;; The following prevents <> from auto-pairing when electric-pair-mode is on.
-;; Otherwise, org-tempo is broken when you try to <s TAB...
-(add-hook 'org-mode-hook (lambda ()
-           (setq-local electric-pair-inhibit-predicate
-                   `(lambda (c)
-                  (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
-
-(global-display-line-numbers-mode 1)
-;; (global-visual-line-mode t)  ;; Enable visual lines
-(setq-default truncate-lines t) ;; Enable truncated lines
-;; (menu-bar-mode -1)           ;; Disable the menu bar 
-;; (scroll-bar-mode -1)         ;; Disable the scroll bar
-;; (tool-bar-mode -1)           ;; Disable the tool bar
-(setq org-edit-src-content-indentation 0) ;; Set src block automatic indent to 0 instead of 2.
-(setq completing-read-function 'ivy-completing-read)
-(setq use-dialog-box nil)
-(setq use-short-answers t)
-(global-set-key [escape] 'keyboard-escape-quit)
-#+end_src
-
-** SHELLS AND TERMINALS
-In my configs, all of my shells (bash, fish, zsh and the ESHELL) require my shell-color-scripts-git package to be installed.  On Arch Linux, you can install it from the AUR.  Otherwise, go to my shell-color-scripts repository on GitLab to get it.
-
-*** Eshell
-Eshell is an Emacs 'shell' that is written in Elisp.
-
-#+begin_src emacs-lisp
-(use-package eshell-toggle
-  :custom
-  (eshell-toggle-size-fraction 3)
-  (eshell-toggle-use-projectile-root t)
-  (eshell-toggle-run-command nil)
-  (eshell-toggle-init-function #'eshell-toggle-init-ansi-term))
-
-  (use-package eshell-syntax-highlighting
-    :after esh-mode
-    :config
-    (eshell-syntax-highlighting-global-mode +1))
-
-  ;; eshell-syntax-highlighting -- adds fish/zsh-like syntax highlighting.
-  ;; eshell-rc-script -- your profile for eshell; like a bashrc for eshell.
-  ;; eshell-aliases-file -- sets an aliases file for the eshell.
-
-  (setq eshell-rc-script (concat user-emacs-directory "eshell/profile")
-        eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
-        eshell-history-size 5000
-        eshell-buffer-maximum-lines 5000
-        eshell-hist-ignoredups t
-        eshell-scroll-to-bottom-on-input t
-        eshell-destroy-buffer-when-process-dies t
-        eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
-#+end_src
-
-*** Vterm-Toggle 
-[[https://github.com/jixiuf/vterm-toggle][vterm-toggle]] toggles between the vterm buffer and whatever buffer you are editing.
-
-#+begin_src emacs-lisp
-(use-package vterm-toggle
-  :after vterm
-  :config
-  ;; When running programs in Vterm and in 'normal' mode, make sure that ESC
-  ;; kills the program as it would in most standard terminal programs.
-  (evil-define-key 'normal vterm-mode-map (kbd "<escape>") 'vterm--self-insert)
-  (setq vterm-toggle-fullscreen-p nil)
-  (setq vterm-toggle-scope 'project)
-  (add-to-list 'display-buffer-alist
-               '((lambda (buffer-or-name _)
-                     (let ((buffer (get-buffer buffer-or-name)))
-                       (with-current-buffer buffer
-                         (or (equal major-mode 'vterm-mode)
-                             (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
-                  (display-buffer-reuse-window display-buffer-at-bottom)
-                  ;;(display-buffer-reuse-window display-buffer-in-direction)
-                  ;;display-buffer-in-direction/direction/dedicated is added in emacs27
-                  ;;(direction . bottom)
-                  ;;(dedicated . t) ;dedicated is supported in emacs27
-                  (reusable-frames . visible)
-                  (window-height . 0.4))))
-
-#+end_src
-
-** SUDO EDIT
-[[https://github.com/nflath/sudo-edit][sudo-edit]] gives us the ability to open files with sudo privileges or switch over to editing with sudo privileges if we initially opened the file without such privileges.
-
-#+begin_src emacs-lisp
-(use-package sudo-edit)
-#+end_src
-
 * Melpa
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
@@ -684,6 +842,94 @@ Eshell is an Emacs 'shell' that is written in Elisp.
 #+end_src
 
 * New config 
+** TODO Move text
+TODO Visual line doesn't behave correctly 
+maybe fix it and make a pr
+#+begin_src emacs-lisp
+(use-package move-text
+  :ensure t
+  :config
+  (move-text-default-bindings))
+#+end_src
+** Snipe
+#+begin_src emacs-lisp
+(use-package evil-snipe
+  :ensure t
+  :config
+  (evil-snipe-mode 1)
+  (evil-snipe-override-mode 1))
+#+end_src
+** Devdocs
+#+begin_src emacs-lisp
+(use-package devdocs
+  :ensure t)
+#+end_src
+** Moody
+#+begin_src emacs-lisp
+
+(use-package moody
+  :ensure t)
+
+#+end_src
+** Keycast
+#+begin_src emacs-lisp
+(use-package keycast
+  :config
+  (define-minor-mode keycast-mode
+    "Show current command and its key binding in the mode line (fix for use with doom-mode-line)."
+    :global t
+    (if keycast-mode
+        (add-hook 'pre-command-hook 'keycast--update t)
+      (remove-hook 'pre-command-hook 'keycast--update)))
+  (add-to-list 'global-mode-string '("" keycast-mode-line)))
+
+#+end_src
+** Pdf-tools
+#+begin_src emacs-lisp
+;; (use-package pdf-tools
+;;   :ensure t)
+
+;; (setq pdf-view-midnight-colors '("#D6A0D1" . "#14171E"))
+
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install)
+  (setq pdf-view-midnight-colors '("#D6A0D1" . "#14171E"))
+  (add-hook 'pdf-view-mode-hook (lambda ()
+                                  (pdf-view-midnight-minor-mode 1)
+                                  (display-line-numbers-mode -1))))
+
+
+#+end_src
+** Treesitter
+#+begin_src emacs-lisp
+(use-package tree-sitter
+  :ensure t)
+
+(use-package tree-sitter-langs
+  :ensure t)
+
+#+end_src
+** Eyebrows
+#+begin_src emacs-lisp
+(use-package eyebrowse
+  :ensure t
+  :config
+  (eyebrowse-mode t))
+
+(global-set-key (kbd "M-1") (lambda () (interactive) (eyebrowse-switch-to-window-config 1)))
+(global-set-key (kbd "M-3") (lambda () (interactive) (eyebrowse-switch-to-window-config 3)))
+(global-set-key (kbd "M-2") (lambda () (interactive) (eyebrowse-switch-to-window-config 2)))
+(global-set-key (kbd "M-4") (lambda () (interactive) (eyebrowse-switch-to-window-config 4)))
+(global-set-key (kbd "M-5") (lambda () (interactive) (eyebrowse-switch-to-window-config 5)))
+(global-set-key (kbd "M-6") (lambda () (interactive) (eyebrowse-switch-to-window-config 6)))
+(global-set-key (kbd "M-7") (lambda () (interactive) (eyebrowse-switch-to-window-config 7)))
+(global-set-key (kbd "M-8") (lambda () (interactive) (eyebrowse-switch-to-window-config 8)))
+(global-set-key (kbd "M-9") (lambda () (interactive) (eyebrowse-switch-to-window-config 9)))
+(global-set-key (kbd "M-TAB") 'eyebrowse-last-window-config)
+
+#+end_src
 ** Helpful
 #+begin_src emacs-lisp
 (use-package helpful
@@ -756,13 +1002,12 @@ TODO change faces
 )
 #+end_src
 ** Vterm
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package vterm
 :config
 (setq shell-file-name "/bin/sh"
       vterm-max-scrollback 5000)
-(add-hook 'vterm-mode-hook (lambda () (display-line-numbers-mode 0)))
-)
+(add-hook 'vterm-mode-hook (lambda () (display-line-numbers-mode 0))))
 #+end_src
 ** Garbage collector
 #+begin_src emacs-lisp
@@ -1009,7 +1254,7 @@ Emacs Dashboard is an extensible startup screen showing you recent files, bookma
                           (registers . 3)))
   :custom 
   (dashboard-modify-heading-icons '((recents . "file-text")
-				    (bookmarks . "book")))
+				                    (bookmarks . "book")))
   :config
   (dashboard-setup-startup-hook)
 
@@ -1024,7 +1269,10 @@ Emacs Dashboard is an extensible startup screen showing you recent files, bookma
   (evil-define-key 'normal dashboard-mode-map (kbd "j") 'widget-forward)
   (evil-define-key 'normal dashboard-mode-map (kbd "k") 'widget-backward)
   (evil-define-key 'normal dashboard-mode-map (kbd "h") 'widget-backward)
-  (evil-define-key 'normal dashboard-mode-map (kbd "l") 'dashboard-return))
+  (evil-define-key 'normal dashboard-mode-map (kbd "l") 'dashboard-return)
+  (evil-define-key 'normal dashboard-mode-map (kbd "<up>") 'widget-backward)
+  (evil-define-key 'normal dashboard-mode-map (kbd "<down>") 'widget-forward))
+
 #+end_src
 
 ** Which-key
@@ -1099,31 +1347,52 @@ However, don't toggle if which-key is currently displayed."
 (add-hook 'window-configuration-change-hook 'edwina-toggle-mode-based-on-window-count)
 
 #+end_src
-
-
 * ORG Mode
-TODO  In a perfect world each code block would
-use the mode for that language maybe not LSP tho.
 ** Config
 #+begin_src emacs-lisp
-(use-package toc-org ;; Table of contents
-    :commands toc-org-enable
-    ;; :init (add-hook 'org-mode-hook 'toc-org-enable)
-)
+(add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)))
+#+end_src
+** TODO Org present
+End the config https://systemcrafters.net/emacs-tips/presentations-with-org-present/
+#+begin_src emacs-lisp
+(use-package org-present
+  :ensure t)
 
-;; Remove "Ind" from showing in the modeline.
-(eval-after-load 'org-indent '(diminish 'org-indent-mode))
-(setq org-confirm-babel-evaluate nil) ;; Dont Bother  
+(unless (package-installed-p 'visual-fill-column)
+  (package-install 'visual-fill-column))
 
+;; Configure fill width
+(setq visual-fill-column-width 110
+      visual-fill-column-center-text t)
 
-(add-hook 'org-mode-hook
-          (lambda ()
-            (toc-org-enable)  ;; Enable Table of Contents
-            (display-line-numbers-mode -1)  ;; Disable line numbers
-            (evil-define-key 'normal org-mode-map (kbd "RET") 'org-ctrl-c-ctrl-c)))
+(defun my/org-present-start ()
+  ;; Center the presentation and wrap lines
+  (visual-fill-column-mode 1)
+  (visual-line-mode 1)
+  ;; Tweak font sizes
+  (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
+                                     (header-line (:height 4.0) variable-pitch)
+                                     (org-document-title (:height 1.75) org-document-title)
+                                     (org-code (:height 1.55) org-code)
+                                     (org-verbatim (:height 1.55) org-verbatim)
+                                     (org-block (:height 1.25) org-block)
+                                     (org-block-begin-line (:height 0.7) org-block))))
+
+(defun my/org-present-end ()
+  ;; Stop centering the document
+  (visual-fill-column-mode 0)
+  (visual-line-mode 0)
+  ;; Reset font customizations
+  (setq-local face-remapping-alist '((default variable-pitch default)))
+  ;; Reset the variable-pitch font to a default
+  (set-face-attribute 'variable-pitch nil :font "JetBrains Mono NL Nerd Font" :weight 'extrabold :height 110))
+
+;; Register hooks with org-present
+(add-hook 'org-present-mode-hook 'my/org-present-start)
+(add-hook 'org-present-mode-quit-hook 'my/org-present-end)
 #+end_src
 ** Bullets
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (add-hook 'org-mode-hook 'org-indent-mode)
 (use-package org-bullets)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
@@ -1141,7 +1410,7 @@ use the mode for that language maybe not LSP tho.
 ** Babel
 TODO load langs specifically enabled
 by a module (modules still don't exist)
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((ruby . t)
@@ -1165,12 +1434,12 @@ Org-tempo allows for '<s' followed by TAB to expand to a begin_src tag.  Other e
 | <s                     | '#+BEGIN_SRC' … '#+END_SRC'             |
 | <v                     | '#+BEGIN_VERSE' … '#+END_VERSE'         |
 
-#+begin_src emacs-lisp 
+#+BEGIN_SRC emacs-lisp 
 (require 'org-tempo)
 #+end_src
 ** Evil org
 open org bullets with =l= and close them with =h=
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defun my-org-cycle-or-move-right ()
   (interactive)
   (if (and (bolp) (org-at-heading-p))
@@ -1192,8 +1461,69 @@ open org bullets with =l= and close them with =h=
 #+end_src
 
 * Language Support
-** Tree
+** Ada
 #+begin_src emacs-lisp
+(use-package ada-mode
+  :ensure t)
+#+end_src
+** C
+#+BEGIN_SRC emacs-lisp
+(defun my-insert-angle-brackets ()
+  "Insert <> for #include, or just < elsewhere."
+  (interactive)
+  (if (save-excursion
+        (re-search-backward "#include " (line-beginning-position) t))
+      (progn
+        (insert "<>")
+        (backward-char))
+    (insert "<")))
+
+;; Hook the function into c-mode and c++-mode keymaps
+(add-hook 'c-mode-hook (lambda ()
+                         (define-key c-mode-map "<" 'my-insert-angle-brackets)))
+(add-hook 'c++-mode-hook (lambda ()
+                           (define-key c++-mode-map "<" 'my-insert-angle-brackets)))
+
+
+
+(setq-default c-basic-offset 4
+              tab-width 4
+              indent-tabs-mode nil)
+#+end_src
+** Zig
+#+begin_src emacs-lisp
+(use-package zig-mode
+  :ensure t)
+#+end_src
+** Ocaml
+#+begin_src emacs-lisp
+(use-package tuareg
+  :ensure t)
+
+#+end_src
+** Gleam
+#+begin_src emacs-lisp
+;;(use-package gleam-mode
+;;  :load-path "~/.config/emaca/modules/gleam-mode")
+#+end_src
+** Arduino
+#+begin_src emacs-lisp
+;; (use-package arduino-mode
+;;   :ensure t)
+#+end_src
+** Lua 
+#+begin_src emacs-lisp
+(use-package lua-mode
+  :ensure t)
+
+#+end_src
+** Haskell
+#+begin_src emacs-lisp
+(use-package haskell-mode
+  :ensure t)
+#+end_src
+** Tree
+#+BEGIN_SRC emacs-lisp
 ;; (use-package tree-sitter-langs
 ;;   :ensure t)
 
@@ -1205,15 +1535,20 @@ open org bullets with =l= and close them with =h=
 ;;   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 #+end_src
 ** Rust
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package rust-mode
   :ensure t
   :mode "\\.rs\\'"
   :config
   (setq rust-format-on-save t))
+
+(use-package rustic
+  :ensure t)
+
+
 #+end_src
 ** Ruby
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package ruby-electric
   :ensure t
   :hook (ruby-mode . ruby-electric-mode))
@@ -1236,8 +1571,123 @@ open org bullets with =l= and close them with =h=
 )
 #+end_src
 * Look and feel
-** Cursor
+** Kind-icons
 #+begin_src emacs-lisp
+(use-package kind-icon
+  :ensure t
+  ;; :after corfu
+  :custom
+  (kind-icon-blend-background t))
+  ;; (kind-icon-default-face 'corfu-default) ; only needed with blend-background
+  ;; :config
+  ;; (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+#+end_src
+** prettify-symbols
+*** Org
+#+BEGIN_SRC emacs-lisp
+;; Org mode symbols
+(defun org-icons ()
+  "Beautify org mode keywords."
+  (setq prettify-symbols-alist 
+        '(("WAIT" . "")
+          ;; ("TODO" . "")
+          ("NOPE" . "")
+          ("DONE" . "")
+          ("[#A]" . "")
+          ("[#B]" . "")
+          ("[#C]" . "")
+          ("[ ]" . "")
+          ("[X]" . "")
+          ("[-]" . "")
+          ("#+BEGIN_SRC" . "")
+          ("#+begin_src" . "")
+          ("#+END_SRC" . "󰨿")
+          (":PROPERTIES:" . "")
+          (":END:" . "―")
+          ("#+STARTUP:" . "")
+          ("#+TITLE: " . "")
+          ("#+RESULTS:" . "")
+          ("#+NAME:" . "")
+          ("#+ROAM_TAGS:" . "")
+          ("#+FILETAGS:" . "")
+          ("#+HTML_HEAD:" . "")
+          ("#+SUBTITLE:" . "")
+          ("#+AUTHOR:" . "")
+          ("#+DESCRIPTION:" . "󰯂")
+          (":Effort:" . "")
+          ("SCHEDULED:" . "")
+          ("DEADLINE:" . "")))
+  (prettify-symbols-mode 1))
+
+(add-hook 'org-mode-hook 'org-icons)
+
+(setq org-ellipsis " ")
+
+#+end_src
+*** Prog-mode
+#+BEGIN_SRC emacs-lisp
+;; Programming modes symbols
+(defun prettify-prog-mode ()
+  "Set up prettify symbols for programming modes."
+  (setq prettify-symbols-alist 
+        '(("lambda" . "λ")
+          ("|>" . "▷")
+          ("<|" . "◁")
+          ("->>" . "↠")
+          ;; ("->" . "→") ➞
+          ;; ("->" . "➞") 
+          ("<-" . "←")
+          ("=>" . "⇒")
+          ("<=" . "≤")
+          ("pi" . "󰏿")
+          ("delta" . "Δ")
+          ("!=" . "≠")
+          ;; ("==" . "≡")
+          ;; ("===" . "≣")
+          ("<<=" . "≪=")
+          (">>=" . "≫=")
+          ("sqrt" . "√")
+          ("sum" . "∑")
+          ("infty" . "∞")
+          ("integral" . "∫")
+          (">=" . "≥")))
+  (prettify-symbols-mode 1))
+
+(add-hook 'prog-mode-hook 'prettify-prog-mode)
+#+end_src
+** Faces
+#+BEGIN_SRC emacs-lisp
+(defface my--comment-face
+  '((t (:foreground "#839496"    ; A softer foreground color, like light gray or blue
+        :background nil          ; No background to keep it simple
+        :family "Jetbrains"      ; A standard monospace font
+        :height 100              ; Standard font size
+        :weight normal           ; Regular weight
+        :slant italic            ; Italicized to differentiate comments
+        :underline nil           ; No underline
+        :overline nil            ; No overline
+        :strike-through nil      ; No strike-through
+        :box nil)))              ; No box around comments
+  "A custom face for comments to make them distinct yet not too prominent.")
+
+;; Apply the custom comment face to font-lock-comment-face
+;; (custom-set-faces
+;;  '(font-lock-comment-face ((t :inherit my--comment-face))))
+
+
+
+
+
+
+
+#+end_src
+** Posframe
+#+BEGIN_SRC emacs-lisp
+
+
+#+end_src
+** Cursor
+#+BEGIN_SRC emacs-lisp
 (blink-cursor-mode -1)
 (defvar laluxx/original-cursor-color nil
   "Variable to store the original cursor color.")
@@ -1301,13 +1751,13 @@ open org bullets with =l= and close them with =h=
 #+end_src
 ** Scrolling
 *** Mouse
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
 (setq mouse-wheel-progressive-speed nil) ;; don"t accelerate scrolling
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 #+end_src
 *** Cursor
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (setq scroll-step 23) ;; keyboard scroll one line at a time
 (setq scroll-conservatively 10000)
 (setq auto-window-vscroll nil)
@@ -1332,20 +1782,31 @@ open org bullets with =l= and close them with =h=
       mouse-wheel-scroll-amount-horizontal 2)
 #+end_src
 ** Double buffering
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (setq double-buffering t)
 #+end_src
 ** Theme
-*** Ef
+*** Catpuccin
 #+begin_src emacs-lisp
-(use-package ef-themes
+(use-package catppuccin-theme
+  :ensure t)
+
+#+end_src
+*** Kaolin
+#+begin_src emacs-lisp
+(use-package kaolin-themes
+  :ensure t)
+#+end_src
+*** Moe
+#+begin_src emacs-lisp
+(use-package moe-theme
   :ensure t)
 
 #+end_src
 *** DOOM
 installing =doom-themes=
 You can create your own Emacs themes with  [[https://emacsfodder.github.io/emacs-theme-editor/][Emacs Theme Editor]].
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
 
 (use-package doom-themes
@@ -1359,23 +1820,9 @@ You can create your own Emacs themes with  [[https://emacsfodder.github.io/emacs
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
 #+end_src
-*** Theme magic
-#+begin_src emacs-lisp
-;;(require 'theme-magic)
-;;(theme-magic-export-theme-mode)
-
-(use-package theme-magic
-  :ensure t)
-  ;;:config
-  ;; Enable theme-magic for supported terminals
-  ;; (theme-magic-export-theme-mode t))
-
-
-
-#+end_src
-
 *** Ewal theme
-#+begin_src emacs-lisp
+Force your emacs to use your system theme
+#+BEGIN_SRC emacs-lisp
 (use-package ewal
   :ensure t
   :init
@@ -1396,10 +1843,22 @@ You can create your own Emacs themes with  [[https://emacsfodder.github.io/emacs
   ;; (load-theme 'ewal-doom-one t)
 )
 #+end_src
+*** Theme magic
+Force your system to use the current emacs theme
+#+BEGIN_SRC emacs-lisp
+(use-package theme-magic
+  :ensure t)
+#+end_src
+*** Ef
+#+BEGIN_SRC emacs-lisp
+(use-package ef-themes
+  :ensure t)
+
+#+end_src
 ** Trasparency
 in Emacs version 29, true transparency has been added.
 this change trasparency based on the theme
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 ;; (add-to-list 'default-frame-alist '(alpha-background . 85)) ; For hardcoded alpha
 
 (defun set-theme-transparency (&rest args)
@@ -1418,7 +1877,7 @@ this change trasparency based on the theme
 (advice-add 'load-theme :after 'set-theme-transparency)
 #+end_src
 ** Modeline
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1)
@@ -1426,11 +1885,12 @@ this change trasparency based on the theme
   (setq doom-modeline-height 35      ;; sets modeline height
         doom-modeline-bar-width 5    ;; sets left bar width
         doom-modeline-persp-name t   ;; adds perspective name to modeline
-        doom-modeline-persp-icon t)) ;; adds folder icon next to persp name
+        doom-modeline-persp-icon t   ;; adds folder icon next to persp name
+        ))
 #+end_src
-** Highlight TODO
+** Highlight Todo
 Adding highlights to TODO and related words.
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package hl-todo
   :hook ((org-mode . hl-todo-mode)
          (prog-mode . hl-todo-mode))
@@ -1446,24 +1906,21 @@ Adding highlights to TODO and related words.
 #+end_src
 
 ** Rainbow delimiters
-rainbow colored parentheses.
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package rainbow-delimiters
-  :hook ((emacs-lisp-mode . rainbow-delimiters-mode)
-         (clojure-mode . rainbow-delimiters-mode)))
-
+  :hook (prog-mode . rainbow-delimiters-mode))
 #+end_src
 
 ** Rainbow mode
 TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package rainbow-mode
   :diminish
   :hook org-mode prog-mode)
 #+end_src
 
 * General keybindings
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package general
   :config
   (general-evil-setup)
@@ -1493,7 +1950,8 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
     "b k" '(kill-current-buffer :wk "Kill current buffer")
     "b K" '(laluxx/kill-current-buffer-and-window :wk "Kill buffer and window")
     "b l" '(list-bookmarks :wk "List bookmarks")
-    "b m" '(bookmark-set :wk "Set bookmark")
+    ;; "b m" '(bookmark-set :wk "Set bookmark")
+    "b m" '(counsel-bookmark :wk "Set bookmark")
     "b n" '(next-buffer :wk "Next buffer")
     "b p" '(previous-buffer :wk "Previous buffer")
     "b r" '(revert-buffer :wk "Reload buffer")
@@ -1536,7 +1994,8 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
     ;; "f i" '((lambda () (interactive)
     ;;           (find-file "~/.config/emacs/init.el")) 
     ;;         :wk "Open emacs init.el")
-    "f i" '(swiper :wk "Swiper")
+    "f i" '(counsel-rg :wk "counsel-rg")
+    "f w" '(swiper :wk "Swiper")
     "f j" '(laluxx/file-jump :wk "Jump to a file")
     ;; "f l" '(counsel-locate :wk "Locate a file")
     "f l" '(find-library :wk "Locate a file")
@@ -1548,6 +2007,7 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
     "f h" '(laluxx/find-header :wk "Find header")
     "f t" '(laluxx/find-TODOs :wk "Find TODOs")
     "f n" '(laluxx/find-NOTES :wk "Find NOTES")
+    "f p" '(laluxx/find-package-source-code :wk "Find package source code")
     "f U" '(sudo-edit :wk "Sudo edit file"))
 
   (laluxx/leader-keys
@@ -1562,7 +2022,8 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
 
   (laluxx/leader-keys
     "k" '(:ignore t :wk "Kill")
-    "k p" '(kill-process :wk "Kill process"))
+    "k p" '(kill-process :wk "Kill process")
+    "k c" '(laluxx/kill-comments-in-region :wk "Kill comments in region"))
 
   (laluxx/leader-keys
     "g" '(:ignore t :wk "Git")    
@@ -1589,10 +2050,12 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
 
   (laluxx/leader-keys
     "h" '(:ignore t :wk "Help")
+    "h h" '(laluxx/list-hooks :wk "List all hooks")
     "h a" '(counsel-apropos :wk "Apropos")
     "h b" '(describe-bindings :wk "Describe bindings")
     "h c" '(describe-char :wk "Describe character under cursor")
     "h d" '(:ignore t :wk "Emacs documentation")
+    "h D" '(devdocs-lookup t :wk "Devdocs lookup")
     "h d a" '(about-emacs :wk "About Emacs")
     "h d d" '(view-emacs-debugging :wk "View Emacs debugging")
     "h d f" '(view-emacs-FAQ :wk "View Emacs FAQ")
@@ -1623,6 +2086,7 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
     "h t" '(laluxx/load-dark-theme :wk "Load theme")
     "h T" '(laluxx/wal-set :wk "Wal set")
     "h v" '(describe-variable :wk "Describe variable")
+    "h V" '(counsel-set-variable :wk "Set variable")
     "h w" '(woman :wk "Woman")
     "h x" '(describe-command :wk "Display full documentation for command"))
 
@@ -1647,6 +2111,7 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
     "o" '(:ignore t :wk "Open")
     "o d" '(dashboard-open :wk "Dashboard")
     "o e" '(elfeed :wk "Elfeed RSS")
+    "o i" '(ielm :wk "Ielm repl")
     "o f" '(make-frame :wk "Open buffer in new frame")
     "o F" '(select-frame-by-name :wk "Select frame by name"))
 
@@ -1657,11 +2122,13 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
 
   (laluxx/leader-keys
     "s" '(:ignore t :wk "Search")
+    "s b" '(scratch-buffer :wk "Scratch buffer")
+    "s B" '(laluxx/split-scratch :wk "Split scratch buffer")
     "s d" '(dictionary-search :wk "Search dictionary")
     "s m" '(man :wk "Man pages")
     "s t" '(tldr :wk "Lookup TLDR docs for a command")
     "s i" '(counsel-imenu :wk "Counsel imenu")
-    "s u" '(vundo :wk "Visual undo")
+    "s u" '(vundo :wk "Visual undo tree")
     "s w" '(woman :wk "Similar to man but doesn't require man"))
 
   (laluxx/leader-keys
@@ -1701,7 +2168,7 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
 #+end_src
 
 * Modeline 
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defvar my-modeline-mode-line-format
   '(:eval (let* ((evil-state (cond ((evil-normal-state-p) '("NORMAL" . "green"))
                                    ((evil-insert-state-p) '("INSERT" . "blue"))
@@ -1733,8 +2200,540 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
 (provide 'my-modeline-mode)
 #+end_src
 * FUNCTIONS
-** Buffer
+** Scratch buffer
 #+begin_src emacs-lisp
+(defun laluxx/split-scratch ()
+  "Open the *scratch* buffer in a new window."
+  (interactive)
+  ;; Split the current window and make a new window
+  (split-window)
+  ;; Focus on the new window
+  (other-window 1)
+  ;; Switch to the *scratch* buffer in the new window
+  (switch-to-buffer "*scratch*"))
+#+end_src
+** TODO Find package source code
+dont include "()" characters
+#+begin_src emacs-lisp
+(defun laluxx/find-package-source-code ()
+  "Opens a .el file corresponding to the extended 'word' under the cursor in the ~/.config/emacs/elpaca/builds/ directory in a new window."
+  (interactive)
+  (save-excursion
+    (let* (start end extended-word dir file-path)
+      ;; Move backwards to the start of the "word"
+      (skip-chars-backward "^ \t\n")
+      (setq start (point))
+      ;; Move forward to the end of the "word"
+      (skip-chars-forward "^ \t\n")
+      (setq end (point))
+      ;; Extract the "word"
+      (setq extended-word (buffer-substring-no-properties start end))
+      ;; Construct the directory and file path
+      (setq dir (concat "~/.config/emacs/elpaca/builds/" extended-word))
+      (setq file-path (concat dir "/" extended-word ".el"))
+      ;; Check if the directory exists
+      (if (file-directory-p dir)
+          (if (file-exists-p file-path)
+              (progn
+                (find-file-other-window file-path))  ; Open the file in a new window if it exists
+            (message "File does not exist: %s" file-path))
+        (message "Directory does not exist: %s" dir)))))
+#+end_src
+** Arch
+#+begin_src emacs-lisp
+(defun arch-pkg-list-callback (process event)
+  "Callback function to handle completion of the package listing process."
+  (when (string= event "finished\n")
+    (let* ((output-buffer (process-buffer process))
+           (packages (with-current-buffer output-buffer
+                       (split-string (buffer-string) "\n" t))))
+      (unless (eq (length packages) 0)
+        (ivy-read "Select a package to install: " packages
+                  :action (lambda (selected-package)
+                            ;; Install the selected package
+                            (start-process-shell-command "install-pkg" "*install-pkg*" (concat "yay -S --noconfirm " selected-package))))
+        ;; Cleanup
+        (kill-buffer output-buffer)))))
+
+(defun laluxx/install-arch-package ()
+  "List Arch Linux packages using `yay` and select a package to install with Ivy."
+  (interactive)
+  (let ((output-buffer (generate-new-buffer "*pkg-list*")))
+    (set-process-sentinel
+     (start-process "pkg-list" output-buffer "yay" "-Slq")
+     #'arch-pkg-list-callback)))
+#+end_src
+** Info mode
+#+begin_src emacs-lisp
+(defun laluxx/info-mode-setup ()
+  "Custom setup for Info-mode."
+  (olivetti-mode 1)        ; Enable Olivetti mode for a distraction-free reading layout
+  (text-scale-increase 2)  ; Increase the font size by two steps
+  (display-line-numbers-mode -1)) ; Disable line numbers
+
+(add-hook 'Info-mode-hook 'laluxx/info-mode-setup)
+#+end_src
+** Emacs-run
+*** Run-launcher
+#+begin_src emacs-lisp
+(defun emacs-run-launcher ()
+  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+  (interactive)
+  (with-selected-frame
+    (make-frame '((name . "emacs-run-launcher")
+                  (minibuffer . only)
+                  (fullscreen . 0) ; no fullscreen
+                  (undecorated . t) ; remove title bar
+                  ;;(auto-raise . t) ; focus on this frame
+                  ;;(tool-bar-lines . 0)
+                  ;;(menu-bar-lines . 0)
+                  (internal-border-width . 10)
+                  (width . 80)
+                  (height . 11)))
+                  (unwind-protect
+                    (app-launcher-run-app)
+                    (delete-frame))))
+#+end_src
+*** wal-set
+**** Default
+#+begin_src emacs-lisp
+(defun emacs-run-wal-set ()
+  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+  (interactive)
+  (with-selected-frame
+    (make-frame '((name . "emacs-run-wal-set")
+                  (minibuffer . only)
+                  (fullscreen . 0) ; no fullscreen
+                  (undecorated . t) ; remove title bar
+                  ;;(auto-raise . t) ; focus on this frame
+                  ;;(tool-bar-lines . 0)
+                  ;;(menu-bar-lines . 0)
+                  (internal-border-width . 10)
+                  (width . 80)
+                  (height . 11)))
+                  (unwind-protect
+                    (laluxx/wal-set)
+                    (delete-frame))))
+#+end_src
+**** Animated
+#+begin_src emacs-lisp
+(defun emacs-run-wal-set-animated ()
+  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+  (interactive)
+  (with-selected-frame
+    (make-frame '((name . "emacs-run-wal-set-animated")
+                  (minibuffer . only)
+                  (fullscreen . 0) ; no fullscreen
+                  (undecorated . t) ; remove title bar
+                  ;;(auto-raise . t) ; focus on this frame
+                  ;;(tool-bar-lines . 0)
+                  ;;(menu-bar-lines . 0)
+                  (internal-border-width . 10)
+                  (width . 80)
+                  (height . 11)))
+                  (unwind-protect
+                    (laluxx/wal-set-animated)
+                    (delete-frame))))
+
+#+end_src
+**** Solid
+#+begin_src emacs-lisp
+(defun emacs-run-wal-set-solid ()
+  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+  (interactive)
+  (with-selected-frame
+    (make-frame '((name . "emacs-run-wal-set-solid")
+                  (minibuffer . only)
+                  (fullscreen . 0) ; no fullscreen
+                  (undecorated . t) ; remove title bar
+                  ;;(auto-raise . t) ; focus on this frame
+                  ;;(tool-bar-lines . 0)
+                  ;;(menu-bar-lines . 0)
+                  (internal-border-width . 10)
+                  (width . 80)
+                  (height . 11)))
+                  (unwind-protect
+                    (laluxx/wal-set-solid)
+                    (delete-frame))))
+#+end_src
+**** favourite
+#+begin_src emacs-lisp
+(defun emacs-run-wal-set-favourite ()
+  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+  (interactive)
+  (with-selected-frame
+    (make-frame '((name . "emacs-run-wal-set-favourite")
+                  (minibuffer . only)
+                  (fullscreen . 0) ; no fullscreen
+                  (undecorated . t) ; remove title bar
+                  ;;(auto-raise . t) ; focus on this frame
+                  ;;(tool-bar-lines . 0)
+                  ;;(menu-bar-lines . 0)
+                  (internal-border-width . 10)
+                  (width . 80)
+                  (height . 11)))
+                  (unwind-protect
+                    (laluxx/wal-set-favourite)
+                    (delete-frame))))
+#+end_src
+**** Set-wallpaper
+#+begin_src emacs-lisp
+(defun emacs-run-set-wallpaper ()
+  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+  (interactive)
+  (with-selected-frame
+    (make-frame '((name . "emacs-run-set-wallpaper")
+                  (minibuffer . only)
+                  (fullscreen . 0) ; no fullscreen
+                  (undecorated . t) ; remove title bar
+                  ;;(auto-raise . t) ; focus on this frame
+                  ;;(tool-bar-lines . 0)
+                  ;;(menu-bar-lines . 0)
+                  (internal-border-width . 10)
+                  (width . 80)
+                  (height . 11)))
+                  (unwind-protect
+                    (laluxx/set-wallpaper)
+                    (delete-frame))))
+#+end_src
+**** Set-animated-wallpaper
+#+begin_src emacs-lisp
+(defun emacs-run-set-animated-wallpaper ()
+  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+  (interactive)
+  (with-selected-frame
+    (make-frame '((name . "emacs-run-set-animated-wallpaper")
+                  (minibuffer . only)
+                  (fullscreen . 0) ; no fullscreen
+                  (undecorated . t) ; remove title bar
+                  ;;(auto-raise . t) ; focus on this frame
+                  ;;(tool-bar-lines . 0)
+                  ;;(menu-bar-lines . 0)
+                  (internal-border-width . 10)
+                  (width . 80)
+                  (height . 11)))
+                  (unwind-protect
+                    (laluxx/set-animated-wallpaper)
+                    (delete-frame))))
+#+end_src
+*** M-X
+#+begin_src emacs-lisp
+(defun emacs-run-M-x ()
+  "Create a new frame and prompt for an M-x command in it."
+  (interactive)
+  (with-selected-frame
+      (make-frame '((name . "emacs-run-M-x")
+                    (minibuffer . only)
+                    (fullscreen . 0)
+                    (undecorated . t)
+                    (internal-border-width . 10)
+                    (width . 80)
+                    (height . 11)))
+    (unwind-protect
+        (call-interactively 'execute-extended-command)
+      (delete-frame))))
+#+end_src
+*** Info
+Open info inside xmonad  DONE:
+- remember last manual manual [x]
+- Toggle [x]
+- ewal break this []
+#+begin_src emacs-lisp
+;; TODO
+(defvar emacs-run-info-frame nil)
+
+(defun emacs-run-info ()
+  "Create a new frame and run 'info' in it."
+  (interactive)
+  (if (and emacs-run-info-frame (frame-live-p emacs-run-info-frame))
+      ;; If the frame exists, delete it.
+      (progn
+        (delete-frame emacs-run-info-frame)
+        (setq emacs-run-info-frame nil))
+    ;; Else, create a new frame.
+    (let* ((new-frame (make-frame '((name . "emacs-run-info")
+                                    (minibuffer . t)
+                                    (fullscreen . 0)
+                                    (undecorated . t)
+                                    (internal-border-width . 10)
+                                    (width . 80)
+                                    (height . 11)))))
+      (setq emacs-run-info-frame new-frame)
+      (select-frame-set-input-focus new-frame)
+      (with-selected-window (frame-selected-window new-frame)
+        (switch-to-buffer (save-window-excursion
+                            (info)
+                            (current-buffer)))
+        (delete-other-windows)
+        (define-key Info-mode-map (kbd "<escape>") 'delete-frame)))))
+
+
+
+#+end_src
+*** Which-key
+#+begin_src emacs-lisp
+;; (defun emacs-run-which-key ()
+;;   "Create a new frame and prompt for a which-key command in it."
+;;   (interactive)
+;;   (let ((new-frame (make-frame '((name . "emacs-run-which-key")
+;;                                  (minibuffer . only)
+;;                                  (fullscreen . 0)
+;;                                  (undecorated . t)
+;;                                  (internal-border-width . 10)
+;;                                  (width . 80)
+;;                                  (height . 11)))))
+;;     (with-selected-frame new-frame
+;;       (which-key-mode 1)
+;;       (call-interactively 'which-key-show-top-level))))
+#+end_src
+*** Dired
+TODO
+- esc don't close the frame [x]
+- hide modeline [x]
+
+#+begin_src emacs-lisp
+(defun hide-mode-line-in-dired-frame (frame)
+  "Hide the mode line in the 'emacs-run-dired' frame."
+  (when (string-equal (frame-parameter frame 'name) "emacs-run-dired")
+    (with-selected-frame frame
+      (setq-default mode-line-format nil))))
+
+(add-hook 'after-make-frame-functions 'hide-mode-line-in-dired-frame)
+
+(defun emacs-run-dired ()
+  "Create a new frame and open dired in it."
+  (interactive)
+  (let* ((original-frame (selected-frame))
+         (new-frame (make-frame '((name . "emacs-run-dired")
+                                  (width . 80)
+                                  (height . 24)
+                                  (minibuffer . t)
+                                  (undecorated . t)
+                                  (internal-border-width . 10)
+                                  (fullscreen . 0)))))
+    (select-frame-set-input-focus new-frame)
+    (with-selected-window (frame-selected-window new-frame)
+      (dired "~"))  ;; opens dired in your home directory, change "~" to any directory you prefer
+    (define-key dired-mode-map (kbd "<escape>") 'delete-frame)
+    (select-frame-set-input-focus original-frame)))
+#+end_src
+*** Dired minubuffer
+#+begin_src emacs-lisp
+;; i have no idea how to do this TODO
+;; (defun emacs-run-dired-minibuffer ()
+;;   "Create a new frame with a minibuffer and open dired in the frame's buffer."
+;;   (interactive)
+;;   (let* ((dired-directory (read-directory-name "Dired (directory): " "~"))
+;;          (new-frame (make-frame '((name . "emacs-run-dired")
+;;                                   (width . 80)
+;;                                   (height . 24)
+;;                                   (minibuffer . t)
+;;                                   (undecorated . t)
+;;                                   (internal-border-width . 10)
+;;                                   (fullscreen . 0)))))
+;;     (select-frame-set-input-focus new-frame)
+;;     (with-selected-window (frame-selected-window new-frame)
+;;       (dired dired-directory)  ;; opens dired in the specified directory
+;;       (define-key (current-local-map) (kbd "<escape>") 'delete-frame))))
+#+end_src
+*** Clone-client-frame
+#+begin_src emacs-lisp
+(defun hide-mode-line-in-frame (frame)
+  "Hide the mode line in the specified frames."
+  (when (string-match-p "^emacs-run-clone-client-frame" (frame-parameter frame 'name))
+    (with-selected-frame frame
+      (setq mode-line-format nil))))
+
+(add-hook 'after-make-frame-functions 'hide-mode-line-in-frame)
+
+(defun emacs-run-clone-client-frame ()
+  "Create a new frame and activate which-key-mode in it."
+  (interactive)
+  (let ((new-frame (make-frame '((name . "emacs-run-clone-client-frame")
+                                 (minibuffer . nil)
+                                 (fullscreen . 0)
+                                 (undecorated . t)
+                                 (internal-border-width . 10)
+                                 (width . 80)
+                                 (height . 11)))))
+    (with-selected-frame new-frame
+      (which-key-mode 1)
+      (minibuffer-keyboard-quit))))
+
+(defun emacs-run-clone-client-frame-bottom ()
+  "Create a new frame and activate which-key-mode in it."
+  (interactive)
+  (let ((new-frame (make-frame '((name . "emacs-run-clone-client-frame-bottom")
+                                 (minibuffer . nil)
+                                 (fullscreen . 0)
+                                 (undecorated . t)
+                                 (internal-border-width . 10)
+                                 (width . 80)
+                                 (height . 11)))))
+    (with-selected-frame new-frame
+      (which-key-mode 1)
+      (minibuffer-keyboard-quit))))
+
+
+#+end_src
+**** Dmenu
+#+begin_src emacs-lisp
+(defun emacs-run-dmenu ()
+  "Create a new frame and run dmenu in it."
+  (interactive)
+  (with-selected-frame
+      (make-frame '((name . "emacs-run-dmenu")
+                    (minibuffer . only)
+                    (fullscreen . 0)
+                    (undecorated . t)
+                    (internal-border-width . 10)
+                    (width . 80)
+                    (height . 11)))
+    (unwind-protect
+        (call-interactively 'dmenu)
+      (delete-frame))))
+
+
+#+end_src
+** List Hooks
+This is old and probably make no sense TODO
+#+begin_src emacs-lisp
+(defun laluxx/list-hooks ()
+  "List all hooks in a completing-read interface."
+  (interactive)
+  (let* ((hook-symbols (sort
+                        (seq-filter (lambda (sym)
+                                      (and (symbolp sym)
+                                           (string-suffix-p "-hook" (symbol-name sym))))
+                                    (append obarray nil))
+                        #'string-lessp))
+         (hooks (mapcar #'symbol-name hook-symbols))
+         (selected-hook (completing-read "Hooks: " hooks)))
+    (when selected-hook
+      (describe-variable (intern selected-hook)))))
+#+end_src
+** Region
+#+begin_src emacs-lisp
+(defun format-selected-region ()
+  "Format the selected region to align the assignment operators."
+  (interactive)
+  (let* ((start (region-beginning))
+         (end (region-end))
+         (region-text (buffer-substring start end))
+         formatted-text max-length)
+    ;; Split the region into lines
+    (setq lines (split-string region-text "\n"))
+    ;; Calculate the maximum length of the variable names
+    (setq max-length (apply 'max (mapcar (lambda (line)
+                                           (length (car (split-string line "="))))
+                                         lines)))
+    ;; Construct the formatted text
+    (setq formatted-text 
+          (mapconcat (lambda (line)
+                       (if (string-match "\\(.*\\)=\\(.*\\)" line)
+                           (let ((var-name (match-string 1 line))
+                                 (rest (match-string 2 line)))
+                             (format "%s=%s" 
+                                     (concat var-name (make-string (- max-length (length var-name)) ? ))
+                                     rest))
+                         line))
+                     lines "\n"))
+    ;; Replace the region with the formatted text
+    (delete-region start end)
+    (goto-char start)
+    (insert formatted-text)))
+#+end_src
+
+#+begin_src emacs-lisp
+(defun laluxx/stringify-selection (start end)
+  "Put a double quote at the start and end of each line in the selection."
+  (interactive "r") ; This line makes the function callable with a region selected
+  (save-excursion ; Preserve the point's original position
+    (goto-char start) ; Move to the start of the region
+    (while (< (point) end) ; Loop until the end of the region
+      (beginning-of-line) ; Move to the beginning of the line
+      (insert "\"") ; Insert a quote at the beginning of the line
+      (end-of-line) ; Move to the end of the line
+      (insert "\"") ; Insert a quote at the end of the line
+      (forward-line 1) ; Move to the next line
+      (setq end (+ end 2))))) ; Adjust the end position for the inserted characters
+#+end_src
+
+#+BEGIN_SRC emacs-lisp
+(defun laluxx/kill-comments-in-region (start end)
+  "Remove C-style comments in the selected region."
+  (interactive "r")
+  (save-excursion
+    (let ((region-end (copy-marker end)))
+      (goto-char start)
+      (while (re-search-forward "/\\*\\(.*?\\)\\*/\\|//.*" region-end t)
+        (replace-match "")))))
+#+end_src
+
+#+begin_src emacs-lisp
+(defun laluxx/kill-strings-in-region (start end)
+  "Kill texts inside double quotes in the specified region."
+  (interactive "r")
+  (save-excursion
+    (goto-char start)
+    (while (re-search-forward "\"\\([^\"]*\\)\"" end t)
+      (replace-match "\"\"" nil nil))))
+#+end_src
+
+#+begin_src emacs-lisp
+(defun laluxx/frame-region ()
+  (interactive)
+  (let ((original-buffer (current-buffer)))
+    (if (use-region-p)
+        (let* ((text (buffer-substring-no-properties (region-beginning) (region-end)))
+               (buf (generate-new-buffer "*Selection*")))
+          (with-current-buffer buf
+            (insert text)
+            ;; Remove "//" comments
+            (goto-char (point-min))
+            (while (search-forward "//" nil t)
+              (replace-match ""))
+            ;; Apply font-lock-comment-face to all text
+            (put-text-property (point-min) (point-max) 'face 'font-lock-comment-face)
+            (text-scale-increase 1))
+          (display-buffer buf '(display-buffer-below-selected))
+          (when (fboundp 'edwina-refresh)
+            (edwina-refresh))
+          (switch-to-buffer original-buffer))
+      (message "No region selected"))))
+#+end_src
+
+** Random stuff
+#+BEGIN_SRC emacs-lisp
+(defun capitalize-all-begin-src ()
+  "Capitalize all occurrences of '#+BEGIN_SRC' in the current buffer."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (search-forward "#+BEGIN_SRC" nil t)
+      (replace-match "#+BEGIN_SRC" t t))))
+#+end_src
+** Disable ivy
+#+BEGIN_SRC emacs-lisp
+(defun ff ()
+  "Open a file using the default Emacs method, without using Ivy for completion."
+  (interactive)
+  (let ((ivy-enabled ivy-mode))
+    ;; Disable Ivy if it's currently enabled
+    (when ivy-enabled
+      (ivy-mode -1))
+    ;; Call the standard find-file function
+    (call-interactively 'find-file)
+    ;; Re-enable Ivy if it was originally enabled
+    (when ivy-enabled
+      (ivy-mode 1))))
+
+
+(global-set-key (kbd "C-x C-f") 'ff)
+
+#+end_src
+** Buffer
+#+BEGIN_SRC emacs-lisp
 (defun laluxx/kill-current-buffer-and-window ()
   "Kill the current buffer and close the window if there are other windows in the frame."
   (interactive)
@@ -1747,7 +2746,7 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
       (delete-window current-window))))
 #+end_src
 ** Modeline
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defun laluxx/toggle-modeline ()
   "Toggle the modeline on and off."
   (interactive)
@@ -1761,7 +2760,7 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
     (redraw-frame (selected-frame))))
 #+end_src
 ** Deadgrep
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defun laluxx/find-TODOs ()
   "Search for TODOs using deadgrep."
   (interactive)
@@ -1774,7 +2773,7 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
 
 #+end_src
 ** Iedit
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defun laluxx/iedit-insert()
   "Activate iedit-mode, switch to insert mode and go to the end of the current word."
   (interactive)
@@ -1791,7 +2790,7 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
 
 #+end_src
 ** Counsel
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 ;; TODO
 (defun laluxx/counsel-fonts ()
   "Display a list of fonts, with each font name styled in its own font."
@@ -1805,10 +2804,6 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
                         (message "You selected: %s" selection)))))
 
 
-
-
-
-
 (defun laluxx/counsel-recentf-split ()
   "Open a recent file in a new window to the right."
   (interactive)
@@ -1820,7 +2815,7 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
 #+end_src
 
 ** Dired
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defun laluxx/dired-split-jump ()
   "Split the window vertically and open dired in the new window."
   (interactive)
@@ -1829,7 +2824,7 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
   (dired nil))               ;; Open dired
 #+end_src
 ** Toggle hl-line
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defun laluxx/toggle-hl-line-mode ()
   "Toggle highlighting of the current line."
   (interactive)
@@ -1838,7 +2833,7 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
     (hl-line-mode 1)))
 #+end_src
 ** Cycle line numbers
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defun laluxx/cycle-line-numbers ()
   "Cycle between line number modes: absolute, relative, none."
   (interactive)
@@ -1860,7 +2855,7 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
     #+end_src
 ** Prot
 *** Mark word
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defun laluxx/mark-word (&optional arg allow-extend)
   "Mark the whole word at point. 
 This function is a modified version of the built-in `mark-word'."
@@ -1900,7 +2895,7 @@ This function is a modified version of `laluxx/mark-word' but moves backward."
   (evil-define-key 'normal 'global "W" 'laluxx/mark-word-backward))
 #+end_src
 *** Monocle
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defvar laluxx/window-configuration nil
   "Current window configuration.
 Intended for use by `laluxx/window-monocle'.")
@@ -1920,12 +2915,12 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 (add-hook 'after-init-hook (lambda () (global-set-key (kbd "M-SPC") 'laluxx/window-single-toggle)))
 #+end_src
 ** Org jump
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defun laluxx/org-move-to-begin-src ()
-  "Move cursor to the line below #+begin_src."
+  "Move cursor to the line below #+BEGIN_SRC."
   (interactive)
   (let ((original-pos (point)))
-    (search-backward "#+begin_src")
+    (search-backward "#+BEGIN_SRC")
     (forward-line 1)
     (when (and (evil-visual-state-p) (evil-visual-line))
       (evil-visual-select original-pos (point) 'line))))
@@ -1950,12 +2945,13 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 (add-hook 'org-mode-hook 'laluxx/setup-org-evil-bindings)
 #+end_src
 ** Theme
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defvar laluxx/light-themes
   '(doom-one-light doom-tomorrow-day doom-flatwhite doom-homage-white doom-plain whiteboard tsdh-light tango modus-operandi
 		   leuven adwaita dichromacy  doom-bluloco-light doom-acario-light doom-ayu-light doom-feather-light doom-gruvbox-light
 		   doom-nord-light doom-oksolar-light doom-opera-light doom-solarized-light doom-earl-grey ef-cyprus ef-day ef-deuteranopia-light
-		   ef-duo-light ef-elea-light ef-frost ef-kassio ef-light ef-maris-light ef-melissa-light ef-spring ef-summer ef-trio-light ef-tritanopia-light)
+		   ef-duo-light ef-elea-light ef-frost ef-kassio ef-light ef-maris-light ef-melissa-light ef-spring ef-summer ef-trio-light ef-tritanopia-light, kaolin-breeze, kaolin-light,
+           kaolin-mono-light, kaolin-valley-light, moe-light)
   "List of light themes.")
 
 (defvar laluxx/ugly-themes
@@ -2051,10 +3047,10 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 
 #+end_src
 *** Cursor
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 #+end_src
 ** Diff
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defun laluxx/diff-buffer-with-file (&optional arg)
   "Compare buffer to its file, else run `vc-diff'.
 With \\[universal-argument] also enable highlighting of word-wise
@@ -2072,7 +3068,7 @@ changes, local to the current buffer."
         (setq-local diff-refine 'font-lock)))))
 #+end_src
 ** Find header
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 ;; (defun laluxx/find-header ()
 ;;   (interactive)
 ;;   (let* ((cmd "rg --files /usr/include --follow --hidden -g \"*.h\"")
@@ -2081,7 +3077,7 @@ changes, local to the current buffer."
 ;;               :action (lambda (x) (find-file-other-window x)))))
 #+end_src
 ** File jump
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defun laluxx/file-jump ()
   "Open a file in a new split. Vertical split if one window, horizontal otherwise."
   (interactive)
@@ -2096,7 +3092,7 @@ changes, local to the current buffer."
 #+end_src
 ** Wal-Set
 *** Default
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defun laluxx/wal-set ()
   (interactive)
   (let* ((default-directory "~/xos/wallpapers/static")
@@ -2115,7 +3111,7 @@ changes, local to the current buffer."
                            ((string-equal wm-name "dwm") (shell-command-to-string "xdotool key super+F5"))))))))
 #+end_src
 *** Animated
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 
 (defun laluxx/wal-set-animated ()
   "Set an animated wallpaper and configure theme based on it."
@@ -2195,7 +3191,7 @@ changes, local to the current buffer."
 #+end_src
 *** Favourite
 Set a wal paper from =~/xos/wallpapers/favourites=
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defun laluxx/wal-set-favourite ()
   (interactive)
   (let* ((default-directory "~/xos/wallpapers/favourites")
@@ -2224,7 +3220,7 @@ Set a wal paper from =~/xos/wallpapers/favourites=
 *** solid
 Choose a wal paper from =~/xos/wallpapers=
 and turn it solid
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defun laluxx/wal-set-solid ()
   (interactive)
   (let* ((default-directory "~/xos/wallpapers/static")
@@ -2256,7 +3252,7 @@ and turn it solid
 
 *** Set-wallpaper
 set system wallpaper
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (defun laluxx/set-wallpaper ()
   (interactive)
   (let* ((default-directory "~/xos/wallpapers/static")
@@ -2271,7 +3267,7 @@ set system wallpaper
 #+end_src
 *** set-animated-wallpaper
 simply set the video as the wallpaper without wal actions
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 ;; work original
 (defvar laluxx/last-animated-wallpaper nil "Path to the last set animated wallpaper.")
 
@@ -2297,7 +3293,7 @@ simply set the video as the wallpaper without wal actions
 
 ** Wal-watcher
 Setup file watcher for ~/.cache/wal/colors
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (run-with-idle-timer
  1 nil
  (lambda ()
@@ -2313,4 +3309,3 @@ Setup file watcher for ~/.cache/wal/colors
       (setq laluxx/current-theme 'ewal-doom-one) ;; Set the current theme variable
       (laluxx/save-current-theme)))))
 #+end_src
-

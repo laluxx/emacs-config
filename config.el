@@ -8,7 +8,6 @@
 (if pulse-cursor
 (require 'pulsing-cursor)) ;; Pulse a cursor
 
-;;this stuff should happen early TODO
 ;;; Reasonable defaults for interactive sessions
 
 ;;; Runtime optimizations
@@ -184,12 +183,31 @@ tell you about it. Very annoying. This prevents that."
 
 (global-auto-revert-mode t) ;; Automatically show changes if the file has changed
 
+(defun display-startup-echo-area-message ()
+  (message ""))
+
+(use-package all-the-icons-completion
+  :ensure t
+  :init
+  (all-the-icons-completion-mode)
+  :config
+  ;; Ensure the icons are applied to completion framework
+  (add-hook 'after-init-hook 'all-the-icons-completion-mode))
+
+(defun my/customize-completion-buffer-appearance ()
+  "Customize appearance of completion buffers: disable line numbers and hide the modeline."
+  (when (derived-mode-p 'completion-list-mode)
+    ;; Disable line numbers
+    (display-line-numbers-mode -1)
+    ;; Hide the modeline
+    (setq mode-line-format nil)))
+
+(add-hook 'completion-list-mode-hook 'my/customize-completion-buffer-appearance)
+
 (use-package all-the-icons
   :ensure t
   :if (display-graphic-p))
 
-(use-package all-the-icons-dired
-  :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
 
 (use-package all-the-icons-ibuffer
   :after all-the-icons
@@ -197,23 +215,11 @@ tell you about it. Very annoying. This prevents that."
 
 ;; (setq backup-directory-alist '((".*" . "~/.local/share/Trash/files")))
 
-(use-package company
-  :defer 2
-  :diminish
-  :custom
-  (company-begin-commands '(self-insert-command))
-  (company-idle-delay .1)
-  (company-minimum-prefix-length 2)
-  (company-show-numbers t)
-  (company-tooltip-align-annotations 't)
-  (global-company-mode t))
-
-(use-package company-box
-  :after company
-  :diminish
-  :hook (company-mode . company-box-mode))
-
 (use-package diminish)
+
+(use-package all-the-icons-dired
+  :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
+
 
 (use-package dired-open
   :config
@@ -239,6 +245,18 @@ tell you about it. Very annoying. This prevents that."
 
 (add-hook 'dired-mode-hook (lambda () (display-line-numbers-mode 0)))
 
+
+
+
+(use-package diredfl
+  :ensure t
+  :config (diredfl-global-mode t))
+
+(with-eval-after-load 'diredfl
+  (set-face-attribute 'diredfl-date-time nil
+                      :foreground "#303244"  ;; Slightly lighter/darker than the background
+                      :weight 'normal))
+
 (use-package evil
   :init
   (setq evil-want-integration t
@@ -249,11 +267,8 @@ tell you about it. Very annoying. This prevents that."
   (evil-mode))
 
 ;; Set the cursor to a solid block for both normal and insert modes
-(setq evil-normal-state-cursor '(box))
-(setq evil-insert-state-cursor '(box))
-
-
-
+;; (setq evil-normal-state-cursor '(box))
+;; (setq evil-insert-state-cursor '(box))
 
 (use-package evil-collection
   :after evil
@@ -281,6 +296,10 @@ tell you about it. Very annoying. This prevents that."
   :config
   (evil-commentary-mode))
 
+(add-hook 'evil-insert-state-entry-hook (lambda () (blink-cursor-mode 1)))
+(add-hook 'evil-emacs-state-entry-hook (lambda () (blink-cursor-mode 1)))
+(add-hook 'evil-normal-state-entry-hook (lambda () (blink-cursor-mode -1)))
+
 (keyboard-translate ?\C-i ?\H-i)
 
 (with-eval-after-load 'evil
@@ -302,6 +321,7 @@ tell you about it. Very annoying. This prevents that."
   (define-key evil-insert-state-map (kbd "C-c") 'kill-ring-save)
   (define-key evil-insert-state-map (kbd "C-x") 'kill-region)
   (define-key evil-insert-state-map (kbd "C-z") 'undo)
+  (define-key evil-insert-state-map (kbd "C-a") 'mark-page)
   (define-key evil-insert-state-map (kbd "C-y") 'undo-redo))
 
 (with-eval-after-load 'evil
@@ -314,37 +334,37 @@ tell you about it. Very annoying. This prevents that."
   :init (global-flycheck-mode))
 
 (set-face-attribute 'default nil
-  :font "JetBrains Mono"
+  :font "JetBrains Mono NL Nerd Font"
   :height 110
-  :weight 'medium)
-(set-face-attribute 'variable-pitch nil
-  :font "Ubuntu"
-  :height 120
-  :weight 'medium)
+  :weight 'extrabold)
 (set-face-attribute 'fixed-pitch nil
-  :font "JetBrains Mono"
+  :font "JetBrains Mono Nerd Font"
   :height 110
-  :weight 'medium)
-;; Makes commented text and keywords italics.
-;; This is working in emacsclient but not emacs.
-;; Your font must have an italic face available.
-(set-face-attribute 'font-lock-comment-face nil
-  :slant 'italic)
-(set-face-attribute 'font-lock-keyword-face nil
-  :slant 'italic)
+  :weight 'bold)
+(set-face-attribute 'variable-pitch nil :font "Iosevka Aile" :weight 'light :height 1.3)
 
-;; This sets the default font on all graphical frames created after restarting Emacs.
-;; Does the same thing as 'set-face-attribute default' above, but emacsclient fonts
-;; are not right unless I also add this method of setting the default font.
-(add-to-list 'default-frame-alist '(font . "JetBrains Mono-11"))
+(defun my-set-italic-comments-and-keywords ()
+  (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+  (set-face-attribute 'font-lock-keyword-face nil :slant 'italic))
 
-;; Uncomment the following line if line spacing needs adjusting.
-(setq-default line-spacing 0.12)
+(add-hook 'prog-mode-hook 'my-set-italic-comments-and-keywords)
+
+;; (setq-default line-spacing 0.12)
+(setq-default line-spacing 0.0)
 
 (global-set-key (kbd "C-=") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
+
+(custom-set-faces
+  '(minibuffer-prompt ((t (:family "JetBrains Mono NL ExtraBold" :height 120)))))
+
+(defun set-minibuffer-font ()
+  "Set the font for the minibuffer."
+  (face-remap-add-relative 'default '(:family "JetBrains Mono NF ExtraBold" :height 100)))
+
+;; (add-hook 'minibuffer-setup-hook 'set-minibuffer-font) ;; Disabled the hook
 
 (use-package git-timemachine
   :after git-timemachine
@@ -355,98 +375,6 @@ tell you about it. Very annoying. This prevents that."
 )
 
 (use-package magit)
-
-;; thanks DOOM
-(defun +ivy-format-function-line-or-arrow (cands)
-  "Transform CANDS into a string for minibuffer.
-Uses an arrow in terminal and standard formatting in a GUI."
-  (if (display-graphic-p)
-      (ivy-format-function-line cands)  ; GUI Emacs
-    (ivy--format-function-generic
-     (lambda (str)
-       (ivy--add-face (concat " " str "\n") 'ivy-current-match))  ; Selected candidate
-     (lambda (str)
-       (concat "  " str "\n"))  ; Other candidates
-     cands
-     "")))
-
-
-
-(use-package ivy
-  :ensure t
-  :bind
-  (("C-c C-r" . ivy-resume)
-   ("C-x B" . ivy-switch-buffer-other-window))
-  :custom
-  (ivy-use-virtual-buffers t)
-  (ivy-count-format "(%d/%d) ")
-  (enable-recursive-minibuffers t)
-  (ivy-use-selectable-prompt t)
-  :config
-  (ivy-mode 1) ;; TODO don't use ivy on keychords like (C-x C-f)
-  (setq ivy-format-functions-alist '((t . +ivy-format-function-line-or-arrow)))
-
-  (setq ivy-sort-functions-alist
-        '((t . ivy--prefix-sort-recentf))) ;; prioritize recent items
-  (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
-  (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)
-  (define-key ivy-minibuffer-map (kbd "<up>") 'ivy-previous-line-or-history)
-  (define-key ivy-minibuffer-map (kbd "<down>") 'ivy-next-line-or-history))
-
-
-
-(use-package counsel
-  :ensure t
-  ;; :after ivy
-  :config 
-  (counsel-mode 1)
-
-  ;; Integrate `helpful` with `counsel`
-  (setq counsel-describe-function-function #'helpful-callable)
-  (setq counsel-describe-variable-function #'helpful-variable)
-
-
-  (define-key counsel-mode-map [remap find-file] nil)
-  (setq ivy-initial-inputs-alist nil)) ;; removes starting ^ regex in M-x
-
-(use-package ivy-rich
-  :ensure t
-  ;; :after ivy
-  :config
-  (ivy-rich-mode 1))
-
-(use-package all-the-icons-ivy-rich
-  :ensure t
-  :after ivy-rich
-  :config
-  (all-the-icons-ivy-rich-mode 1))
-
-
-
-
-(defun laluxx/ivy-rich-header-icon (_candidate)
-  "Force the icon to always represent a .h file."
-  (all-the-icons-icon-for-file "dummy.h"))
-
-(defun laluxx/setup-ivy-rich-header-icon ()
-  (setq ivy-rich-display-transformers-list
-        (plist-put ivy-rich-display-transformers-list
-                   'laluxx/find-header
-                   '(:columns
-                     ((laluxx/ivy-rich-header-icon :width 2)
-                      (identity (:width 0.3 :face default)))))))
-
-(with-eval-after-load 'ivy-rich
-  (laluxx/setup-ivy-rich-header-icon))
-
-(defun laluxx/find-header ()
-  "Search for headers and open in a new window."
-  (interactive)
-  (let* ((cmd "rg --files /usr/include --follow --hidden -g \"*.h\"")
-         (headers (split-string (shell-command-to-string cmd) "\n" t)))
-    (ivy-read "Choose header: " headers
-              :action (lambda (x) (find-file-other-window x))
-              :caller 'laluxx/find-header)))
 
 (use-package neotree
   :config
@@ -540,12 +468,285 @@ Uses an arrow in terminal and standard formatting in a GUI."
 
 (use-package sudo-edit)
 
+;; (use-package corfu
+;;   :ensure t
+;;   :custom
+;;   (corfu-cycle t)             ;; Allows cycling through candidates with TAB.
+;;   (corfu-auto t)              ;; Enable auto popup.
+;;   :init
+;;   (global-corfu-mode 1))      ;; Enable Corfu globally.
+
+(use-package company
+  :ensure t)
+
+;; (use-package company
+;;   :defer 2
+;;   :diminish
+;;   :custom
+;;   (company-begin-commands '(self-insert-command))
+;;   (company-idle-delay .1)
+;;   (company-minimum-prefix-length 2)
+;;   (company-show-numbers t)
+;;   (company-tooltip-align-annotations 't)
+;;   (global-company-mode t))
+
+;; (use-package company-box
+;;   :after company
+;;   :diminish
+;;   :hook (company-mode . company-box-mode))
+
+
+;; (use-package company
+;;   :defer t
+;;   :bind (:map company-active-map
+;;          ("C-n" . company-select-next)
+;;          ("C-p" . company-select-previous)
+;;          ("<tab>" . company-complete-selection))
+;;   :hook (after-init . global-company-mode)
+;;   :init
+;;   (setq company-minimum-prefix-length 2
+;;         company-tooltip-limit 14
+;;         company-tooltip-align-annotations t
+;;         company-require-match 'never
+;;         company-global-modes '(not erc-mode circe-mode message-mode help-mode gud-mode vterm-mode)
+;;         company-frontends '(company-pseudo-tooltip-frontend company-echo-metadata-frontend)
+;;         company-backends '(company-capf)
+;;         company-auto-commit nil
+;;         company-dabbrev-other-buffers nil
+;;         company-dabbrev-ignore-case nil
+;;         company-dabbrev-downcase nil)
+;;   :config
+;;   ;; Add any additional configuration or hooks here
+;; )
+
+;; ;; Conditional loading for company-tng if required
+;; (use-package company-tng
+;;   :after company
+;;   :if (bound-and-true-p company-tng-mode)
+;;   :config
+;;   (add-hook 'global-company-mode-hook 'company-tng-mode))
+
+;; ;; If using Evil mode, configure company integration
+;; (when (featurep 'evil)
+;;   (add-hook 'company-mode-hook 'evil-normalize-keymaps)
+;;   ;; Define additional hooks or functions here as needed
+;; )
+
+;; ;; Company-box configuration, conditional on childframe availability
+;; (use-package company-box
+;;   :hook (company-mode . company-box-mode)
+;;   :if (display-graphic-p)
+;;   :config
+;;   (setq company-box-show-single-candidate t
+;;         company-box-backends-colors nil
+;;         company-box-tooltip-limit 50
+;;         ;; Add additional company-box configurations here
+;;         ;; ...
+;;   ))
+
+;; ;; Company-dict configuration
+;; (use-package company-dict
+;;   :defer t
+;;   :config
+;;   ;; Set your company-dict-dir and any other configurations here
+;;   )
+
+;; ;; Additional customization or packages can be added in a similar fashion
+
+;; ;; Enable vertico
+;; (use-package vertico
+;;   :init
+;;   (vertico-mode)
+
+;;   ;; Different scroll margin
+;;   ;; (setq vertico-scroll-margin 0)
+
+;;   ;; Show more candidates
+;;   ;; (setq vertico-count 20)
+
+;;   ;; Grow and shrink the Vertico minibuffer
+;;   ;; (setq vertico-resize t)
+
+;;   ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+;;   ;; (setq vertico-cycle t)
+;;   )
+
+;; ;; Persist history over Emacs restarts. Vertico sorts by history position.
+;; ;;(use-package savehist
+;; ;;  :init
+;; ;;  (savehist-mode))
+
+;; ;; A few more useful configurations...
+
+;; ;; Optionally use the `orderless' completion style.
+;; (use-package orderless
+;;   :init
+;;   ;; Configure a custom style dispatcher (see the Consult wiki)
+;;   ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
+;;   ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+;;   (setq completion-styles '(orderless basic)
+;;         completion-category-defaults nil
+;;         completion-category-overrides '((file (styles partial-completion)))))
+
+;; thanks DOOM
+(defun +ivy-format-function-line-or-arrow (cands)
+  "Transform CANDS into a string for minibuffer.
+Uses an arrow in terminal and standard formatting in a GUI."
+  (if (display-graphic-p)
+      (ivy-format-function-line cands)  ; GUI Emacs
+    (ivy--format-function-generic
+     (lambda (str)
+       (ivy--add-face (concat " " str "\n") 'ivy-current-match))  ; Selected candidate
+     (lambda (str)
+       (concat "  " str "\n"))  ; Other candidates
+     cands
+     "")))
+
+(use-package ivy
+  :ensure t
+  :bind
+  (("C-c C-r" . ivy-resume)
+   ("C-x B" . ivy-switch-buffer-other-window))
+  :custom
+  (ivy-use-virtual-buffers t)
+  (ivy-count-format "(%d/%d) ")
+  (enable-recursive-minibuffers t)
+  (ivy-use-selectable-prompt t)
+  :config
+  (ivy-mode 1) ;; TODO don't use ivy on keychords like (C-x C-f)
+  (setq ivy-format-functions-alist '((t . +ivy-format-function-line-or-arrow)))
+
+  (setq ivy-sort-functions-alist
+        '((t . ivy--prefix-sort-recentf))) ;; prioritize recent items
+  (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
+  (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)
+  (define-key ivy-minibuffer-map (kbd "<up>") 'ivy-previous-line-or-history)
+  (define-key ivy-minibuffer-map (kbd "<down>") 'ivy-next-line-or-history))
+
+
+
+(use-package counsel
+  :ensure t
+  ;; :after ivy
+  :config 
+  (counsel-mode 1)
+
+  ;; Integrate `helpful` with `counsel`
+  (setq counsel-describe-function-function #'helpful-callable)
+  (setq counsel-describe-variable-function #'helpful-variable)
+
+
+  (define-key counsel-mode-map [remap find-file] nil)
+  (setq ivy-initial-inputs-alist nil)) ;; removes starting ^ regex in M-x
+
+(use-package ivy-rich
+  :ensure t
+  ;; :after ivy
+  :config
+  (ivy-rich-mode 1))
+
+(use-package all-the-icons-ivy-rich
+  :ensure t
+  :after ivy-rich
+  :config
+  (all-the-icons-ivy-rich-mode 1))
+
+
+
+
+(defun laluxx/ivy-rich-header-icon (_candidate)
+  "Force the icon to always represent a .h file."
+  (all-the-icons-icon-for-file "dummy.h"))
+
+(defun laluxx/setup-ivy-rich-header-icon ()
+  (setq ivy-rich-display-transformers-list
+        (plist-put ivy-rich-display-transformers-list
+                   'laluxx/find-header
+                   '(:columns
+                     ((laluxx/ivy-rich-header-icon :width 2)
+                      (identity (:width 0.3 :face default)))))))
+
+(with-eval-after-load 'ivy-rich
+  (laluxx/setup-ivy-rich-header-icon))
+
+(defun laluxx/find-header ()
+  "Search for headers and open in a new window."
+  (interactive)
+  (let* ((cmd "rg --files /usr/include --follow --hidden -g \"*.h\"")
+         (headers (split-string (shell-command-to-string cmd) "\n" t)))
+    (ivy-read "Choose header: " headers
+              :action (lambda (x) (find-file-other-window x))
+              :caller 'laluxx/find-header)))
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
 ;; and `package-pinned-packages`. Most users will not need or want to do this.
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
+
+(use-package move-text
+  :ensure t
+  :config
+  (move-text-default-bindings))
+
+(use-package evil-snipe
+  :ensure t
+  :config
+  (evil-snipe-mode 1)
+  (evil-snipe-override-mode 1))
+
+(use-package devdocs
+  :ensure t)
+
+(use-package moody
+  :ensure t)
+
+(use-package keycast
+  :config
+  (define-minor-mode keycast-mode
+    "Show current command and its key binding in the mode line (fix for use with doom-mode-line)."
+    :global t
+    (if keycast-mode
+        (add-hook 'pre-command-hook 'keycast--update t)
+      (remove-hook 'pre-command-hook 'keycast--update)))
+  (add-to-list 'global-mode-string '("" keycast-mode-line)))
+
+;; (use-package pdf-tools
+;;   :ensure t)
+
+;; (setq pdf-view-midnight-colors '("#D6A0D1" . "#14171E"))
+
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install)
+  (setq pdf-view-midnight-colors '("#D6A0D1" . "#14171E"))
+  (add-hook 'pdf-view-mode-hook (lambda ()
+                                  (pdf-view-midnight-minor-mode 1)
+                                  (display-line-numbers-mode -1))))
+
+(use-package tree-sitter
+  :ensure t)
+
+(use-package tree-sitter-langs
+  :ensure t)
+
+(use-package eyebrowse
+  :ensure t
+  :config
+  (eyebrowse-mode t))
+
+(global-set-key (kbd "M-1") (lambda () (interactive) (eyebrowse-switch-to-window-config 1)))
+(global-set-key (kbd "M-3") (lambda () (interactive) (eyebrowse-switch-to-window-config 3)))
+(global-set-key (kbd "M-2") (lambda () (interactive) (eyebrowse-switch-to-window-config 2)))
+(global-set-key (kbd "M-4") (lambda () (interactive) (eyebrowse-switch-to-window-config 4)))
+(global-set-key (kbd "M-5") (lambda () (interactive) (eyebrowse-switch-to-window-config 5)))
+(global-set-key (kbd "M-6") (lambda () (interactive) (eyebrowse-switch-to-window-config 6)))
+(global-set-key (kbd "M-7") (lambda () (interactive) (eyebrowse-switch-to-window-config 7)))
+(global-set-key (kbd "M-8") (lambda () (interactive) (eyebrowse-switch-to-window-config 8)))
+(global-set-key (kbd "M-9") (lambda () (interactive) (eyebrowse-switch-to-window-config 9)))
+(global-set-key (kbd "M-TAB") 'eyebrowse-last-window-config)
 
 (use-package helpful
   :ensure t
@@ -611,8 +812,7 @@ Uses an arrow in terminal and standard formatting in a GUI."
 :config
 (setq shell-file-name "/bin/sh"
       vterm-max-scrollback 5000)
-(add-hook 'vterm-mode-hook (lambda () (display-line-numbers-mode 0)))
-)
+(add-hook 'vterm-mode-hook (lambda () (display-line-numbers-mode 0))))
 
 ;; Set a very high garbage collection threshold to reduce frequency of garbage collection
 (setq gc-cons-threshold (* 500 1024 1024))  ; 500MB
@@ -837,7 +1037,7 @@ Uses an arrow in terminal and standard formatting in a GUI."
                           (registers . 3)))
   :custom 
   (dashboard-modify-heading-icons '((recents . "file-text")
-				    (bookmarks . "book")))
+				                    (bookmarks . "book")))
   :config
   (dashboard-setup-startup-hook)
 
@@ -852,7 +1052,9 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (evil-define-key 'normal dashboard-mode-map (kbd "j") 'widget-forward)
   (evil-define-key 'normal dashboard-mode-map (kbd "k") 'widget-backward)
   (evil-define-key 'normal dashboard-mode-map (kbd "h") 'widget-backward)
-  (evil-define-key 'normal dashboard-mode-map (kbd "l") 'dashboard-return))
+  (evil-define-key 'normal dashboard-mode-map (kbd "l") 'dashboard-return)
+  (evil-define-key 'normal dashboard-mode-map (kbd "<up>") 'widget-backward)
+  (evil-define-key 'normal dashboard-mode-map (kbd "<down>") 'widget-forward))
 
 (use-package which-key
   :init
@@ -918,21 +1120,43 @@ However, don't toggle if which-key is currently displayed."
 
 (add-hook 'window-configuration-change-hook 'edwina-toggle-mode-based-on-window-count)
 
-(use-package toc-org ;; Table of contents
-    :commands toc-org-enable
-    ;; :init (add-hook 'org-mode-hook 'toc-org-enable)
-)
+(add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)))
 
-;; Remove "Ind" from showing in the modeline.
-(eval-after-load 'org-indent '(diminish 'org-indent-mode))
-(setq org-confirm-babel-evaluate nil) ;; Dont Bother  
+(use-package org-present
+  :ensure t)
 
+(unless (package-installed-p 'visual-fill-column)
+  (package-install 'visual-fill-column))
 
-(add-hook 'org-mode-hook
-          (lambda ()
-            (toc-org-enable)  ;; Enable Table of Contents
-            (display-line-numbers-mode -1)  ;; Disable line numbers
-            (evil-define-key 'normal org-mode-map (kbd "RET") 'org-ctrl-c-ctrl-c)))
+;; Configure fill width
+(setq visual-fill-column-width 110
+      visual-fill-column-center-text t)
+
+(defun my/org-present-start ()
+  ;; Center the presentation and wrap lines
+  (visual-fill-column-mode 1)
+  (visual-line-mode 1)
+  ;; Tweak font sizes
+  (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
+                                     (header-line (:height 4.0) variable-pitch)
+                                     (org-document-title (:height 1.75) org-document-title)
+                                     (org-code (:height 1.55) org-code)
+                                     (org-verbatim (:height 1.55) org-verbatim)
+                                     (org-block (:height 1.25) org-block)
+                                     (org-block-begin-line (:height 0.7) org-block))))
+
+(defun my/org-present-end ()
+  ;; Stop centering the document
+  (visual-fill-column-mode 0)
+  (visual-line-mode 0)
+  ;; Reset font customizations
+  (setq-local face-remapping-alist '((default variable-pitch default)))
+  ;; Reset the variable-pitch font to a default
+  (set-face-attribute 'variable-pitch nil :font "JetBrains Mono NL Nerd Font" :weight 'extrabold :height 110))
+
+;; Register hooks with org-present
+(add-hook 'org-present-mode-hook 'my/org-present-start)
+(add-hook 'org-present-mode-quit-hook 'my/org-present-end)
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 (use-package org-bullets)
@@ -974,6 +1198,49 @@ However, don't toggle if which-key is currently displayed."
             (evil-define-key 'normal org-mode-map
               (kbd "h") 'my-org-close-or-move-left)))
 
+(use-package ada-mode
+  :ensure t)
+
+(defun my-insert-angle-brackets ()
+  "Insert <> for #include, or just < elsewhere."
+  (interactive)
+  (if (save-excursion
+        (re-search-backward "#include " (line-beginning-position) t))
+      (progn
+        (insert "<>")
+        (backward-char))
+    (insert "<")))
+
+;; Hook the function into c-mode and c++-mode keymaps
+(add-hook 'c-mode-hook (lambda ()
+                         (define-key c-mode-map "<" 'my-insert-angle-brackets)))
+(add-hook 'c++-mode-hook (lambda ()
+                           (define-key c++-mode-map "<" 'my-insert-angle-brackets)))
+
+
+
+(setq-default c-basic-offset 4
+              tab-width 4
+              indent-tabs-mode nil)
+
+(use-package zig-mode
+  :ensure t)
+
+(use-package tuareg
+  :ensure t)
+
+;;(use-package gleam-mode
+;;  :load-path "~/.config/emaca/modules/gleam-mode")
+
+;; (use-package arduino-mode
+;;   :ensure t)
+
+(use-package lua-mode
+  :ensure t)
+
+(use-package haskell-mode
+  :ensure t)
+
 ;; (use-package tree-sitter-langs
 ;;   :ensure t)
 
@@ -989,6 +1256,9 @@ However, don't toggle if which-key is currently displayed."
   :mode "\\.rs\\'"
   :config
   (setq rust-format-on-save t))
+
+(use-package rustic
+  :ensure t)
 
 (use-package ruby-electric
   :ensure t
@@ -1010,6 +1280,101 @@ However, don't toggle if which-key is currently displayed."
   (defadvice inf-ruby-console-auto (before activate-rvm-for-robe activate)
     (rvm-activate-corresponding-ruby))
 )
+
+(use-package kind-icon
+  :ensure t
+  ;; :after corfu
+  :custom
+  (kind-icon-blend-background t))
+  ;; (kind-icon-default-face 'corfu-default) ; only needed with blend-background
+  ;; :config
+  ;; (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+;; Org mode symbols
+(defun org-icons ()
+  "Beautify org mode keywords."
+  (setq prettify-symbols-alist 
+        '(("WAIT" . "")
+          ;; ("TODO" . "")
+          ("NOPE" . "")
+          ("DONE" . "")
+          ("[#A]" . "")
+          ("[#B]" . "")
+          ("[#C]" . "")
+          ("[ ]" . "")
+          ("[X]" . "")
+          ("[-]" . "")
+          ("#+BEGIN_SRC" . "")
+          ("#+begin_src" . "")
+          ("#+END_SRC" . "󰨿")
+          (":PROPERTIES:" . "")
+          (":END:" . "―")
+          ("#+STARTUP:" . "")
+          ("#+TITLE: " . "")
+          ("#+RESULTS:" . "")
+          ("#+NAME:" . "")
+          ("#+ROAM_TAGS:" . "")
+          ("#+FILETAGS:" . "")
+          ("#+HTML_HEAD:" . "")
+          ("#+SUBTITLE:" . "")
+          ("#+AUTHOR:" . "")
+          ("#+DESCRIPTION:" . "󰯂")
+          (":Effort:" . "")
+          ("SCHEDULED:" . "")
+          ("DEADLINE:" . "")))
+  (prettify-symbols-mode 1))
+
+(add-hook 'org-mode-hook 'org-icons)
+
+(setq org-ellipsis " ")
+
+;; Programming modes symbols
+(defun prettify-prog-mode ()
+  "Set up prettify symbols for programming modes."
+  (setq prettify-symbols-alist 
+        '(("lambda" . "λ")
+          ("|>" . "▷")
+          ("<|" . "◁")
+          ("->>" . "↠")
+          ;; ("->" . "→") ➞
+          ;; ("->" . "➞") 
+          ("<-" . "←")
+          ("=>" . "⇒")
+          ("<=" . "≤")
+          ("pi" . "󰏿")
+          ("delta" . "Δ")
+          ("!=" . "≠")
+          ;; ("==" . "≡")
+          ;; ("===" . "≣")
+          ("<<=" . "≪=")
+          (">>=" . "≫=")
+          ("sqrt" . "√")
+          ("sum" . "∑")
+          ("infty" . "∞")
+          ("integral" . "∫")
+          (">=" . "≥")))
+  (prettify-symbols-mode 1))
+
+(add-hook 'prog-mode-hook 'prettify-prog-mode)
+
+(defface my--comment-face
+  '((t (:foreground "#839496"    ; A softer foreground color, like light gray or blue
+        :background nil          ; No background to keep it simple
+        :family "Jetbrains"      ; A standard monospace font
+        :height 100              ; Standard font size
+        :weight normal           ; Regular weight
+        :slant italic            ; Italicized to differentiate comments
+        :underline nil           ; No underline
+        :overline nil            ; No overline
+        :strike-through nil      ; No strike-through
+        :box nil)))              ; No box around comments
+  "A custom face for comments to make them distinct yet not too prominent.")
+
+;; Apply the custom comment face to font-lock-comment-face
+;; (custom-set-faces
+;;  '(font-lock-comment-face ((t :inherit my--comment-face))))
+
+
 
 (blink-cursor-mode -1)
 (defvar laluxx/original-cursor-color nil
@@ -1098,7 +1463,13 @@ However, don't toggle if which-key is currently displayed."
 
 (setq double-buffering t)
 
-(use-package ef-themes
+(use-package catppuccin-theme
+  :ensure t)
+
+(use-package kaolin-themes
+  :ensure t)
+
+(use-package moe-theme
   :ensure t)
 
 (add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
@@ -1113,15 +1484,6 @@ However, don't toggle if which-key is currently displayed."
   (doom-themes-neotree-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
-
-;;(require 'theme-magic)
-;;(theme-magic-export-theme-mode)
-
-(use-package theme-magic
-  :ensure t)
-  ;;:config
-  ;; Enable theme-magic for supported terminals
-  ;; (theme-magic-export-theme-mode t))
 
 (use-package ewal
   :ensure t
@@ -1142,6 +1504,12 @@ However, don't toggle if which-key is currently displayed."
   :config
   ;; (load-theme 'ewal-doom-one t)
 )
+
+(use-package theme-magic
+  :ensure t)
+
+(use-package ef-themes
+  :ensure t)
 
 ;; (add-to-list 'default-frame-alist '(alpha-background . 85)) ; For hardcoded alpha
 
@@ -1167,7 +1535,8 @@ However, don't toggle if which-key is currently displayed."
   (setq doom-modeline-height 35      ;; sets modeline height
         doom-modeline-bar-width 5    ;; sets left bar width
         doom-modeline-persp-name t   ;; adds perspective name to modeline
-        doom-modeline-persp-icon t)) ;; adds folder icon next to persp name
+        doom-modeline-persp-icon t   ;; adds folder icon next to persp name
+        ))
 
 (use-package hl-todo
   :hook ((org-mode . hl-todo-mode)
@@ -1183,8 +1552,7 @@ However, don't toggle if which-key is currently displayed."
           ("DEPRECATED" font-lock-doc-face bold))))
 
 (use-package rainbow-delimiters
-  :hook ((emacs-lisp-mode . rainbow-delimiters-mode)
-         (clojure-mode . rainbow-delimiters-mode)))
+  :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package rainbow-mode
   :diminish
@@ -1219,7 +1587,8 @@ However, don't toggle if which-key is currently displayed."
     "b k" '(kill-current-buffer :wk "Kill current buffer")
     "b K" '(laluxx/kill-current-buffer-and-window :wk "Kill buffer and window")
     "b l" '(list-bookmarks :wk "List bookmarks")
-    "b m" '(bookmark-set :wk "Set bookmark")
+    ;; "b m" '(bookmark-set :wk "Set bookmark")
+    "b m" '(counsel-bookmark :wk "Set bookmark")
     "b n" '(next-buffer :wk "Next buffer")
     "b p" '(previous-buffer :wk "Previous buffer")
     "b r" '(revert-buffer :wk "Reload buffer")
@@ -1262,7 +1631,8 @@ However, don't toggle if which-key is currently displayed."
     ;; "f i" '((lambda () (interactive)
     ;;           (find-file "~/.config/emacs/init.el")) 
     ;;         :wk "Open emacs init.el")
-    "f i" '(swiper :wk "Swiper")
+    "f i" '(counsel-rg :wk "counsel-rg")
+    "f w" '(swiper :wk "Swiper")
     "f j" '(laluxx/file-jump :wk "Jump to a file")
     ;; "f l" '(counsel-locate :wk "Locate a file")
     "f l" '(find-library :wk "Locate a file")
@@ -1274,6 +1644,7 @@ However, don't toggle if which-key is currently displayed."
     "f h" '(laluxx/find-header :wk "Find header")
     "f t" '(laluxx/find-TODOs :wk "Find TODOs")
     "f n" '(laluxx/find-NOTES :wk "Find NOTES")
+    "f p" '(laluxx/find-package-source-code :wk "Find package source code")
     "f U" '(sudo-edit :wk "Sudo edit file"))
 
   (laluxx/leader-keys
@@ -1288,7 +1659,8 @@ However, don't toggle if which-key is currently displayed."
 
   (laluxx/leader-keys
     "k" '(:ignore t :wk "Kill")
-    "k p" '(kill-process :wk "Kill process"))
+    "k p" '(kill-process :wk "Kill process")
+    "k c" '(laluxx/kill-comments-in-region :wk "Kill comments in region"))
 
   (laluxx/leader-keys
     "g" '(:ignore t :wk "Git")    
@@ -1315,10 +1687,12 @@ However, don't toggle if which-key is currently displayed."
 
   (laluxx/leader-keys
     "h" '(:ignore t :wk "Help")
+    "h h" '(laluxx/list-hooks :wk "List all hooks")
     "h a" '(counsel-apropos :wk "Apropos")
     "h b" '(describe-bindings :wk "Describe bindings")
     "h c" '(describe-char :wk "Describe character under cursor")
     "h d" '(:ignore t :wk "Emacs documentation")
+    "h D" '(devdocs-lookup t :wk "Devdocs lookup")
     "h d a" '(about-emacs :wk "About Emacs")
     "h d d" '(view-emacs-debugging :wk "View Emacs debugging")
     "h d f" '(view-emacs-FAQ :wk "View Emacs FAQ")
@@ -1349,6 +1723,7 @@ However, don't toggle if which-key is currently displayed."
     "h t" '(laluxx/load-dark-theme :wk "Load theme")
     "h T" '(laluxx/wal-set :wk "Wal set")
     "h v" '(describe-variable :wk "Describe variable")
+    "h V" '(counsel-set-variable :wk "Set variable")
     "h w" '(woman :wk "Woman")
     "h x" '(describe-command :wk "Display full documentation for command"))
 
@@ -1373,6 +1748,7 @@ However, don't toggle if which-key is currently displayed."
     "o" '(:ignore t :wk "Open")
     "o d" '(dashboard-open :wk "Dashboard")
     "o e" '(elfeed :wk "Elfeed RSS")
+    "o i" '(ielm :wk "Ielm repl")
     "o f" '(make-frame :wk "Open buffer in new frame")
     "o F" '(select-frame-by-name :wk "Select frame by name"))
 
@@ -1383,11 +1759,13 @@ However, don't toggle if which-key is currently displayed."
 
   (laluxx/leader-keys
     "s" '(:ignore t :wk "Search")
+    "s b" '(scratch-buffer :wk "Scratch buffer")
+    "s B" '(laluxx/split-scratch :wk "Split scratch buffer")
     "s d" '(dictionary-search :wk "Search dictionary")
     "s m" '(man :wk "Man pages")
     "s t" '(tldr :wk "Lookup TLDR docs for a command")
     "s i" '(counsel-imenu :wk "Counsel imenu")
-    "s u" '(vundo :wk "Visual undo")
+    "s u" '(vundo :wk "Visual undo tree")
     "s w" '(woman :wk "Similar to man but doesn't require man"))
 
   (laluxx/leader-keys
@@ -1454,6 +1832,464 @@ However, don't toggle if which-key is currently displayed."
 
 (provide 'my-modeline-mode)
 
+(defun laluxx/split-scratch ()
+  "Open the *scratch* buffer in a new window."
+  (interactive)
+  ;; Split the current window and make a new window
+  (split-window)
+  ;; Focus on the new window
+  (other-window 1)
+  ;; Switch to the *scratch* buffer in the new window
+  (switch-to-buffer "*scratch*"))
+
+(defun laluxx/find-package-source-code ()
+  "Opens a .el file corresponding to the extended 'word' under the cursor in the ~/.config/emacs/elpaca/builds/ directory in a new window."
+  (interactive)
+  (save-excursion
+    (let* (start end extended-word dir file-path)
+      ;; Move backwards to the start of the "word"
+      (skip-chars-backward "^ \t\n")
+      (setq start (point))
+      ;; Move forward to the end of the "word"
+      (skip-chars-forward "^ \t\n")
+      (setq end (point))
+      ;; Extract the "word"
+      (setq extended-word (buffer-substring-no-properties start end))
+      ;; Construct the directory and file path
+      (setq dir (concat "~/.config/emacs/elpaca/builds/" extended-word))
+      (setq file-path (concat dir "/" extended-word ".el"))
+      ;; Check if the directory exists
+      (if (file-directory-p dir)
+          (if (file-exists-p file-path)
+              (progn
+                (find-file-other-window file-path))  ; Open the file in a new window if it exists
+            (message "File does not exist: %s" file-path))
+        (message "Directory does not exist: %s" dir)))))
+
+(defun arch-pkg-list-callback (process event)
+  "Callback function to handle completion of the package listing process."
+  (when (string= event "finished\n")
+    (let* ((output-buffer (process-buffer process))
+           (packages (with-current-buffer output-buffer
+                       (split-string (buffer-string) "\n" t))))
+      (unless (eq (length packages) 0)
+        (ivy-read "Select a package to install: " packages
+                  :action (lambda (selected-package)
+                            ;; Install the selected package
+                            (start-process-shell-command "install-pkg" "*install-pkg*" (concat "yay -S --noconfirm " selected-package))))
+        ;; Cleanup
+        (kill-buffer output-buffer)))))
+
+(defun laluxx/install-arch-package ()
+  "List Arch Linux packages using `yay` and select a package to install with Ivy."
+  (interactive)
+  (let ((output-buffer (generate-new-buffer "*pkg-list*")))
+    (set-process-sentinel
+     (start-process "pkg-list" output-buffer "yay" "-Slq")
+     #'arch-pkg-list-callback)))
+
+(defun laluxx/info-mode-setup ()
+  "Custom setup for Info-mode."
+  (olivetti-mode 1)        ; Enable Olivetti mode for a distraction-free reading layout
+  (text-scale-increase 2)  ; Increase the font size by two steps
+  (display-line-numbers-mode -1)) ; Disable line numbers
+
+(add-hook 'Info-mode-hook 'laluxx/info-mode-setup)
+
+(defun emacs-run-launcher ()
+  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+  (interactive)
+  (with-selected-frame
+    (make-frame '((name . "emacs-run-launcher")
+                  (minibuffer . only)
+                  (fullscreen . 0) ; no fullscreen
+                  (undecorated . t) ; remove title bar
+                  ;;(auto-raise . t) ; focus on this frame
+                  ;;(tool-bar-lines . 0)
+                  ;;(menu-bar-lines . 0)
+                  (internal-border-width . 10)
+                  (width . 80)
+                  (height . 11)))
+                  (unwind-protect
+                    (app-launcher-run-app)
+                    (delete-frame))))
+
+(defun emacs-run-wal-set ()
+  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+  (interactive)
+  (with-selected-frame
+    (make-frame '((name . "emacs-run-wal-set")
+                  (minibuffer . only)
+                  (fullscreen . 0) ; no fullscreen
+                  (undecorated . t) ; remove title bar
+                  ;;(auto-raise . t) ; focus on this frame
+                  ;;(tool-bar-lines . 0)
+                  ;;(menu-bar-lines . 0)
+                  (internal-border-width . 10)
+                  (width . 80)
+                  (height . 11)))
+                  (unwind-protect
+                    (laluxx/wal-set)
+                    (delete-frame))))
+
+(defun emacs-run-wal-set-animated ()
+  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+  (interactive)
+  (with-selected-frame
+    (make-frame '((name . "emacs-run-wal-set-animated")
+                  (minibuffer . only)
+                  (fullscreen . 0) ; no fullscreen
+                  (undecorated . t) ; remove title bar
+                  ;;(auto-raise . t) ; focus on this frame
+                  ;;(tool-bar-lines . 0)
+                  ;;(menu-bar-lines . 0)
+                  (internal-border-width . 10)
+                  (width . 80)
+                  (height . 11)))
+                  (unwind-protect
+                    (laluxx/wal-set-animated)
+                    (delete-frame))))
+
+(defun emacs-run-wal-set-solid ()
+  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+  (interactive)
+  (with-selected-frame
+    (make-frame '((name . "emacs-run-wal-set-solid")
+                  (minibuffer . only)
+                  (fullscreen . 0) ; no fullscreen
+                  (undecorated . t) ; remove title bar
+                  ;;(auto-raise . t) ; focus on this frame
+                  ;;(tool-bar-lines . 0)
+                  ;;(menu-bar-lines . 0)
+                  (internal-border-width . 10)
+                  (width . 80)
+                  (height . 11)))
+                  (unwind-protect
+                    (laluxx/wal-set-solid)
+                    (delete-frame))))
+
+(defun emacs-run-wal-set-favourite ()
+  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+  (interactive)
+  (with-selected-frame
+    (make-frame '((name . "emacs-run-wal-set-favourite")
+                  (minibuffer . only)
+                  (fullscreen . 0) ; no fullscreen
+                  (undecorated . t) ; remove title bar
+                  ;;(auto-raise . t) ; focus on this frame
+                  ;;(tool-bar-lines . 0)
+                  ;;(menu-bar-lines . 0)
+                  (internal-border-width . 10)
+                  (width . 80)
+                  (height . 11)))
+                  (unwind-protect
+                    (laluxx/wal-set-favourite)
+                    (delete-frame))))
+
+(defun emacs-run-set-wallpaper ()
+  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+  (interactive)
+  (with-selected-frame
+    (make-frame '((name . "emacs-run-set-wallpaper")
+                  (minibuffer . only)
+                  (fullscreen . 0) ; no fullscreen
+                  (undecorated . t) ; remove title bar
+                  ;;(auto-raise . t) ; focus on this frame
+                  ;;(tool-bar-lines . 0)
+                  ;;(menu-bar-lines . 0)
+                  (internal-border-width . 10)
+                  (width . 80)
+                  (height . 11)))
+                  (unwind-protect
+                    (laluxx/set-wallpaper)
+                    (delete-frame))))
+
+(defun emacs-run-set-animated-wallpaper ()
+  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+  (interactive)
+  (with-selected-frame
+    (make-frame '((name . "emacs-run-set-animated-wallpaper")
+                  (minibuffer . only)
+                  (fullscreen . 0) ; no fullscreen
+                  (undecorated . t) ; remove title bar
+                  ;;(auto-raise . t) ; focus on this frame
+                  ;;(tool-bar-lines . 0)
+                  ;;(menu-bar-lines . 0)
+                  (internal-border-width . 10)
+                  (width . 80)
+                  (height . 11)))
+                  (unwind-protect
+                    (laluxx/set-animated-wallpaper)
+                    (delete-frame))))
+
+(defun emacs-run-M-x ()
+  "Create a new frame and prompt for an M-x command in it."
+  (interactive)
+  (with-selected-frame
+      (make-frame '((name . "emacs-run-M-x")
+                    (minibuffer . only)
+                    (fullscreen . 0)
+                    (undecorated . t)
+                    (internal-border-width . 10)
+                    (width . 80)
+                    (height . 11)))
+    (unwind-protect
+        (call-interactively 'execute-extended-command)
+      (delete-frame))))
+
+;; TODO
+(defvar emacs-run-info-frame nil)
+
+(defun emacs-run-info ()
+  "Create a new frame and run 'info' in it."
+  (interactive)
+  (if (and emacs-run-info-frame (frame-live-p emacs-run-info-frame))
+      ;; If the frame exists, delete it.
+      (progn
+        (delete-frame emacs-run-info-frame)
+        (setq emacs-run-info-frame nil))
+    ;; Else, create a new frame.
+    (let* ((new-frame (make-frame '((name . "emacs-run-info")
+                                    (minibuffer . t)
+                                    (fullscreen . 0)
+                                    (undecorated . t)
+                                    (internal-border-width . 10)
+                                    (width . 80)
+                                    (height . 11)))))
+      (setq emacs-run-info-frame new-frame)
+      (select-frame-set-input-focus new-frame)
+      (with-selected-window (frame-selected-window new-frame)
+        (switch-to-buffer (save-window-excursion
+                            (info)
+                            (current-buffer)))
+        (delete-other-windows)
+        (define-key Info-mode-map (kbd "<escape>") 'delete-frame)))))
+
+;; (defun emacs-run-which-key ()
+;;   "Create a new frame and prompt for a which-key command in it."
+;;   (interactive)
+;;   (let ((new-frame (make-frame '((name . "emacs-run-which-key")
+;;                                  (minibuffer . only)
+;;                                  (fullscreen . 0)
+;;                                  (undecorated . t)
+;;                                  (internal-border-width . 10)
+;;                                  (width . 80)
+;;                                  (height . 11)))))
+;;     (with-selected-frame new-frame
+;;       (which-key-mode 1)
+;;       (call-interactively 'which-key-show-top-level))))
+
+(defun hide-mode-line-in-dired-frame (frame)
+  "Hide the mode line in the 'emacs-run-dired' frame."
+  (when (string-equal (frame-parameter frame 'name) "emacs-run-dired")
+    (with-selected-frame frame
+      (setq-default mode-line-format nil))))
+
+(add-hook 'after-make-frame-functions 'hide-mode-line-in-dired-frame)
+
+(defun emacs-run-dired ()
+  "Create a new frame and open dired in it."
+  (interactive)
+  (let* ((original-frame (selected-frame))
+         (new-frame (make-frame '((name . "emacs-run-dired")
+                                  (width . 80)
+                                  (height . 24)
+                                  (minibuffer . t)
+                                  (undecorated . t)
+                                  (internal-border-width . 10)
+                                  (fullscreen . 0)))))
+    (select-frame-set-input-focus new-frame)
+    (with-selected-window (frame-selected-window new-frame)
+      (dired "~"))  ;; opens dired in your home directory, change "~" to any directory you prefer
+    (define-key dired-mode-map (kbd "<escape>") 'delete-frame)
+    (select-frame-set-input-focus original-frame)))
+
+;; i have no idea how to do this TODO
+;; (defun emacs-run-dired-minibuffer ()
+;;   "Create a new frame with a minibuffer and open dired in the frame's buffer."
+;;   (interactive)
+;;   (let* ((dired-directory (read-directory-name "Dired (directory): " "~"))
+;;          (new-frame (make-frame '((name . "emacs-run-dired")
+;;                                   (width . 80)
+;;                                   (height . 24)
+;;                                   (minibuffer . t)
+;;                                   (undecorated . t)
+;;                                   (internal-border-width . 10)
+;;                                   (fullscreen . 0)))))
+;;     (select-frame-set-input-focus new-frame)
+;;     (with-selected-window (frame-selected-window new-frame)
+;;       (dired dired-directory)  ;; opens dired in the specified directory
+;;       (define-key (current-local-map) (kbd "<escape>") 'delete-frame))))
+
+(defun hide-mode-line-in-frame (frame)
+  "Hide the mode line in the specified frames."
+  (when (string-match-p "^emacs-run-clone-client-frame" (frame-parameter frame 'name))
+    (with-selected-frame frame
+      (setq mode-line-format nil))))
+
+(add-hook 'after-make-frame-functions 'hide-mode-line-in-frame)
+
+(defun emacs-run-clone-client-frame ()
+  "Create a new frame and activate which-key-mode in it."
+  (interactive)
+  (let ((new-frame (make-frame '((name . "emacs-run-clone-client-frame")
+                                 (minibuffer . nil)
+                                 (fullscreen . 0)
+                                 (undecorated . t)
+                                 (internal-border-width . 10)
+                                 (width . 80)
+                                 (height . 11)))))
+    (with-selected-frame new-frame
+      (which-key-mode 1)
+      (minibuffer-keyboard-quit))))
+
+(defun emacs-run-clone-client-frame-bottom ()
+  "Create a new frame and activate which-key-mode in it."
+  (interactive)
+  (let ((new-frame (make-frame '((name . "emacs-run-clone-client-frame-bottom")
+                                 (minibuffer . nil)
+                                 (fullscreen . 0)
+                                 (undecorated . t)
+                                 (internal-border-width . 10)
+                                 (width . 80)
+                                 (height . 11)))))
+    (with-selected-frame new-frame
+      (which-key-mode 1)
+      (minibuffer-keyboard-quit))))
+
+(defun emacs-run-dmenu ()
+  "Create a new frame and run dmenu in it."
+  (interactive)
+  (with-selected-frame
+      (make-frame '((name . "emacs-run-dmenu")
+                    (minibuffer . only)
+                    (fullscreen . 0)
+                    (undecorated . t)
+                    (internal-border-width . 10)
+                    (width . 80)
+                    (height . 11)))
+    (unwind-protect
+        (call-interactively 'dmenu)
+      (delete-frame))))
+
+(defun laluxx/list-hooks ()
+  "List all hooks in a completing-read interface."
+  (interactive)
+  (let* ((hook-symbols (sort
+                        (seq-filter (lambda (sym)
+                                      (and (symbolp sym)
+                                           (string-suffix-p "-hook" (symbol-name sym))))
+                                    (append obarray nil))
+                        #'string-lessp))
+         (hooks (mapcar #'symbol-name hook-symbols))
+         (selected-hook (completing-read "Hooks: " hooks)))
+    (when selected-hook
+      (describe-variable (intern selected-hook)))))
+
+(defun format-selected-region ()
+  "Format the selected region to align the assignment operators."
+  (interactive)
+  (let* ((start (region-beginning))
+         (end (region-end))
+         (region-text (buffer-substring start end))
+         formatted-text max-length)
+    ;; Split the region into lines
+    (setq lines (split-string region-text "\n"))
+    ;; Calculate the maximum length of the variable names
+    (setq max-length (apply 'max (mapcar (lambda (line)
+                                           (length (car (split-string line "="))))
+                                         lines)))
+    ;; Construct the formatted text
+    (setq formatted-text 
+          (mapconcat (lambda (line)
+                       (if (string-match "\\(.*\\)=\\(.*\\)" line)
+                           (let ((var-name (match-string 1 line))
+                                 (rest (match-string 2 line)))
+                             (format "%s=%s" 
+                                     (concat var-name (make-string (- max-length (length var-name)) ? ))
+                                     rest))
+                         line))
+                     lines "\n"))
+    ;; Replace the region with the formatted text
+    (delete-region start end)
+    (goto-char start)
+    (insert formatted-text)))
+
+(defun laluxx/stringify-selection (start end)
+  "Put a double quote at the start and end of each line in the selection."
+  (interactive "r") ; This line makes the function callable with a region selected
+  (save-excursion ; Preserve the point's original position
+    (goto-char start) ; Move to the start of the region
+    (while (< (point) end) ; Loop until the end of the region
+      (beginning-of-line) ; Move to the beginning of the line
+      (insert "\"") ; Insert a quote at the beginning of the line
+      (end-of-line) ; Move to the end of the line
+      (insert "\"") ; Insert a quote at the end of the line
+      (forward-line 1) ; Move to the next line
+      (setq end (+ end 2))))) ; Adjust the end position for the inserted characters
+
+(defun laluxx/kill-comments-in-region (start end)
+  "Remove C-style comments in the selected region."
+  (interactive "r")
+  (save-excursion
+    (let ((region-end (copy-marker end)))
+      (goto-char start)
+      (while (re-search-forward "/\\*\\(.*?\\)\\*/\\|//.*" region-end t)
+        (replace-match "")))))
+
+(defun laluxx/kill-strings-in-region (start end)
+  "Kill texts inside double quotes in the specified region."
+  (interactive "r")
+  (save-excursion
+    (goto-char start)
+    (while (re-search-forward "\"\\([^\"]*\\)\"" end t)
+      (replace-match "\"\"" nil nil))))
+
+(defun laluxx/frame-region ()
+  (interactive)
+  (let ((original-buffer (current-buffer)))
+    (if (use-region-p)
+        (let* ((text (buffer-substring-no-properties (region-beginning) (region-end)))
+               (buf (generate-new-buffer "*Selection*")))
+          (with-current-buffer buf
+            (insert text)
+            ;; Remove "//" comments
+            (goto-char (point-min))
+            (while (search-forward "//" nil t)
+              (replace-match ""))
+            ;; Apply font-lock-comment-face to all text
+            (put-text-property (point-min) (point-max) 'face 'font-lock-comment-face)
+            (text-scale-increase 1))
+          (display-buffer buf '(display-buffer-below-selected))
+          (when (fboundp 'edwina-refresh)
+            (edwina-refresh))
+          (switch-to-buffer original-buffer))
+      (message "No region selected"))))
+
+(defun capitalize-all-begin-src ()
+  "Capitalize all occurrences of '#+BEGIN_SRC' in the current buffer."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (search-forward "#+BEGIN_SRC" nil t)
+      (replace-match "#+BEGIN_SRC" t t))))
+
+(defun ff ()
+  "Open a file using the default Emacs method, without using Ivy for completion."
+  (interactive)
+  (let ((ivy-enabled ivy-mode))
+    ;; Disable Ivy if it's currently enabled
+    (when ivy-enabled
+      (ivy-mode -1))
+    ;; Call the standard find-file function
+    (call-interactively 'find-file)
+    ;; Re-enable Ivy if it was originally enabled
+    (when ivy-enabled
+      (ivy-mode 1))))
+
+
+(global-set-key (kbd "C-x C-f") 'ff)
+
 (defun laluxx/kill-current-buffer-and-window ()
   "Kill the current buffer and close the window if there are other windows in the frame."
   (interactive)
@@ -1512,10 +2348,6 @@ However, don't toggle if which-key is currently displayed."
     (ivy-read "Choose a font: " (nreverse formatted-fonts)
               :action (lambda (selection)
                         (message "You selected: %s" selection)))))
-
-
-
-
 
 
 (defun laluxx/counsel-recentf-split ()
@@ -1617,10 +2449,10 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
 (add-hook 'after-init-hook (lambda () (global-set-key (kbd "M-SPC") 'laluxx/window-single-toggle)))
 
 (defun laluxx/org-move-to-begin-src ()
-  "Move cursor to the line below #+begin_src."
+  "Move cursor to the line below #+BEGIN_SRC."
   (interactive)
   (let ((original-pos (point)))
-    (search-backward "#+begin_src")
+    (search-backward "#+BEGIN_SRC")
     (forward-line 1)
     (when (and (evil-visual-state-p) (evil-visual-line))
       (evil-visual-select original-pos (point) 'line))))
@@ -1648,7 +2480,8 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
   '(doom-one-light doom-tomorrow-day doom-flatwhite doom-homage-white doom-plain whiteboard tsdh-light tango modus-operandi
 		   leuven adwaita dichromacy  doom-bluloco-light doom-acario-light doom-ayu-light doom-feather-light doom-gruvbox-light
 		   doom-nord-light doom-oksolar-light doom-opera-light doom-solarized-light doom-earl-grey ef-cyprus ef-day ef-deuteranopia-light
-		   ef-duo-light ef-elea-light ef-frost ef-kassio ef-light ef-maris-light ef-melissa-light ef-spring ef-summer ef-trio-light ef-tritanopia-light)
+		   ef-duo-light ef-elea-light ef-frost ef-kassio ef-light ef-maris-light ef-melissa-light ef-spring ef-summer ef-trio-light ef-tritanopia-light, kaolin-breeze, kaolin-light,
+           kaolin-mono-light, kaolin-valley-light, moe-light)
   "List of light themes.")
 
 (defvar laluxx/ugly-themes
