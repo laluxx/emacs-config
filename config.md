@@ -1,3 +1,169 @@
+- [Sourcing the scripts](#org045a174)
+- [DOOM](#orgebc0892)
+  - [Start](#orgdc265eb)
+  - [UI](#orgee2c7cc)
+  - [Editor](#orga774d29)
+- [CONFIG](#orgb13002a)
+  - [Disable GNU message](#org2bd9852)
+  - [All-the-icons-completion](#org6edf4c8)
+  - [All the icons](#org618e476)
+  - [BACKUP](#orgaefde8f)
+  - [DIMINISH](#orgaae6002)
+  - [DIRED](#org32dd021)
+  - [EVIL MODE](#orge38e7ee)
+    - [Conf](#orgcd401e3)
+    - [Normal](#orgcca4549)
+    - [Insert](#org63fdf35)
+    - [Visual](#org80c8185)
+  - [FLYCHECK](#org9708d08)
+  - [FONTS](#org3ea89b5)
+  - [GIT PROGRAMS](#orgc452584)
+    - [Git Time Machine](#orgd639bf7)
+    - [Magit](#org36552ea)
+  - [NEOTREE](#orge6a5a1c)
+  - [PROJECTILE](#org7147cda)
+  - [SANE DEFAULTS](#org2c12b28)
+  - [SUDO EDIT](#org5a9e091)
+- [Completion](#org60c0851)
+  - [Consult](#orgd37cb86)
+  - [Corfu TODO](#orgf26e77a)
+  - [Company rewrite](#org39ed509)
+  - [Company](#org6fd39a4)
+  - [Vertico](#org74ea9de)
+  - [Ivy](#org0c26ce1)
+- [Melpa](#orgad6280a)
+- [New config](#org4a26621)
+  - [Markdown](#org824352e)
+  - [Yascroll](#orgb492429)
+  - [Anzu](#orga10c3bb)
+  - [Drag stuff](#org358a2ee)
+  - [Snipe](#org1adbc58)
+  - [Devdocs](#orga5362bd)
+  - [Keycast](#org024f95e)
+  - [Pdf-tools](#org32f0b3d)
+  - [Treesitter](#org8efa50d)
+  - [Eyebrows](#org1c2f790)
+  - [Helpful](#orgb5d320e)
+  - [Iedit](#org19a9af6)
+  - [Olivetti](#org0d17c3f)
+  - [Woman](#org9aeba9f)
+  - [Deadgrep](#org654cad9)
+  - [Eshell](#org73fae22)
+  - [Vterm](#org77cd81c)
+  - [Garbage collector](#org5d8fbe0)
+  - [Solaire-mode](#orgf66f4e5)
+  - [Vundo](#org4f6c26e)
+  - [Undo-tree](#org608b802)
+  - [Amx](#orgb5ba303)
+  - [Remap](#org56982df)
+  - [Treemacs](#org122f366)
+  - [Lsp](#orgef286fb)
+  - [Dashboard](#org3939dba)
+  - [Which-key](#orgef055e7)
+  - [Edwina](#orge6f0b04)
+- [ORG Mode](#org2774970)
+  - [Config](#org95614eb)
+  - [Org present](#org7c64e2f)
+  - [Bullets](#org3348271)
+  - [Babel](#org0622580)
+  - [Tempo](#org088c488)
+  - [Evil org](#orgb6d949e)
+- [Language Support](#orgfa86954)
+  - [Yaml](#org7d1a2eb)
+  - [C](#org5281ca2)
+  - [Ada](#orgb7f082a)
+  - [Zig](#orgc0b18d9)
+  - [Ocaml](#orgfe50d31)
+  - [Gleam](#org5db1692)
+  - [Lua](#org1b78b0b)
+  - [Haskell](#org2d4dd3f)
+  - [Tree](#org10af724)
+  - [Rust](#orgea50da6)
+  - [Ruby](#org10a9a61)
+- [Look and feel](#org2f63799)
+  - [Kind-icons](#orgefccea6)
+  - [prettify-symbols](#orgf8ddfc6)
+    - [Org](#orgd65f8c5)
+    - [Prog-mode](#org036b657)
+  - [Faces](#org9eb4ae4)
+  - [Posframe](#org0707caf)
+  - [Cursor](#org1fa29a1)
+  - [Scrolling](#org500106b)
+    - [Mouse](#org7c7cb94)
+    - [Cursor](#org66c473a)
+  - [Double buffering](#orgc0f3374)
+  - [Theme](#org541e1e6)
+    - [MyThemes](#org1a7f100)
+    - [Catpuccin](#org3e7bed0)
+    - [Kaolin](#org9ec9306)
+    - [Moe](#orgca94a26)
+    - [DOOM](#org7fcaf93)
+    - [Ewal theme](#org22ce26b)
+    - [Theme magic](#org9e54175)
+    - [Ef](#org57b977c)
+  - [Trasparency](#orgfc42294)
+  - [Modeline](#org52b33de)
+  - [Highlight Todo](#orgba9507c)
+  - [Rainbow delimiters](#org4152b05)
+  - [Rainbow mode](#orgf7c8d2c)
+- [General keybindings](#org4b97c40)
+- [Modeline](#org0a6fce0)
+- [Functions](#orgdfeb122)
+  - [Markdown](#orgeef5bff)
+  - [Eval](#org29a3988)
+    - [Paste and eval](#orgee20442)
+  - [Smart hungry delete](#org94b7ba9)
+  - [Scratch buffer](#org36802e1)
+  - [Find package source code](#orge393e16)
+  - [Arch](#org00c2f7e)
+  - [Info mode](#org078a6fd)
+  - [Emacs-run](#org379c967)
+    - [Run-launcher](#org979d2bb)
+    - [wal-set](#orgae2cbf4)
+    - [M-X](#org108fd2e)
+    - [Info](#orgf51350e)
+    - [Which-key](#org7cc79c2)
+    - [Dired](#orgbda23a6)
+    - [Dired minubuffer](#org39a0b3c)
+    - [Clone-client-frame](#orga73431c)
+  - [List Hooks](#org9b1f591)
+  - [Region](#org3a13258)
+  - [Random stuff](#org7d26e18)
+  - [Disable ivy](#org2dc43b1)
+  - [Buffer](#orga5cc59f)
+  - [Modeline](#org9ccc7c6)
+  - [Deadgrep](#org29017c5)
+  - [Iedit](#org48f8bb7)
+  - [Counsel](#org2715b38)
+  - [Dired](#orge61ab2b)
+  - [Toggle hl-line](#orgb218407)
+  - [Cycle line numbers](#orge24e9bc)
+  - [Prot](#org58bab38)
+    - [Mark word](#org7d12562)
+    - [Monocle](#org9a8de31)
+  - [Org jump](#orgdb3be48)
+  - [Theme](#orgb22e2b5)
+    - [Cursor](#org5a74913)
+  - [Diff](#org909045f)
+  - [Find header](#org32e973f)
+  - [File jump](#orgcb695d9)
+  - [Wal-Set](#orgd075582)
+    - [Default](#orgc8be69c)
+    - [Animated](#org672c0ee)
+    - [Favourite](#org51ccda4)
+    - [solid](#orgff62210)
+    - [Set-wallpaper](#org0fc4685)
+    - [set-animated-wallpaper](#orgc19b731)
+  - [Wal-watcher](#org6999eb9)
+
+TODO C-a to appen at the end of the paragraph. TODO shift+0 to go at the beginning of the paragraph. TODO open markdown files already rendered (keybind to edit them as text). TODO Toggle emacs scrolling function. TODO copy buffer function, TODO disable line number when entering messages buffer. TODO uncomment then eval region. TODO enable flyspell in org buffer even tho its annoying, maybe add some words that he skip checking. TODO make eval region (SPC e r) move the point back like yanking does TODO DOOM MODELINE TODO Preattify org (bold, etc.. also when you close and heading that contain a src block) TODO enable and configure flymake TODO Dired (g to redisplay in normal mode) TODO Custom mouse cursor in emacs TODO M-n M-p M-b M-f to drag stuff TODO M-tab doesn't work in eshell for some reason TODO Consult gotoline when the first character in evil command mode is a number TODO add export dispatcher to the list of fake buffers for solaire
+
+
+<a id="org045a174"></a>
+
+# Sourcing the scripts
+
+```emacs-lisp
 (defvar pulse-cursor nil
   "Determine if the cursor should pulse.")
 
@@ -6,8 +172,21 @@
 (require 'elpaca-setup)    ;; The Elpaca Package Manager
 ;; (require 'app-launchers)   ;; Use emacs as a run launcher like dmenu (experimental)
 (if pulse-cursor
-(require 'pulsing-cursor)) ;; Pulse a cursor
+(require 'pulsing-cursor)) ;; Pulse a cursor 
 
+```
+
+
+<a id="orgebc0892"></a>
+
+# DOOM
+
+
+<a id="orgdc265eb"></a>
+
+## Start
+
+```emacs-lisp
 ;;; Reasonable defaults for interactive sessions
 
 ;;; Runtime optimizations
@@ -65,7 +244,14 @@
 ;; Contrary to what many Emacs users have in their configs, you don't need more
 ;; than this to make UTF-8 the default coding system:
 (set-language-environment "UTF-8")
+```
 
+
+<a id="orgee2c7cc"></a>
+
+## UI
+
+```emacs-lisp
 ;; Don't prompt for confirmation when we create a new file or buffer (assume the
 ;; user knows what they're doing).
 (setq confirm-nonexistent-file-or-buffer nil)
@@ -84,7 +270,14 @@
 
 ;; Explicitly define a width to reduce the cost of on-the-fly computation
 (setq-default display-line-numbers-width 3)
+```
 
+
+<a id="orga774d29"></a>
+
+## Editor
+
+```emacs-lisp
 ;; Resolve symlinks when opening files, so that any operations are conducted
 ;; from the file's true directory (like `find-file').
 (setq find-file-visit-truename t
@@ -182,7 +375,19 @@ tell you about it. Very annoying. This prevents that."
 
 
 (global-auto-revert-mode t) ;; Automatically show changes if the file has changed
+```
 
+
+<a id="orgb13002a"></a>
+
+# CONFIG
+
+
+<a id="org2bd9852"></a>
+
+## Disable GNU message
+
+```emacs-lisp
 (defun display-startup-echo-area-message ()
   (message ""))
 
@@ -194,6 +399,15 @@ tell you about it. Very annoying. This prevents that."
                     "Have a productive Emacs session!")))
     (message "%s" (nth (random (length messages)) messages))))
 
+
+```
+
+
+<a id="org6edf4c8"></a>
+
+## All-the-icons-completion
+
+```emacs-lisp
 (use-package all-the-icons-completion
   :ensure t
   :init
@@ -211,7 +425,16 @@ tell you about it. Very annoying. This prevents that."
     (setq mode-line-format nil)))
 
 (add-hook 'completion-list-mode-hook 'my/customize-completion-buffer-appearance)
+```
 
+
+<a id="org618e476"></a>
+
+## All the icons
+
+This is an icon set that can be used with dashboard, dired, ibuffer and other Emacs programs.
+
+```emacs-lisp
 (use-package all-the-icons
   :ensure t
   :if (display-graphic-p))
@@ -220,10 +443,36 @@ tell you about it. Very annoying. This prevents that."
 (use-package all-the-icons-ibuffer
   :after all-the-icons
   :hook (ibuffer-mode . (lambda () (all-the-icons-ibuffer-mode 1))))
+```
 
+
+<a id="orgaefde8f"></a>
+
+## BACKUP
+
+By default, Emacs creates automatic backups of files in their original directories, such "file.el" and the backup "file.el~". This leads to a lot of clutter. so let's tell Emacs to put all backups that it creates in the `TRASH` directory.
+
+```emacs-lisp
 ;; (setq backup-directory-alist '((".*" . "~/.local/share/Trash/files")))
+```
 
+
+<a id="orgaae6002"></a>
+
+## DIMINISH
+
+Add ':diminish' to any use-package block to hide that particular mode in the modeline.
+
+```emacs-lisp
 (use-package diminish)
+```
+
+
+<a id="org32dd021"></a>
+
+## DIRED
+
+```emacs-lisp
 
 (use-package all-the-icons-dired
   :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
@@ -269,6 +518,23 @@ tell you about it. Very annoying. This prevents that."
                       :foreground "#303244"  ;; Slightly lighter/darker than the background
                       :weight 'normal))
 
+
+
+```
+
+
+<a id="orge38e7ee"></a>
+
+## EVIL MODE
+
+
+<a id="orgcd401e3"></a>
+
+### Conf
+
+[Evil](https://github.com/emacs-evil/evil) the extensible vi layer for Emacs.
+
+```emacs-lisp
 (use-package evil
   :init
   (setq evil-want-integration t
@@ -300,7 +566,7 @@ tell you about it. Very annoying. This prevents that."
   (define-key evil-motion-state-map (kbd "RET") nil)
   (define-key evil-motion-state-map (kbd "TAB") nil))
 ;; Setting RETURN key in org-mode to follow links
-(setq org-return-follows-link  t)
+  (setq org-return-follows-link  t)
 
 (use-package evil-commentary
   :ensure t
@@ -308,10 +574,6 @@ tell you about it. Very annoying. This prevents that."
   :config
   (evil-commentary-mode))
 
-(use-package evil-surround
-  :ensure t
-  :config
-  (global-evil-surround-mode 1))
 
 ;; (use-package evil-goggles
 ;;   :ensure t)
@@ -325,19 +587,31 @@ tell you about it. Very annoying. This prevents that."
       evil-visual-state-message nil
       evil-motion-state-message t)
 
+
+```
+
+
+<a id="orgcca4549"></a>
+
+### Normal
+
+```emacs-lisp
 (keyboard-translate ?\C-i ?\H-i)
 
 (with-eval-after-load 'evil
   (define-key evil-normal-state-map (kbd "C-8") 'swiper-isearch-thing-at-point)
   (define-key evil-normal-state-map (kbd "C-s") 'consult-line)
   (define-key evil-normal-state-map (kbd "g r") 'deadgrep)
-  (define-key evil-normal-state-map (kbd "M-o") 'open-line)
   (define-key evil-normal-state-map (kbd "DEL") 'laluxx/smart-hungry-delete-backward)
   (define-key evil-normal-state-map (kbd "H-i") 'laluxx/iedit-insert))
+```
 
-;; (with-eval-after-load 'evil
-;;   (evil-define-key 'normal global-map (kbd "c s") 'laluxx/evil-change-inside-string))
 
+<a id="org63fdf35"></a>
+
+### Insert
+
+```emacs-lisp
 (with-eval-after-load 'evil
   (define-key evil-insert-state-map [escape] 'laluxx/escape-and-quit-iedit)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-backward-char)
@@ -346,23 +620,46 @@ tell you about it. Very annoying. This prevents that."
   (define-key evil-insert-state-map (kbd "C-l") 'forward-char)
   (define-key evil-insert-state-map (kbd "C-v") 'yank)
   (define-key evil-insert-state-map (kbd "C-s") 'save-buffer)
-  ;; (define-key evil-insert-state-map (kbd "C-c") 'kill-ring-save)
-  ;; (define-key evil-insert-state-map (kbd "C-x") 'kill-region)
+  (define-key evil-insert-state-map (kbd "C-c") 'kill-ring-save)
+  (define-key evil-insert-state-map (kbd "C-x") 'kill-region)
   (define-key evil-insert-state-map (kbd "C-z") 'undo)
-  (define-key evil-insert-state-map (kbd "M-o") 'open-line)
-  ;; (define-key evil-insert-state-map (kbd "C-a") 'mark-page)
+  (define-key evil-insert-state-map (kbd "C-a") 'mark-page)
   (define-key evil-insert-state-map (kbd "C-y") 'undo-redo))
+```
 
+
+<a id="org80c8185"></a>
+
+### Visual
+
+```emacs-lisp
 (with-eval-after-load 'evil
-  (define-key evil-visual-state-map (kbd "|") 'shell-command-on-region)
-  (define-key evil-visual-state-map (kbd "e") 'eval-region))
+  (define-key evil-visual-state-map (kbd "|") 'shell-command-on-region))
+```
 
+
+<a id="org9708d08"></a>
+
+## FLYCHECK
+
+`luacheck` for lua. `python-pylint` for python. Haskell works with flycheck as long as `haskell-ghc` or `haskell-stack-ghc` is installed. For more information on language support for flycheck, [read this](https://www.flycheck.org/en/latest/languages.html).
+
+```emacs-lisp
 (use-package flycheck
   :ensure t
   :defer t
   :diminish
   :init (global-flycheck-mode))
+```
 
+
+<a id="org3ea89b5"></a>
+
+## FONTS
+
+Defining the various fonts used by Emacs.
+
+```emacs-lisp
 (set-face-attribute 'default nil
   :font "JetBrains Mono NL Nerd Font"
   :height 110
@@ -381,21 +678,47 @@ tell you about it. Very annoying. This prevents that."
 
 ;; (setq-default line-spacing 0.12)
 (setq-default line-spacing 0.0)
+```
 
+Setting keybinds to zoom in and out
+
+```emacs-lisp
 (global-set-key (kbd "C-=") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
+```
 
+MINIBUFFER FONTS
+
+```emacs-lisp
 (custom-set-faces
   '(minibuffer-prompt ((t (:family "JetBrains Mono NL ExtraBold" :height 120)))))
+```
 
+adding a function to minibuffer-setup-hook, which Emacs runs every time the minibuffer is entered
+
+```emacs-lisp
 (defun set-minibuffer-font ()
   "Set the font for the minibuffer."
   (face-remap-add-relative 'default '(:family "JetBrains Mono NF ExtraBold" :height 100)))
 
 ;; (add-hook 'minibuffer-setup-hook 'set-minibuffer-font) ;; Disabled the hook
+```
 
+
+<a id="orgc452584"></a>
+
+## GIT PROGRAMS
+
+
+<a id="orgd639bf7"></a>
+
+### Git Time Machine
+
+[git-timemachine](https://github.com/emacsmirror/git-timemachine) is a program that allows you to move backwards and forwards through a file's commits. 'SPC g t' will open the time machine on a file if it is in a git repo. Then, while in normal mode, 'CTRL-j' and 'CTRL-k' to move backwards and forwards through the commits.
+
+```emacs-lisp
 (use-package git-timemachine
   :after git-timemachine
   :hook (evil-normalize-keymaps . git-timemachine-hook)
@@ -403,13 +726,29 @@ tell you about it. Very annoying. This prevents that."
     (evil-define-key 'normal git-timemachine-mode-map (kbd "C-j") 'git-timemachine-show-previous-revision)
     (evil-define-key 'normal git-timemachine-mode-map (kbd "C-k") 'git-timemachine-show-next-revision)
 )
+```
 
+
+<a id="org36552ea"></a>
+
+### Magit
+
+[Magit](https://magit.vc/manual/) is a full-featured git client for Emacs.
+
+```emacs-lisp
 (use-package magit)
 
 (use-package magit-todos
   :after magit
   :config (magit-todos-mode 1))
+```
 
+
+<a id="orge6a5a1c"></a>
+
+## NEOTREE
+
+```emacs-lisp
 (use-package neotree
   :config
   (setq neo-smart-open t
@@ -427,10 +766,27 @@ tell you about it. Very annoying. This prevents that."
                  (make-local-variable 'auto-hscroll-mode)
                  (setq auto-hscroll-mode nil)))))
 
+```
+
+
+<a id="org7147cda"></a>
+
+## PROJECTILE
+
+[Projectile](https://github.com/bbatsov/projectile) is a project interaction library for Emacs.
+
+```emacs-lisp
 (use-package projectile
   :config
   (projectile-mode 1))
+```
 
+
+<a id="org2c12b28"></a>
+
+## SANE DEFAULTS
+
+```emacs-lisp
 (delete-selection-mode 1)
 (electric-indent-mode -1)
 (electric-pair-mode 1)       ;; Turns on automatic parens pairing
@@ -452,15 +808,44 @@ tell you about it. Very annoying. This prevents that."
 (setq use-dialog-box nil)
 (setq use-short-answers t)
 (global-set-key [escape] 'keyboard-escape-quit)
+```
 
+
+<a id="org5a9e091"></a>
+
+## SUDO EDIT
+
+[sudo-edit](https://github.com/nflath/sudo-edit) gives us the ability to open files with sudo privileges or switch over to editing with sudo privileges if we initially opened the file without such privileges.
+
+```emacs-lisp
 (use-package sudo-edit)
+```
 
+
+<a id="org60c0851"></a>
+
+# Completion
+
+
+<a id="orgd37cb86"></a>
+
+## Consult
+
+```emacs-lisp
 (use-package consult
   :ensure t)
 
 (use-package consult-projectile
   :ensure t)
 
+```
+
+
+<a id="orgf26e77a"></a>
+
+## Corfu TODO
+
+```emacs-lisp
 ;; (use-package corfu
 ;;   :ensure t
 ;;   :custom
@@ -468,10 +853,24 @@ tell you about it. Very annoying. This prevents that."
 ;;   (corfu-auto t)              ;; Enable auto popup.
 ;;   :init
 ;;   (global-corfu-mode 1))      ;; Enable Corfu globally.
+```
 
+
+<a id="org39ed509"></a>
+
+## Company rewrite
+
+```emacs-lisp
 (use-package company
   :ensure t)
+```
 
+
+<a id="org6fd39a4"></a>
+
+## Company
+
+```emacs-lisp
 ;; (use-package company
 ;;   :defer 2
 ;;   :diminish
@@ -545,7 +944,14 @@ tell you about it. Very annoying. This prevents that."
 ;;   )
 
 ;; ;; Additional customization or packages can be added in a similar fashion
+```
 
+
+<a id="org74ea9de"></a>
+
+## Vertico
+
+```emacs-lisp
 ;; ;; Enable vertico
 ;; (use-package vertico
 ;;   :init
@@ -581,17 +987,25 @@ tell you about it. Very annoying. This prevents that."
 ;;         completion-category-defaults nil
 ;;         completion-category-overrides '((file (styles partial-completion)))))
 
+```
+
+
+<a id="org0c26ce1"></a>
+
+## Ivy
+
+```emacs-lisp
 ;; thanks DOOM
 (defun +ivy-format-function-line-or-arrow (cands)
   "Transform CANDS into a string for minibuffer.
 Uses an arrow in terminal and standard formatting in a GUI."
   (if (display-graphic-p)
-  (ivy-format-function-line cands)  ; GUI Emacs
+      (ivy-format-function-line cands)  ; GUI Emacs
     (ivy--format-function-generic
      (lambda (str)
-   (ivy--add-face (concat " " str "\n") 'ivy-current-match))  ; Selected candidate
+       (ivy--add-face (concat " " str "\n") 'ivy-current-match))  ; Selected candidate
      (lambda (str)
-   (concat "  " str "\n"))  ; Other candidates
+       (concat "  " str "\n"))  ; Other candidates
      cands
      "")))
 
@@ -610,7 +1024,7 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (setq ivy-format-functions-alist '((t . +ivy-format-function-line-or-arrow)))
 
   (setq ivy-sort-functions-alist
-	'((t . ivy--prefix-sort-recentf))) ;; prioritize recent items
+        '((t . ivy--prefix-sort-recentf))) ;; prioritize recent items
   (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
   (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)
   (define-key ivy-minibuffer-map (kbd "<up>") 'ivy-previous-line-or-history)
@@ -618,25 +1032,25 @@ Uses an arrow in terminal and standard formatting in a GUI."
 
 
 
- (use-package counsel
-   :ensure t
-   ;; :after ivy
-   :config 
-   (counsel-mode 1)
+(use-package counsel
+  :ensure t
+  ;; :after ivy
+  :config 
+  (counsel-mode 1)
 
-   ;; Integrate `helpful` with `counsel`
-   (setq counsel-describe-function-function #'helpful-callable)
-   (setq counsel-describe-variable-function #'helpful-variable)
+  ;; Integrate `helpful` with `counsel`
+  (setq counsel-describe-function-function #'helpful-callable)
+  (setq counsel-describe-variable-function #'helpful-variable)
 
 
-   (define-key counsel-mode-map [remap find-file] nil)
-   (setq ivy-initial-inputs-alist nil)) ;; removes starting ^ regex in M-x
+  (define-key counsel-mode-map [remap find-file] nil)
+  (setq ivy-initial-inputs-alist nil)) ;; removes starting ^ regex in M-x
 
- (use-package ivy-rich
-   :ensure t
-    :after ivy
-   :config
-   (ivy-rich-mode 1))
+(use-package ivy-rich
+  :ensure t
+  ;; :after ivy
+  :config
+  (ivy-rich-mode 1))
 
 (use-package all-the-icons-ivy-rich
   :ensure t
@@ -644,45 +1058,61 @@ Uses an arrow in terminal and standard formatting in a GUI."
   :config
   (all-the-icons-ivy-rich-mode 1))
 
+
+
+
+(defun laluxx/ivy-rich-header-icon (_candidate)
+  "Force the icon to always represent a .h file."
+  (all-the-icons-icon-for-file "dummy.h"))
+
+(defun laluxx/setup-ivy-rich-header-icon ()
+  (setq ivy-rich-display-transformers-list
+        (plist-put ivy-rich-display-transformers-list
+                   'laluxx/find-header
+                   '(:columns
+                     ((laluxx/ivy-rich-header-icon :width 2)
+                      (identity (:width 0.3 :face default)))))))
+
+(with-eval-after-load 'ivy-rich
+  (laluxx/setup-ivy-rich-header-icon))
+
+(defun laluxx/find-header ()
+  "Search for headers and open in a new window."
+  (interactive)
+  (let* ((cmd "rg --files /usr/include --follow --hidden -g \"*.h\"")
+         (headers (split-string (shell-command-to-string cmd) "\n" t)))
+    (ivy-read "Choose header: " headers
+              :action (lambda (x) (find-file-other-window x))
+              :caller 'laluxx/find-header)))
+```
+
+
+<a id="orgad6280a"></a>
+
+# Melpa
+
+```emacs-lisp
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
 ;; and `package-pinned-packages`. Most users will not need or want to do this.
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
+```
 
-;; (use-package sideframe
-;;   :ensure t)
 
-(use-package svg-tag-mode
-  :ensure t  ; Aukomatically install the package if not already installed
-  :config
-  (setq svg-tag-tags
-        '(
-          (":TODO:" . ((lambda (tag) (svg-tag-make "TODO"
-                                                   :inverse t))))
+<a id="org4a26621"></a>
 
-          (":HELLO:" . ((lambda (tag) (svg-tag-make "HELLO"))
-                        (lambda () (interactive) (message "Hello world!"))
-                        "Print a greeting message"))
+# New config
 
-          ("\\(:[A-Z]+:\\)" . ((lambda (tag)
-                                 (svg-tag-make tag :beg 1 :end -1))))
-          ("\\(:[A-Z]+\\)\|[a-zA-Z#0-9]+:" . ((lambda (tag)
-                                                (svg-tag-make tag :beg 1 :inverse t
-                                                              :margin 0 :crop-right t))))
-          (":[A-Z]+\\(\|[a-zA-Z#0-9]+:\\)" . ((lambda (tag)
-                                                (svg-tag-make tag :beg 1 :end -1
-                                                              :margin 0 :crop-left t))))
-          ("\\(:#[A-Za-z0-9]+\\)" . ((lambda (tag)
-                                       (svg-tag-make tag :beg 2))))
-          ("\\(:#[A-Za-z0-9]+:\\)$" . ((lambda (tag)
-                                         (svg-tag-make tag :beg 2 :end -1))))
 
-        )
-))
+<a id="org824352e"></a>
 
+## Markdown
+
+```emacs-lisp
 ;; (require 'ox-md)
+
 
 (use-package ox-gfm
   :ensure t
@@ -690,9 +1120,29 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (eval-after-load "org"
     '(require 'ox-gfm nil t)))
 
+
+
+
+```
+
+
+<a id="orgb492429"></a>
+
+## Yascroll
+
+Yet anoter scroll bar
+
+```emacs-lisp
 (use-package yascroll
   :ensure t)
+```
 
+
+<a id="orga10c3bb"></a>
+
+## Anzu
+
+```emacs-lisp
 (use-package anzu
   :ensure t
   :config
@@ -702,22 +1152,50 @@ Uses an arrow in terminal and standard formatting in a GUI."
 
 (use-package evil-anzu
   :ensure t)
+```
 
+
+<a id="org358a2ee"></a>
+
+## Drag stuff
+
+```emacs-lisp
 (use-package drag-stuff
   :ensure t
   :config
   (drag-stuff-global-mode 1)
   (drag-stuff-define-keys))
+```
 
+
+<a id="org1adbc58"></a>
+
+## Snipe
+
+```emacs-lisp
 (use-package evil-snipe
   :ensure t
   :config
   (evil-snipe-mode 1)
   (evil-snipe-override-mode 1))
+```
 
+
+<a id="orga5362bd"></a>
+
+## Devdocs
+
+```emacs-lisp
 (use-package devdocs
   :ensure t)
+```
 
+
+<a id="org024f95e"></a>
+
+## Keycast
+
+```emacs-lisp
 (use-package keycast
   :config
   (define-minor-mode keycast-mode
@@ -728,6 +1206,14 @@ Uses an arrow in terminal and standard formatting in a GUI."
       (remove-hook 'pre-command-hook 'keycast--update)))
   (add-to-list 'global-mode-string '("" keycast-mode-line)))
 
+```
+
+
+<a id="org32f0b3d"></a>
+
+## Pdf-tools
+
+```emacs-lisp
 (use-package pdf-tools
   :ensure t
   :config
@@ -736,13 +1222,28 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (add-hook 'pdf-view-mode-hook (lambda ()
                                   (pdf-view-midnight-minor-mode 1)
                                   (display-line-numbers-mode -1))))
+```
 
+
+<a id="org8efa50d"></a>
+
+## Treesitter
+
+```emacs-lisp
 (use-package tree-sitter
   :ensure t)
 
 (use-package tree-sitter-langs
   :ensure t)
 
+```
+
+
+<a id="org1c2f790"></a>
+
+## Eyebrows
+
+```emacs-lisp
 (use-package eyebrowse
   :ensure t
   :config
@@ -759,6 +1260,14 @@ Uses an arrow in terminal and standard formatting in a GUI."
 (global-set-key (kbd "M-9") (lambda () (interactive) (eyebrowse-switch-to-window-config 9)))
 (global-set-key (kbd "M-TAB") 'eyebrowse-last-window-config)
 
+```
+
+
+<a id="orgb5d320e"></a>
+
+## Helpful
+
+```emacs-lisp
 (use-package helpful
   :ensure t
   :bind
@@ -779,16 +1288,39 @@ Uses an arrow in terminal and standard formatting in a GUI."
                           (olivetti-mode 1)
                           ;; Set olivetti width
                           (olivetti-set-width 70))))
+```
 
+
+<a id="org19a9af6"></a>
+
+## Iedit
+
+```emacs-lisp
 (use-package iedit
   :ensure t)
+```
 
+
+<a id="org0d17c3f"></a>
+
+## Olivetti
+
+```emacs-lisp
 (use-package olivetti
   :config
   ;; text width
   (setq olivetti-body-width 80)
 )
+```
 
+
+<a id="org9aeba9f"></a>
+
+## Woman
+
+TODO change faces
+
+```emacs-lisp
 (add-to-list 'display-buffer-alist
              '("\\*WoMan.*\\*" . (display-buffer-pop-up-window)))
 
@@ -796,7 +1328,14 @@ Uses an arrow in terminal and standard formatting in a GUI."
           (lambda ()
             (display-line-numbers-mode -1)
             (olivetti-mode 1)))
+```
 
+
+<a id="org654cad9"></a>
+
+## Deadgrep
+
+```emacs-lisp
 (use-package deadgrep
   :ensure t
   :config
@@ -818,7 +1357,14 @@ Uses an arrow in terminal and standard formatting in a GUI."
               (evil-define-key 'normal deadgrep-mode-map (kbd "n") 'deadgrep-forward-filename)
               (evil-define-key 'normal deadgrep-mode-map (kbd "N") 'deadgrep-backward-filename))))
 )
+```
 
+
+<a id="org73fae22"></a>
+
+## Eshell
+
+```emacs-lisp
 (with-no-warnings
   (defun eshell/clear ()
     "Clear the eshell buffer."
@@ -911,7 +1457,6 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (with-eval-after-load 'evil
     (evil-define-key 'insert eshell-mode-map (kbd "C-l") #'eshell/clear)
     (evil-define-key 'insert eshell-mode-map (kbd "C-j") #'eshell-send-input)
-    (define-key 'normal eshell-mode-map (kbd "M-TAB") 'eyebrowse-last-window-config)
     (evil-define-key 'normal eshell-mode-map (kbd "G") #'laluxx/eshell-end-of-buffer-and-insert)))
 
 (defun laluxx/eshell-end-of-buffer-and-insert ()
@@ -922,13 +1467,22 @@ Uses an arrow in terminal and standard formatting in a GUI."
 
 ;; HOOK
 (add-hook 'eshell-mode-hook 'eshell-setup)
+```
 
+
+<a id="org77cd81c"></a>
+
+## Vterm
+
+```emacs-lisp
 (use-package vterm
 :config
 (setq shell-file-name "/bin/sh"
       vterm-max-scrollback 5000)
 (add-hook 'vterm-mode-hook (lambda () (display-line-numbers-mode 0))))
+```
 
+```emacs-lisp
 (use-package vterm-toggle
   :after vterm
   :config
@@ -951,6 +1505,14 @@ Uses an arrow in terminal and standard formatting in a GUI."
                   (reusable-frames . visible)
                   (window-height . 0.4))))
 
+```
+
+
+<a id="org5d8fbe0"></a>
+
+## Garbage collector
+
+```emacs-lisp
 ;; Set a very high garbage collection threshold to reduce frequency of garbage collection
 (setq gc-cons-threshold (* 500 1024 1024))  ; 500MB
 
@@ -963,13 +1525,29 @@ Uses an arrow in terminal and standard formatting in a GUI."
   :config
   (setq gcmh-high-cons-threshold (* 500 1024 1024))  ; 500MB
   (gcmh-mode 1))
+```
 
+
+<a id="orgf66f4e5"></a>
+
+## Solaire-mode
+
+```emacs-lisp
 (use-package solaire-mode
   :ensure t
   :config
   (solaire-global-mode +1)
 )
+```
 
+
+<a id="org4f6c26e"></a>
+
+## Vundo
+
+TODO Make vundo darker with solaire
+
+```emacs-lisp
 (use-package vundo
   :if (> emacs-major-version 27)
   :defer t
@@ -982,7 +1560,14 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (add-hook 'vundo-mode-hook
             (lambda ()
               (display-line-numbers-mode -1))))
+```
 
+
+<a id="org608b802"></a>
+
+## Undo-tree
+
+```emacs-lisp
 (use-package undo-tree
   :ensure t
   :init
@@ -991,7 +1576,16 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (setq undo-tree-auto-save-history nil)
   ;; Additional undo-tree configurations can go here
 )
+```
 
+
+<a id="orgb5ba303"></a>
+
+## Amx
+
+The `amx` package enhances the minibuffer experience, by tracking the history of commands and ranking them automagically.
+
+```emacs-lisp
 (use-package amx
   :ensure t
   :after ivy
@@ -1002,126 +1596,147 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (amx-show-key-bindings nil)
   :config
   (amx-mode 1))
+```
 
+
+<a id="org56982df"></a>
+
+## Remap
+
+```emacs-lisp
 (define-key global-map [remap dired] 'counsel-dired)
 (global-set-key [remap describe-variable] 'counsel-describe-variable)
 (global-set-key [remap describe-function] 'counsel-describe-function)
+```
 
-(use-package treemacs
-  :ensure t
-  :defer t
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-  :config
-  (progn
-    (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
-          treemacs-deferred-git-apply-delay        0.5
-          treemacs-directory-name-transformer      #'identity
-          treemacs-display-in-side-window          t
-          treemacs-eldoc-display                   'simple
-          treemacs-file-event-delay                2000
-          treemacs-file-extension-regex            treemacs-last-period-regex-value
-          treemacs-file-follow-delay               0.2
-          treemacs-file-name-transformer           #'identity
-          treemacs-follow-after-init               t
-          treemacs-expand-after-init               t
-          treemacs-find-workspace-method           'find-for-file-or-pick-first
-          treemacs-git-command-pipe                ""
-          treemacs-goto-tag-strategy               'refetch-index
-          treemacs-header-scroll-indicators        '(nil . "^^^^^^")
-          treemacs-hide-dot-git-directory          t
-          treemacs-indentation                     2
-          treemacs-indentation-string              " "
-          treemacs-is-never-other-window           nil
-          treemacs-max-git-entries                 5000
-          treemacs-missing-project-action          'ask
-          treemacs-move-forward-on-expand          nil
-          treemacs-no-png-images                   nil
-          treemacs-no-delete-other-windows         t
-          treemacs-project-follow-cleanup          nil
-          treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-          treemacs-position                        'left
-          treemacs-read-string-input               'from-child-frame
-          treemacs-recenter-distance               0.1
-          treemacs-recenter-after-file-follow      nil
-          treemacs-recenter-after-tag-follow       nil
-          treemacs-recenter-after-project-jump     'always
-          treemacs-recenter-after-project-expand   'on-distance
-          treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
-          treemacs-project-follow-into-home        nil
-          treemacs-show-cursor                     t 
-          treemacs-show-hidden-files               t
-          treemacs-silent-filewatch                nil
-          treemacs-silent-refresh                  nil
-          treemacs-sorting                         'alphabetic-asc
-          treemacs-select-when-already-in-treemacs 'move-back
-          treemacs-space-between-root-nodes        t
-          treemacs-tag-follow-cleanup              t
-          treemacs-tag-follow-delay                1.5
-          treemacs-text-scale                      nil
-          treemacs-user-mode-line-format           nil
-          treemacs-user-header-line-format         nil
-          treemacs-wide-toggle-width               70
-          treemacs-width                           35
-          treemacs-width-increment                 1
-          treemacs-width-is-initially-locked       t
-          treemacs-workspace-switch-cleanup        nil)
 
-    ;; The default width and height of the icons is 22 pixels. If you are
-    ;; using a Hi-DPI display, uncomment this to double the icon size.
-    ;;(treemacs-resize-icons 44)
+<a id="org122f366"></a>
 
-    (treemacs-follow-mode t)
-    (treemacs-filewatch-mode t)
-    (treemacs-fringe-indicator-mode 'always)
-    (when treemacs-python-executable
-      (treemacs-git-commit-diff-mode t))
+## Treemacs
 
-    (pcase (cons (not (null (executable-find "git")))
-                 (not (null treemacs-python-executable)))
-      (`(t . t)
-       (treemacs-git-mode 'deferred))
-      (`(t . _)
-       (treemacs-git-mode 'simple)))
+```emacs-lisp
+;; (use-package treemacs
+;;   :ensure t
+;;   :defer t
+;;   :init
+;;   (with-eval-after-load 'winum
+;;     (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+;;   :config
+;;   (progn
+;;     (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
+;;           treemacs-deferred-git-apply-delay        0.5
+;;           treemacs-directory-name-transformer      #'identity
+;;           treemacs-display-in-side-window          t
+;;           treemacs-eldoc-display                   'simple
+;;           treemacs-file-event-delay                2000
+;;           treemacs-file-extension-regex            treemacs-last-period-regex-value
+;;           treemacs-file-follow-delay               0.2
+;;           treemacs-file-name-transformer           #'identity
+;;           treemacs-follow-after-init               t
+;;           treemacs-expand-after-init               t
+;;           treemacs-find-workspace-method           'find-for-file-or-pick-first
+;;           treemacs-git-command-pipe                ""
+;;           treemacs-goto-tag-strategy               'refetch-index
+;;           treemacs-header-scroll-indicators        '(nil . "^^^^^^")
+;;           treemacs-hide-dot-git-directory          t
+;;           treemacs-indentation                     2
+;;           treemacs-indentation-string              " "
+;;           treemacs-is-never-other-window           nil
+;;           treemacs-max-git-entries                 5000
+;;           treemacs-missing-project-action          'ask
+;;           treemacs-move-forward-on-expand          nil
+;;           treemacs-no-png-images                   nil
+;;           treemacs-no-delete-other-windows         t
+;;           treemacs-project-follow-cleanup          nil
+;;           treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+;;           treemacs-position                        'left
+;;           treemacs-read-string-input               'from-child-frame
+;;           treemacs-recenter-distance               0.1
+;;           treemacs-recenter-after-file-follow      nil
+;;           treemacs-recenter-after-tag-follow       nil
+;;           treemacs-recenter-after-project-jump     'always
+;;           treemacs-recenter-after-project-expand   'on-distance
+;;           treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
+;;           treemacs-project-follow-into-home        nil
+;;           treemacs-show-cursor                     t 
+;;           treemacs-show-hidden-files               t
+;;           treemacs-silent-filewatch                nil
+;;           treemacs-silent-refresh                  nil
+;;           treemacs-sorting                         'alphabetic-asc
+;;           treemacs-select-when-already-in-treemacs 'move-back
+;;           treemacs-space-between-root-nodes        t
+;;           treemacs-tag-follow-cleanup              t
+;;           treemacs-tag-follow-delay                1.5
+;;           treemacs-text-scale                      nil
+;;           treemacs-user-mode-line-format           nil
+;;           treemacs-user-header-line-format         nil
+;;           treemacs-wide-toggle-width               70
+;;           treemacs-width                           35
+;;           treemacs-width-increment                 1
+;;           treemacs-width-is-initially-locked       t
+;;           treemacs-workspace-switch-cleanup        nil)
 
-    (treemacs-hide-gitignored-files-mode nil))
-  :bind
-  (:map global-map
-        ("M-0"       . treemacs-select-window)
-        ("C-x t 1"   . treemacs-delete-other-windows)
-        ("C-x t t"   . treemacs)
-        ("C-x t d"   . treemacs-select-directory)
-        ("C-x t B"   . treemacs-bookmark)
-        ("C-x t C-t" . treemacs-find-file)
-        ("C-x t M-t" . treemacs-find-tag)))
+;;     ;; The default width and height of the icons is 22 pixels. If you are
+;;     ;; using a Hi-DPI display, uncomment this to double the icon size.
+;;     ;;(treemacs-resize-icons 44)
 
-(use-package treemacs-evil
-  :after (treemacs evil)
-  :ensure t)
+;;     (treemacs-follow-mode t)
+;;     (treemacs-filewatch-mode t)
+;;     (treemacs-fringe-indicator-mode 'always)
+;;     (when treemacs-python-executable
+;;       (treemacs-git-commit-diff-mode t))
 
-(use-package treemacs-projectile
-  :after (treemacs projectile)
-  :ensure t)
+;;     (pcase (cons (not (null (executable-find "git")))
+;;                  (not (null treemacs-python-executable)))
+;;       (`(t . t)
+;;        (treemacs-git-mode 'deferred))
+;;       (`(t . _)
+;;        (treemacs-git-mode 'simple)))
 
-(use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-enable-once)
-  :ensure t)
+;;     (treemacs-hide-gitignored-files-mode nil))
+;;   :bind
+;;   (:map global-map
+;;         ("M-0"       . treemacs-select-window)
+;;         ("C-x t 1"   . treemacs-delete-other-windows)
+;;         ("C-x t t"   . treemacs)
+;;         ("C-x t d"   . treemacs-select-directory)
+;;         ("C-x t B"   . treemacs-bookmark)
+;;         ("C-x t C-t" . treemacs-find-file)
+;;         ("C-x t M-t" . treemacs-find-tag)))
 
-(use-package treemacs-magit
-  :after (treemacs magit)
-  :ensure t)
+;; (use-package treemacs-evil
+;;   :after (treemacs evil)
+;;   :ensure t)
 
-(use-package treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
-  :after (treemacs persp-mode) ;;or perspective vs. persp-mode
-  :ensure t
-  :config (treemacs-set-scope-type 'Perspectives))
+;; (use-package treemacs-projectile
+;;   :after (treemacs projectile)
+;;   :ensure t)
 
-(use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
-  :after (treemacs)
-  :ensure t
-  :config (treemacs-set-scope-type 'Tabs))
+;; (use-package treemacs-icons-dired
+;;   :hook (dired-mode . treemacs-icons-dired-enable-once)
+;;   :ensure t)
 
+;; (use-package treemacs-magit
+;;   :after (treemacs magit)
+;;   :ensure t)
+
+;; (use-package treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
+;;   :after (treemacs persp-mode) ;;or perspective vs. persp-mode
+;;   :ensure t
+;;   :config (treemacs-set-scope-type 'Perspectives))
+
+;; (use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
+;;   :after (treemacs)
+;;   :ensure t
+;;   :config (treemacs-set-scope-type 'Tabs))
+```
+
+
+<a id="orgef286fb"></a>
+
+## Lsp
+
+```emacs-lisp
 ;; (setq package-selected-packages '(lsp-mode yasnippet lsp-treemacs
 ;;     projectile hydra flycheck company avy dap-mode))
 
@@ -1155,10 +1770,16 @@ Uses an arrow in terminal and standard formatting in a GUI."
 
   ;; Disable the LSP headerline (breadcrumb)
   (setq lsp-headerline-breadcrumb-enable nil))
+```
 
-(use-package lsp-ui
-  :ensure t)
 
+<a id="org3939dba"></a>
+
+## Dashboard
+
+Emacs Dashboard is an extensible startup screen showing you recent files, bookmarks, agenda items and an Emacs banner.
+
+```emacs-lisp
 (use-package dashboard
   :ensure t 
   :init
@@ -1168,8 +1789,8 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
   ;; (setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
   ;; (setq dashboard-startup-banner "~/.config/emacs/images/dtmacs-logo.png")
-  (setq dashboard-startup-banner "~/xos/emacs/dashboard/xos-logo.png") ;; logo
-  ;; (setq dashboard-startup-banner "~/.config/emacs/images/emacs-fancy.png") ;; logo
+  ;; (setq dashboard-startup-banner "~/xos/emacs/dashboard/xos-logo.png") ;; logo
+  (setq dashboard-startup-banner "~/.config/emacs/images/emacs-fancy.png") ;; logo
   (setq dashboard-center-content t) ;; set to 't' for centered content
   (setq dashboard-items '((recents . 5)
                           (agenda . 5 )
@@ -1178,7 +1799,7 @@ Uses an arrow in terminal and standard formatting in a GUI."
                           (registers . 3)))
   :custom 
   (dashboard-modify-heading-icons '((recents . "file-text")
-				                    (bookmarks . "book")))
+                                    (bookmarks . "book")))
   :config
   (dashboard-setup-startup-hook)
 
@@ -1186,7 +1807,7 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (add-hook 'dashboard-mode-hook
             (lambda ()
               (solaire-mode -1)))
-  
+
   ;; Ensure dashboard is in evil normal mode
   (add-hook 'dashboard-mode-hook 'evil-normal-state)
 
@@ -1197,25 +1818,37 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (evil-define-key 'normal dashboard-mode-map (kbd "<up>") 'widget-backward)
   (evil-define-key 'normal dashboard-mode-map (kbd "<down>") 'widget-forward))
 
+```
+
+
+<a id="orgef055e7"></a>
+
+## Which-key
+
+```emacs-lisp
 (use-package which-key
   :init
     (which-key-mode 1)
   :diminish
   :config
   (setq which-key-side-window-location 'bottom
-	  which-key-sort-order #'which-key-key-order-alpha
-	  which-key-allow-imprecise-window-fit nil
-	  which-key-sort-uppercase-first nil
-	  which-key-add-column-padding 1
-	  which-key-max-display-columns nil
-	  which-key-min-display-lines 6
-	  which-key-side-window-slot -10
-	  which-key-side-window-max-height 0.25
-	  which-key-idle-delay 0.8
-	  which-key-max-description-length 25
-	  which-key-allow-imprecise-window-fit nil
-	  which-key-separator " → " ))
+      which-key-sort-order #'which-key-key-order-alpha
+      which-key-allow-imprecise-window-fit nil
+      which-key-sort-uppercase-first nil
+      which-key-add-column-padding 1
+      which-key-max-display-columns nil
+      which-key-min-display-lines 6
+      which-key-side-window-slot -10
+      which-key-side-window-max-height 0.25
+      which-key-idle-delay 0.8
+      which-key-max-description-length 25
+      which-key-allow-imprecise-window-fit nil
+      which-key-separator " → " ))
+```
 
+Disable the modeline in which key buffer
+
+```emacs-lisp
 (defun laluxx/hide-which-key-mode-line-and-line-numbers (&rest _)
   "Hide the mode line and line numbers in the `which-key' popup window."
   (let* ((buf (get-buffer which-key-buffer-name))
@@ -1227,6 +1860,14 @@ Uses an arrow in terminal and standard formatting in a GUI."
 
 (advice-add 'which-key--show-popup :after 'laluxx/hide-which-key-mode-line-and-line-numbers)
 
+```
+
+
+<a id="orge6f0b04"></a>
+
+## Edwina
+
+```emacs-lisp
 (use-package edwina
   :ensure f
   :config
@@ -1261,8 +1902,30 @@ However, don't toggle if which-key is currently displayed."
 
 (add-hook 'window-configuration-change-hook 'edwina-toggle-mode-based-on-window-count)
 
-(add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)))
+```
 
+
+<a id="org2774970"></a>
+
+# ORG Mode
+
+
+<a id="org95614eb"></a>
+
+## Config
+
+```emacs-lisp
+(add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)))
+```
+
+
+<a id="org7c64e2f"></a>
+
+## TODO Org present
+
+End the config <https://systemcrafters.net/emacs-tips/presentations-with-org-present/>
+
+```emacs-lisp
 (use-package org-present
   :ensure t)
 
@@ -1298,7 +1961,14 @@ However, don't toggle if which-key is currently displayed."
 ;; Register hooks with org-present
 (add-hook 'org-present-mode-hook 'my/org-present-start)
 (add-hook 'org-present-mode-quit-hook 'my/org-present-end)
+```
 
+
+<a id="org3348271"></a>
+
+## Bullets
+
+```emacs-lisp
 (add-hook 'org-mode-hook 'org-indent-mode)
 
 (use-package org-bullets
@@ -1314,15 +1984,55 @@ However, don't toggle if which-key is currently displayed."
  '(org-level-5 ((t (:inherit outline-5 :height 1.3))))
  '(org-level-6 ((t (:inherit outline-5 :height 1.2))))
  '(org-level-7 ((t (:inherit outline-5 :height 1.1)))))
+```
 
+
+<a id="org0622580"></a>
+
+## Babel
+
+TODO load langs specifically enabled by a module (modules still don't exist)
+
+```emacs-lisp
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((ruby . t)
    ;; other languages if needed
    ))
+```
 
+
+<a id="org088c488"></a>
+
+## Tempo
+
+Org-tempo is not a separate package but a module within org that can be enabled. Org-tempo allows for '<s' followed by TAB to expand to a begin<sub>src</sub> tag. Other expansions available include:
+
+| Typing the below + TAB | Expands to &#x2026;                                         |
+|---------------------- |----------------------------------------------------------- |
+| <a                     | '#+BEGIN<sub>EXPORT</sub> ascii' … '#+END<sub>EXPORT</sub>  |
+| <c                     | '#+BEGIN<sub>CENTER</sub>' … '#+END<sub>CENTER</sub>'       |
+| <C                     | '#+BEGIN<sub>COMMENT</sub>' … '#+END<sub>COMMENT</sub>'     |
+| <e                     | '#+BEGIN<sub>EXAMPLE</sub>' … '#+END<sub>EXAMPLE</sub>'     |
+| <E                     | '#+BEGIN<sub>EXPORT</sub>' … '#+END<sub>EXPORT</sub>'       |
+| <h                     | '#+BEGIN<sub>EXPORT</sub> html' … '#+END<sub>EXPORT</sub>'  |
+| <l                     | '#+BEGIN<sub>EXPORT</sub> latex' … '#+END<sub>EXPORT</sub>' |
+| <q                     | '#+BEGIN<sub>QUOTE</sub>' … '#+END<sub>QUOTE</sub>'         |
+| <s                     | '#+BEGIN<sub>SRC</sub>' … '#+END<sub>SRC</sub>'             |
+| <v                     | '#+BEGIN<sub>VERSE</sub>' … '#+END<sub>VERSE</sub>'         |
+
+```emacs-lisp
 (require 'org-tempo)
+```
 
+
+<a id="orgb6d949e"></a>
+
+## Evil org
+
+open org bullets with `l` and close them with `h`
+
+```emacs-lisp
 (defun my-org-cycle-or-move-right ()
   (interactive)
   (if (and (bolp) (org-at-heading-p))
@@ -1341,7 +2051,32 @@ However, don't toggle if which-key is currently displayed."
               (kbd "l") 'my-org-cycle-or-move-right)
             (evil-define-key 'normal org-mode-map
               (kbd "h") 'my-org-close-or-move-left)))
+```
 
+
+<a id="orgfa86954"></a>
+
+# Language Support
+
+
+<a id="org7d1a2eb"></a>
+
+## Yaml
+
+```emacs-lisp
+(use-package yaml-mode
+  :ensure t)
+
+```
+
+
+<a id="org5281ca2"></a>
+
+## C
+
+TODO Unify hooks TODO o shoudl not work in insert mode
+
+```emacs-lisp
 (defun my-insert-angle-brackets ()
   "Insert <> for #include, or just < elsewhere."
   (interactive)
@@ -1386,28 +2121,75 @@ However, don't toggle if which-key is currently displayed."
 (setq-default c-basic-offset 4
               tab-width 4
               indent-tabs-mode nil)
+```
 
-(use-package yaml-mode
-  :ensure t)
 
+<a id="orgb7f082a"></a>
+
+## Ada
+
+```emacs-lisp
 (use-package ada-mode
   :ensure t)
+```
 
+
+<a id="orgc0b18d9"></a>
+
+## Zig
+
+```emacs-lisp
 (use-package zig-mode
   :ensure t)
+```
 
+
+<a id="orgfe50d31"></a>
+
+## Ocaml
+
+```emacs-lisp
 (use-package tuareg
   :ensure t)
 
+```
+
+
+<a id="org5db1692"></a>
+
+## Gleam
+
+```emacs-lisp
 ;;(use-package gleam-mode
 ;;  :load-path "~/.config/emaca/modules/gleam-mode")
+```
 
+
+<a id="org1b78b0b"></a>
+
+## Lua
+
+```emacs-lisp
 (use-package lua-mode
   :ensure t)
+```
 
+
+<a id="org2d4dd3f"></a>
+
+## Haskell
+
+```emacs-lisp
 (use-package haskell-mode
   :ensure t)
+```
 
+
+<a id="org10af724"></a>
+
+## Tree
+
+```emacs-lisp
 ;; (use-package tree-sitter-langs
 ;;   :ensure t)
 
@@ -1417,7 +2199,14 @@ However, don't toggle if which-key is currently displayed."
 ;;   (require 'tree-sitter-langs)
 ;;   (global-tree-sitter-mode)
 ;;   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+```
 
+
+<a id="orgea50da6"></a>
+
+## Rust
+
+```emacs-lisp
 (use-package rust-mode
   :ensure t
   :mode "\\.rs\\'"
@@ -1426,7 +2215,14 @@ However, don't toggle if which-key is currently displayed."
 
 (use-package rustic
   :ensure t)
+```
 
+
+<a id="org10a9a61"></a>
+
+## Ruby
+
+```emacs-lisp
 (use-package ruby-electric
   :ensure t
   :hook (ruby-mode . ruby-electric-mode))
@@ -1447,7 +2243,19 @@ However, don't toggle if which-key is currently displayed."
   (defadvice inf-ruby-console-auto (before activate-rvm-for-robe activate)
     (rvm-activate-corresponding-ruby))
 )
+```
 
+
+<a id="org2f63799"></a>
+
+# Look and feel
+
+
+<a id="orgefccea6"></a>
+
+## Kind-icons
+
+```emacs-lisp
 (use-package kind-icon
   :ensure t
   ;; :after corfu
@@ -1456,7 +2264,19 @@ However, don't toggle if which-key is currently displayed."
   ;; (kind-icon-default-face 'corfu-default) ; only needed with blend-background
   ;; :config
   ;; (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+```
 
+
+<a id="orgf8ddfc6"></a>
+
+## prettify-symbols
+
+
+<a id="orgd65f8c5"></a>
+
+### Org
+
+```emacs-lisp
 ;; Org mode symbols
 (defun org-icons ()
   "Beautify org mode keywords."
@@ -1495,6 +2315,14 @@ However, don't toggle if which-key is currently displayed."
 
 (setq org-ellipsis " ")
 
+```
+
+
+<a id="org036b657"></a>
+
+### Prog-mode
+
+```emacs-lisp
 ;; Programming modes symbols
 (defun prettify-prog-mode ()
   "Set up prettify symbols for programming modes."
@@ -1523,7 +2351,14 @@ However, don't toggle if which-key is currently displayed."
   (prettify-symbols-mode 1))
 
 (add-hook 'prog-mode-hook 'prettify-prog-mode)
+```
 
+
+<a id="org9eb4ae4"></a>
+
+## Faces
+
+```emacs-lisp
 (defface my--comment-face
   '((t (:foreground "#839496"    ; A softer foreground color, like light gray or blue
         :background nil          ; No background to keep it simple
@@ -1543,6 +2378,28 @@ However, don't toggle if which-key is currently displayed."
 
 
 
+
+
+
+
+```
+
+
+<a id="org0707caf"></a>
+
+## Posframe
+
+```emacs-lisp
+
+
+```
+
+
+<a id="org1fa29a1"></a>
+
+## Cursor
+
+```emacs-lisp
 (blink-cursor-mode -1)
 (defvar laluxx/original-cursor-color nil
   "Variable to store the original cursor color.")
@@ -1601,10 +2458,32 @@ However, don't toggle if which-key is currently displayed."
                                 (save-default-cursor-color)
                                 (set-evil-insert-cursor-color)))
 
+
+
+```
+
+
+<a id="org500106b"></a>
+
+## Scrolling
+
+
+<a id="org7c7cb94"></a>
+
+### Mouse
+
+```emacs-lisp
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
 (setq mouse-wheel-progressive-speed nil) ;; don"t accelerate scrolling
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+```
 
+
+<a id="org66c473a"></a>
+
+### Cursor
+
+```emacs-lisp
 (setq scroll-step 23) ;; keyboard scroll one line at a time
 (setq scroll-conservatively 10000)
 (setq auto-window-vscroll nil)
@@ -1627,9 +2506,28 @@ However, don't toggle if which-key is currently displayed."
       ;; mouse
       mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
       mouse-wheel-scroll-amount-horizontal 2)
+```
 
+
+<a id="orgc0f3374"></a>
+
+## Double buffering
+
+```emacs-lisp
 (setq double-buffering t)
+```
 
+
+<a id="org541e1e6"></a>
+
+## Theme
+
+
+<a id="org1a7f100"></a>
+
+### MyThemes
+
+```emacs-lisp
 (deftheme mycustomtheme "A brief description of your theme.")
 
 (custom-theme-set-faces
@@ -1657,16 +2555,48 @@ However, don't toggle if which-key is currently displayed."
 )
 
 (provide-theme 'mycustomtheme)
+```
 
+
+<a id="org3e7bed0"></a>
+
+### Catpuccin
+
+```emacs-lisp
 (use-package catppuccin-theme
   :ensure t)
 
+```
+
+
+<a id="org9ec9306"></a>
+
+### Kaolin
+
+```emacs-lisp
 (use-package kaolin-themes
   :ensure t)
+```
 
+
+<a id="orgca94a26"></a>
+
+### Moe
+
+```emacs-lisp
 (use-package moe-theme
   :ensure t)
 
+```
+
+
+<a id="org7fcaf93"></a>
+
+### DOOM
+
+installing `doom-themes` You can create your own Emacs themes with [Emacs Theme Editor](https://emacsfodder.github.io/emacs-theme-editor/).
+
+```emacs-lisp
 (add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
 
 (use-package doom-themes
@@ -1679,7 +2609,16 @@ However, don't toggle if which-key is currently displayed."
   (doom-themes-neotree-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
+```
 
+
+<a id="org22ce26b"></a>
+
+### Ewal theme
+
+Force your emacs to use your system theme
+
+```emacs-lisp
 (use-package ewal
   :ensure t
   :init
@@ -1699,13 +2638,39 @@ However, don't toggle if which-key is currently displayed."
   :config
   ;; (load-theme 'ewal-doom-one t)
 )
+```
 
+
+<a id="org9e54175"></a>
+
+### Theme magic
+
+Force your system to use the current emacs theme
+
+```emacs-lisp
 (use-package theme-magic
   :ensure t)
+```
 
+
+<a id="org57b977c"></a>
+
+### Ef
+
+```emacs-lisp
 (use-package ef-themes
   :ensure t)
 
+```
+
+
+<a id="orgfc42294"></a>
+
+## Trasparency
+
+in Emacs version 29, true transparency has been added. this change trasparency based on the theme
+
+```emacs-lisp
 ;; (add-to-list 'default-frame-alist '(alpha-background . 85)) ; For hardcoded alpha
 
 (defun set-theme-transparency (&rest args)
@@ -1722,7 +2687,14 @@ However, don't toggle if which-key is currently displayed."
       (set-frame-parameter frame 'alpha-background alpha-value))))
 
 (advice-add 'load-theme :after 'set-theme-transparency)
+```
 
+
+<a id="org52b33de"></a>
+
+## Modeline
+
+```emacs-lisp
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1)
@@ -1732,7 +2704,16 @@ However, don't toggle if which-key is currently displayed."
         doom-modeline-persp-name t   ;; adds perspective name to modeline
         doom-modeline-persp-icon t   ;; adds folder icon next to persp name
         ))
+```
 
+
+<a id="orgba9507c"></a>
+
+## Highlight Todo
+
+Adding highlights to TODO and related words.
+
+```emacs-lisp
 (use-package hl-todo
   :hook ((org-mode . hl-todo-mode)
          (prog-mode . hl-todo-mode))
@@ -1745,22 +2726,45 @@ However, don't toggle if which-key is currently displayed."
           ("REVIEW"     font-lock-keyword-face bold)
           ("NOTE"       success bold)
           ("DEPRECATED" font-lock-doc-face bold))))
+```
 
+
+<a id="org4152b05"></a>
+
+## Rainbow delimiters
+
+```emacs-lisp
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
+```
 
+
+<a id="orgf7c8d2c"></a>
+
+## Rainbow mode
+
+TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
+
+```emacs-lisp
 (use-package rainbow-mode
   :diminish
   :hook org-mode prog-mode)
+```
 
+
+<a id="org4b97c40"></a>
+
+# General keybindings
+
+```emacs-lisp
 (use-package general
   :config
   (general-evil-setup)
-  
+
   ;; set up 'SPC' as the global leader key
   (general-create-definer laluxx/leader-keys
     :states '(normal ;; insert
-		     visual emacs)
+             visual emacs)
     :keymaps 'override
     :prefix "SPC") ;; set leader
     ;; :global-prefix "M-SPC") ;; access leader in insert mode
@@ -1782,6 +2786,7 @@ However, don't toggle if which-key is currently displayed."
     "b k" '(kill-current-buffer :wk "Kill current buffer")
     "b K" '(laluxx/kill-current-buffer-and-window :wk "Kill buffer and window")
     "b l" '(list-bookmarks :wk "List bookmarks")
+    ;; "b m" '(bookmark-set :wk "Set bookmark")
     "b m" '(counsel-bookmark :wk "Set bookmark")
     "b n" '(next-buffer :wk "Next buffer")
     "b p" '(previous-buffer :wk "Previous buffer")
@@ -1798,7 +2803,7 @@ However, don't toggle if which-key is currently displayed."
     "d J" '(laluxx/dired-split-jump :wk "Dired split jump ")
     "d n" '(neotree-dir :wk "Open directory in neotree")
     "d i" '(laluxx/diff-buffer-with-file :wk "Diff buffer with file")
-    "d p" '(projectile-find-dir :wk "Dired project"))
+    "d p" '(peep-dired :wk "Peep-dired"))
 
   (laluxx/leader-keys
     "C" '(compile :wk "Compile")
@@ -1821,25 +2826,26 @@ However, don't toggle if which-key is currently displayed."
     "f c" '((lambda () (interactive)
               (find-file "~/.config/emacs/config.org")) 
             :wk "Open emacs config.org")
-    "f m" '(laluxx/find-module :wk "Find C module")
     "f e" '(consult-flymake :wk "Find errors")
     "f d" '(find-grep-dired :wk "Search for string in files in DIR")
     "f g" '(counsel-grep-or-swiper :wk "Search for string current file")
+    ;; "f i" '((lambda () (interactive)
+    ;;           (find-file "~/.config/emacs/init.el")) 
+    ;;         :wk "Open emacs init.el")
     "f i" '(counsel-rg :wk "counsel-rg")
     "f w" '(swiper :wk "Swiper")
     "f j" '(laluxx/file-jump :wk "Jump to a file")
-    "f l" '(find-library :wk "Find emacs library")
+    ;; "f l" '(counsel-locate :wk "Locate a file")
+    "f l" '(find-library :wk "Locate a file")
     "f r" '(counsel-recentf :wk "File recent")
     "f R" '(laluxx/counsel-recentf-split :wk "File recent split")
     "f u" '(sudo-edit-find-file :wk "Sudo find file")
     "f f" '(counsel-find-file :wk "Find file")
-    "f F" '(find-function :wk "Find function")
-    "f H" '(laluxx/find-header-split :wk "Find header split")
-    "f h" '(laluxx/find-header :wk "Find matching header")
+    "f F" '(laluxx/file-jump :wk "Find file split")
+    "f h" '(laluxx/find-header :wk "Find header")
     "f t" '(laluxx/find-TODOs :wk "Find TODOs")
     "f n" '(laluxx/find-NOTES :wk "Find NOTES")
-    "f p" '(projectile-switch-project :wk "Find project")
-    "f P" '(laluxx/find-package-source-code :wk "Find package source code")
+    "f p" '(laluxx/find-package-source-code :wk "Find package source code")
     "f U" '(sudo-edit :wk "Sudo edit file"))
 
   (laluxx/leader-keys
@@ -1850,7 +2856,6 @@ However, don't toggle if which-key is currently displayed."
     "i" '(:ignore t :wk "Insert")
     "i i" '(all-the-icons-insert-faicon :wk "Insert FontAwesome")
     "i f" '(all-the-icons-insert-fileicon :wk "Insert file icon") ;
-    "i n" '(nerd-icons-insert :wk "Insert nerd icon") ;
     "i g" '(all-the-icons-insert-octicon :wk "Insert github icon"))
 
   (laluxx/leader-keys
@@ -1883,7 +2888,6 @@ However, don't toggle if which-key is currently displayed."
 
   (laluxx/leader-keys
     "h" '(:ignore t :wk "Help")
-    "h j" '(laluxx/header-jump :wk "Header jump")
     "h h" '(laluxx/list-hooks :wk "List all hooks")
     "h a" '(counsel-apropos :wk "Apropos")
     "h b" '(describe-bindings :wk "Describe bindings")
@@ -1968,13 +2972,12 @@ However, don't toggle if which-key is currently displayed."
   (laluxx/leader-keys
     "t" '(:ignore t :wk "Toggle")
     "t s" '(yascroll-bar-mode :wk "Toggle yascroll")
-    "t c" '(calendar :wk "Toggle calendar")
     "t e" '(eshell-toggle :wk "Toggle eshell")
     "t m" '(laluxx/toggle-modeline :wk "Toggle modeline")
     "t f" '(flycheck-mode :wk "Toggle flycheck")
     "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
     "t n" '(neotree-toggle :wk "Toggle neotree file viewer")
-    "t o" '(olivetti-mode :wk "Toggle olivetti mode") ;; TODO Toggle opacity
+    "t o" '(org-mode :wk "Toggle org mode") ;; TODO Toggle opacity
     "t r" '(rainbow-mode :wk "Toggle rainbow mode")
     "t t" '(toggle-truncate-lines :wk "Toggle truncated lines")
     "t h" '(laluxx/toggle-hl-line-mode :wk "Toggle hl-line-mode")
@@ -2001,6 +3004,14 @@ However, don't toggle if which-key is currently displayed."
     "w L" '(buf-move-right :wk "Buffer move right"))
   )
 
+```
+
+
+<a id="org0a6fce0"></a>
+
+# Modeline
+
+```emacs-lisp
 (defvar my-modeline-mode-line-format
   '(:eval (let* ((evil-state (cond ((evil-normal-state-p) '("NORMAL" . "green"))
                                    ((evil-insert-state-p) '("INSERT" . "blue"))
@@ -2030,304 +3041,51 @@ However, don't toggle if which-key is currently displayed."
   (my-modeline-refresh))
 
 (provide 'my-modeline-mode)
-
-(defun laluxx/format-region ()
-  "Format the selected region to align the assignment operators."
-  (interactive)
-  (let* ((start (region-beginning))
-         (end (region-end))
-         (region-text (buffer-substring start end))
-         formatted-text max-length)
-    ;; Split the region into lines
-    (setq lines (split-string region-text "\n"))
-    ;; Calculate the maximum length of the variable names
-    (setq max-length (apply 'max (mapcar (lambda (line)
-                                           (length (car (split-string line "="))))
-                                         lines)))
-    ;; Construct the formatted text
-    (setq formatted-text 
-          (mapconcat (lambda (line)
-                       (if (string-match "\\(.*\\)=\\(.*\\)" line)
-                           (let ((var-name (match-string 1 line))
-                                 (rest (match-string 2 line)))
-                             (format "%s=%s" 
-                                     (concat var-name (make-string (- max-length (length var-name)) ? ))
-                                     rest))
-                         line))
-                     lines "\n"))
-    ;; Replace the region with the formatted text
-    (delete-region start end)
-    (goto-char start)
-    (insert formatted-text)))
-
-;; TODO
-(defun goto-implementation ()
-  (interactive)
-  ;; Extract the current line.
-  (let ((line (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
-    ;; Extract the function name from the current line.
-    (if (string-match "\\b\\([_a-zA-Z][_a-zA-Z0-9]*\\) *(" line)
-        (let* ((function-name (match-string 1 line))
-               ;; Replace the extension of the current file from .h to .c
-               (source-file (concat (file-name-sans-extension (buffer-file-name)) ".c")))
-          (if (file-exists-p source-file)
-              (progn
-                ;; Open the .c file
-                (find-file source-file)
-                ;; Go to the beginning of the buffer to start the search
-                (goto-char (point-min))
-                ;; Search for the function implementation.
-                (unless (search-forward (concat function-name "(") nil t)
-                  (message "Function implementation not found for %s" function-name)))
-            (message "Source file does not exist: %s" source-file)))
-      (message "Could not extract function name from the current line."))))
+```
 
 
-(defun laluxx/copy-project ()
-  "Concatenate the content of all .c and .h files in the current directory and copy to the clipboard."
-  (interactive)
-  (let ((files (directory-files "." t "\\.[ch]$"))
-        (content ""))
-    (dolist (file files)
-      (setq content (concat content (when (file-readable-p file)
-                                       (with-temp-buffer
-                                         (insert-file-contents file)
-                                         (buffer-string)))
-                             "\n\n"))) ; Add extra newlines between files for readability
-    (unless (string= content "")
-      (kill-new content)
-      (message "Copied content of .c and .h files to clipboard."))))
+<a id="orgdfeb122"></a>
+
+# Functions
 
 
+<a id="orgeef5bff"></a>
+
+## Markdown
+
+```emacs-lisp
 
 
-(defun laluxx/ivy-rich-header-icon (_candidate)
-  "Force the icon to always represent a .h file."
-  (all-the-icons-icon-for-file "dummy.h"))
-
-(defun laluxx/setup-ivy-rich-header-icon ()
-  (setq ivy-rich-display-transformers-list
-        (plist-put ivy-rich-display-transformers-list
-                   'laluxx/find-header
-                   '(:columns
-                     ((laluxx/ivy-rich-header-icon :width 2)
-                      (identity (:width 0.3 :face default)))))))
-
-(with-eval-after-load 'ivy-rich
-  (laluxx/setup-ivy-rich-header-icon))
-
-(defun laluxx/header-jump ()
-  "Search for headers and open in a new window."
-  (interactive)
-  (let* ((cmd "rg --files /usr/include --follow --hidden -g \"*.h\"")
-         (headers (split-string (shell-command-to-string cmd) "\n" t)))
-    (ivy-read "Choose header: " headers
-              :action (lambda (x) (find-file-other-window x))
-              :caller 'laluxx/header-jump)))
-
-(defun laluxx/find-module ()
-  "Find modules in the current directory, close all other windows, and open selected .c and .h files side by side."
-  (interactive)
-  (let* ((files (directory-files default-directory nil "\\.\\(c\\|h\\)$"))
-         (base-names (laluxx/unique-base-names files))
-         (ivy-action (lambda (base-name)
-                       (delete-other-windows)  ; Close all other windows
-                       (find-file (concat base-name ".c")) ; Open .c file in the current window
-                       (split-window-right)    ; Split window to the right
-                       (other-window 1)        ; Move to the new window
-                       (find-file (concat base-name ".h"))  ; Open .h file
-                       (other-window -1))))    ; Return focus to the .c file
-    (ivy-read "Select a module: " base-names
-              :action ivy-action)))
-
-(defun laluxx/unique-base-names (files)
-  "Extract unique base names from a list of file names."
-  (let ((names (mapcar #'file-name-sans-extension files)))
-    (seq-uniq names)))
-
-(defun laluxx/find-header ()
-  "Toggle between a C source file and its corresponding header file."
-  (interactive)
-  (let* ((current-file (buffer-file-name))
-         (extension (file-name-extension current-file))
-         (base-name (file-name-sans-extension current-file))
-         target-file)
-    ;; Determine the target file based on the extension of the current file
-    (setq target-file
-          (cond ((string= extension "c") (concat base-name ".h"))
-                ((string= extension "h") (concat base-name ".c"))
-                (t (error "Not a C or Header file: %s" current-file))))
-    ;; Check if the target file exists and open it
-    (if (file-exists-p target-file)
-        (find-file target-file)
-      (message "File does not exist: %s" target-file))))
-
-(defun laluxx/find-header-split ()
-  "Toggle between a C source file and its corresponding header file in a new split window."
-  (interactive)
-  (let* ((current-file (buffer-file-name))
-         (extension (file-name-extension current-file))
-         (base-name (file-name-sans-extension current-file))
-         (target-file (cond ((string= extension "c") (concat base-name ".h"))
-                            ((string= extension "h") (concat base-name ".c"))
-                            (t (error "Not a C or Header file: %s" current-file)))))
-    ;; Check if the target file exists
-    (if (file-exists-p target-file)
-        (progn
-          ;; Split the window and find the file in the new window
-          (split-window-right) ;; or `split-window-below` to split horizontally
-          (other-window 1)
-          (find-file target-file))
-      (message "File does not exist: %s" target-file))))
-
-(defun laluxx/preatty-theme ()
-  "Load 'ewal-doom-one' theme and simulate pressing 'super+5'."
-  (interactive)
-  ;; Ensure theme-magic and ewal packages are loaded
-  (require 'theme-magic)
-  (require 'ewal)
-
-  ;; Apply the system theme to Emacs using theme-magic
-  (theme-magic-from-emacs)
-
-  ;; Load and enable the ewal-doom-one theme
-  (load-theme 'ewal-doom-one t)
-
-  ;; Simulate pressing 'super+5'
- (shell-command "xdotool key super+F5"))
+```
 
 
-(defun laluxx/preatty-theme-solid ()
-  "Load 'ewal-doom-one' theme, simulate pressing 'super+F5', and set a solid color wallpaper using ImageMagick."
-  (interactive)
-  ;; Call the existing function to apply theme and reload window manager colors
-  (laluxx/preatty-theme)
+<a id="org29a3988"></a>
 
-  ;; Extract the background color from the current theme
-  (let* ((bg-color (face-background 'default nil t))
-         (directory "~/xos/wallpapers/solid")
-         (wallpaper-file (expand-file-name "solid-bg.png" directory)))
-    ;; Ensure the wallpaper directory exists
-    (unless (file-exists-p directory)
-      (make-directory directory t))
-
-    ;; Generate an image file with the extracted background color using ImageMagick
-    (shell-command (format "convert -size 1920x1080 xc:'%s' %s" bg-color wallpaper-file))
-
-    ;; Set the generated image as the wallpaper using feh
-    (shell-command (format "feh --bg-scale %s" wallpaper-file))))
-
-(defvar laluxx/light-themes
-  '(doom-one-light doom-tomorrow-day doom-flatwhite doom-homage-white doom-plain whiteboard tsdh-light tango modus-operandi
-		   leuven adwaita dichromacy  doom-bluloco-light doom-acario-light doom-ayu-light doom-feather-light doom-gruvbox-light
-		   doom-nord-light doom-oksolar-light doom-opera-light doom-solarized-light doom-earl-grey ef-cyprus ef-day ef-deuteranopia-light
-		   ef-duo-light ef-elea-light ef-frost ef-kassio ef-light ef-maris-light ef-melissa-light ef-spring ef-summer ef-trio-light ef-tritanopia-light moe-light light-blue)
-  "List of light themes.")
-
-(defvar laluxx/ugly-themes
-  '(wombat wheatgrass tsdh-dark tango-dark misterioso leuven-dark
-	   deeper-blue doom-acario-dark doom-homage-black doom-ir-black doom-meltbus doom-oksolar-dark)
-  "List of themes that are considered ugly.")
-
-(defvar laluxx/current-theme nil
-  "The current theme used in the Emacs session.")
-
-(defun laluxx/save-current-theme ()
-  "Save the current theme name and its background color as a string to a file."
-  (when laluxx/current-theme
-    (let ((background-color (face-attribute 'default :background)))
-      (with-temp-file "~/.config/emacs/static-variables"
-        (insert (format "%s\n%s" (symbol-name laluxx/current-theme) background-color))))))
+## Eval
 
 
+<a id="orgee20442"></a>
 
-(defun laluxx/load-theme-generic (theme-list prompt)
-  "Load a theme from THEME-LIST, with preview. Revert to original theme if canceled."
-  (let ((original-theme (car custom-enabled-themes))
-        selected-theme)
-    (ivy-read prompt (mapcar 'symbol-name theme-list)
-              :preselect (symbol-name original-theme)
-              :update-fn (lambda ()
-                           (let ((current-selection (intern (ivy-state-current ivy-last))))
-                             (when (and current-selection
-                                        (not (equal current-selection original-theme)))
-                               (mapc #'disable-theme custom-enabled-themes)
-                               (load-theme current-selection t)
-			                   (if pulse-cursor
-				   (update-pulsing-cursor-color))))) ;; Preview theme
-              :action (lambda (theme)
-                        (setq selected-theme (intern theme))
-                        (when selected-theme
-                          (setq laluxx/current-theme selected-theme) ;; Update current theme
-                          (mapc #'disable-theme custom-enabled-themes)
-                          (load-theme selected-theme t)
-                          (laluxx/save-current-theme))
-			            (if pulse-cursor
-                            (update-pulsing-cursor-color))) ;; Save current theme
-              :unwind (lambda ()
-                        (unless selected-theme
-                          (mapc #'disable-theme custom-enabled-themes)
-                          (when original-theme
-                            (load-theme original-theme t)
-                            (laluxx/update-cursor-colors) ;; Update cursor colors
-                            (setq laluxx/current-theme original-theme)
-                            (laluxx/save-current-theme)
-			                (if pulse-cursor
-                                (update-pulsing-cursor-color)))))))) ;; Revert to original theme
+### TODO Paste and eval
 
+bind this
 
-
-(defun laluxx/load-saved-theme ()
-  "Load the saved theme from the file."
-  (when (file-exists-p "~/.config/emacs/static-variables")
-    (with-temp-buffer
-      (insert-file-contents "~/.config/emacs/static-variables")
-      (goto-char (point-min)) ;; Move to the beginning of the buffer
-      (let ((theme-name (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
-        (setq laluxx/current-theme (intern theme-name))
-        (load-theme laluxx/current-theme t)
-        (laluxx/update-cursor-colors) ;; Update cursor colors
-	    (if pulse-cursor
-            (update-pulsing-cursor-color))))))
-
-
-
-(with-eval-after-load 'doom-themes
-  (with-eval-after-load 'ewal
-    (laluxx/load-saved-theme)))
-
-
-
-(defun laluxx/load-dark-theme ()
-  "Load a dark theme, excluding light and ugly themes."
-  (interactive)
-  (laluxx/load-theme-generic (seq-difference (custom-available-themes) (append laluxx/light-themes laluxx/ugly-themes))
-                             "Load dark theme: "))
-
-(defun laluxx/load-light-theme ()
-  "Load a light theme."
-  (interactive)
-  (laluxx/load-theme-generic laluxx/light-themes "Load light theme: "))
-
-(defun laluxx/load-ugly-theme ()
-  "Load an ugly theme."
-  (interactive)
-  (laluxx/load-theme-generic laluxx/ugly-themes "Load ugly theme: "))
-
-
-
-(defun laluxx/change-string ()
-  "Simulate pressing `c i s` to change inside string, evil-surround needed."
-  (interactive)
-  (evil-normal-state)  ;; Ensure we're in normal mode
-  (evil-execute-key-sequence "cis" nil))
-
+```emacs-lisp
 (defun laluxx/paste-and-eval ()
   "Yank text and evaluate it as Emacs Lisp code."
   (interactive)
   (yank) ;; Paste the text
   (eval-last-sexp nil))
+```
 
+
+<a id="org94b7ba9"></a>
+
+## Smart hungry delete
+
+How i want hungry delete to behave
+
+```emacs-lisp
 (defun laluxx/smart-hungry-delete-backward ()
   "Delete contiguous stream of whitespace backward, or a single character if no whitespace is found. Leaves a newline if whitespaces spans multiple lines."
   (interactive)
@@ -2343,7 +3101,14 @@ However, don't toggle if which-key is currently displayed."
           (delete-char -1)
         ;; Otherwise, just delete the whitespace.
         (delete-region (point) start)))))
+```
 
+
+<a id="org36802e1"></a>
+
+## Scratch buffer
+
+```emacs-lisp
 (defun laluxx/split-scratch ()
   "Open the *scratch* buffer in a new window."
   (interactive)
@@ -2353,7 +3118,16 @@ However, don't toggle if which-key is currently displayed."
   (other-window 1)
   ;; Switch to the *scratch* buffer in the new window
   (switch-to-buffer "*scratch*"))
+```
 
+
+<a id="orge393e16"></a>
+
+## TODO Find package source code
+
+dont include "()" characters
+
+```emacs-lisp
 (defun laluxx/find-package-source-code ()
   "Opens a .el file corresponding to the extended 'word' under the cursor in the ~/.config/emacs/elpaca/builds/ directory in a new window."
   (interactive)
@@ -2377,7 +3151,14 @@ However, don't toggle if which-key is currently displayed."
                 (find-file-other-window file-path))  ; Open the file in a new window if it exists
             (message "File does not exist: %s" file-path))
         (message "Directory does not exist: %s" dir)))))
+```
 
+
+<a id="org00c2f7e"></a>
+
+## Arch
+
+```emacs-lisp
 (defun arch-pkg-list-callback (process event)
   "Callback function to handle completion of the package listing process."
   (when (string= event "finished\n")
@@ -2399,7 +3180,14 @@ However, don't toggle if which-key is currently displayed."
     (set-process-sentinel
      (start-process "pkg-list" output-buffer "yay" "-Slq")
      #'arch-pkg-list-callback)))
+```
 
+
+<a id="org078a6fd"></a>
+
+## Info mode
+
+```emacs-lisp
 (defun laluxx/info-mode-setup ()
   "Custom setup for Info-mode."
   (olivetti-mode 1)        ; Enable Olivetti mode for a distraction-free reading layout
@@ -2407,7 +3195,19 @@ However, don't toggle if which-key is currently displayed."
   (display-line-numbers-mode -1)) ; Disable line numbers
 
 (add-hook 'Info-mode-hook 'laluxx/info-mode-setup)
+```
 
+
+<a id="org379c967"></a>
+
+## Emacs-run
+
+
+<a id="org979d2bb"></a>
+
+### Run-launcher
+
+```emacs-lisp
 (defun emacs-run-launcher ()
   "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
   (interactive)
@@ -2425,115 +3225,152 @@ However, don't toggle if which-key is currently displayed."
                   (unwind-protect
                     (app-launcher-run-app)
                     (delete-frame))))
+```
 
-(defun emacs-run-wal-set ()
-  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
-  (interactive)
-  (with-selected-frame
-    (make-frame '((name . "emacs-run-wal-set")
-                  (minibuffer . only)
-                  (fullscreen . 0) ; no fullscreen
-                  (undecorated . t) ; remove title bar
-                  ;;(auto-raise . t) ; focus on this frame
-                  ;;(tool-bar-lines . 0)
-                  ;;(menu-bar-lines . 0)
-                  (internal-border-width . 10)
-                  (width . 80)
-                  (height . 11)))
-                  (unwind-protect
-                    (laluxx/wal-set)
-                    (delete-frame))))
 
-(defun emacs-run-wal-set-animated ()
-  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
-  (interactive)
-  (with-selected-frame
-    (make-frame '((name . "emacs-run-wal-set-animated")
-                  (minibuffer . only)
-                  (fullscreen . 0) ; no fullscreen
-                  (undecorated . t) ; remove title bar
-                  ;;(auto-raise . t) ; focus on this frame
-                  ;;(tool-bar-lines . 0)
-                  ;;(menu-bar-lines . 0)
-                  (internal-border-width . 10)
-                  (width . 80)
-                  (height . 11)))
-                  (unwind-protect
-                    (laluxx/wal-set-animated)
-                    (delete-frame))))
+<a id="orgae2cbf4"></a>
 
-(defun emacs-run-wal-set-solid ()
-  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
-  (interactive)
-  (with-selected-frame
-    (make-frame '((name . "emacs-run-wal-set-solid")
-                  (minibuffer . only)
-                  (fullscreen . 0) ; no fullscreen
-                  (undecorated . t) ; remove title bar
-                  ;;(auto-raise . t) ; focus on this frame
-                  ;;(tool-bar-lines . 0)
-                  ;;(menu-bar-lines . 0)
-                  (internal-border-width . 10)
-                  (width . 80)
-                  (height . 11)))
-                  (unwind-protect
-                    (laluxx/wal-set-solid)
-                    (delete-frame))))
+### wal-set
 
-(defun emacs-run-wal-set-favourite ()
-  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
-  (interactive)
-  (with-selected-frame
-    (make-frame '((name . "emacs-run-wal-set-favourite")
-                  (minibuffer . only)
-                  (fullscreen . 0) ; no fullscreen
-                  (undecorated . t) ; remove title bar
-                  ;;(auto-raise . t) ; focus on this frame
-                  ;;(tool-bar-lines . 0)
-                  ;;(menu-bar-lines . 0)
-                  (internal-border-width . 10)
-                  (width . 80)
-                  (height . 11)))
-                  (unwind-protect
-                    (laluxx/wal-set-favourite)
-                    (delete-frame))))
+1.  Default
 
-(defun emacs-run-set-wallpaper ()
-  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
-  (interactive)
-  (with-selected-frame
-    (make-frame '((name . "emacs-run-set-wallpaper")
-                  (minibuffer . only)
-                  (fullscreen . 0) ; no fullscreen
-                  (undecorated . t) ; remove title bar
-                  ;;(auto-raise . t) ; focus on this frame
-                  ;;(tool-bar-lines . 0)
-                  ;;(menu-bar-lines . 0)
-                  (internal-border-width . 10)
-                  (width . 80)
-                  (height . 11)))
-                  (unwind-protect
-                    (laluxx/set-wallpaper)
-                    (delete-frame))))
+    ```emacs-lisp
+    (defun emacs-run-wal-set ()
+      "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+      (interactive)
+      (with-selected-frame
+        (make-frame '((name . "emacs-run-wal-set")
+                      (minibuffer . only)
+                      (fullscreen . 0) ; no fullscreen
+                      (undecorated . t) ; remove title bar
+                      ;;(auto-raise . t) ; focus on this frame
+                      ;;(tool-bar-lines . 0)
+                      ;;(menu-bar-lines . 0)
+                      (internal-border-width . 10)
+                      (width . 80)
+                      (height . 11)))
+                      (unwind-protect
+                        (laluxx/wal-set)
+                        (delete-frame))))
+    ```
 
-(defun emacs-run-set-animated-wallpaper ()
-  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
-  (interactive)
-  (with-selected-frame
-    (make-frame '((name . "emacs-run-set-animated-wallpaper")
-                  (minibuffer . only)
-                  (fullscreen . 0) ; no fullscreen
-                  (undecorated . t) ; remove title bar
-                  ;;(auto-raise . t) ; focus on this frame
-                  ;;(tool-bar-lines . 0)
-                  ;;(menu-bar-lines . 0)
-                  (internal-border-width . 10)
-                  (width . 80)
-                  (height . 11)))
-                  (unwind-protect
-                    (laluxx/set-animated-wallpaper)
-                    (delete-frame))))
+2.  Animated
 
+    ```emacs-lisp
+    (defun emacs-run-wal-set-animated ()
+      "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+      (interactive)
+      (with-selected-frame
+        (make-frame '((name . "emacs-run-wal-set-animated")
+                      (minibuffer . only)
+                      (fullscreen . 0) ; no fullscreen
+                      (undecorated . t) ; remove title bar
+                      ;;(auto-raise . t) ; focus on this frame
+                      ;;(tool-bar-lines . 0)
+                      ;;(menu-bar-lines . 0)
+                      (internal-border-width . 10)
+                      (width . 80)
+                      (height . 11)))
+                      (unwind-protect
+                        (laluxx/wal-set-animated)
+                        (delete-frame))))
+    
+    ```
+
+3.  Solid
+
+    ```emacs-lisp
+    (defun emacs-run-wal-set-solid ()
+      "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+      (interactive)
+      (with-selected-frame
+        (make-frame '((name . "emacs-run-wal-set-solid")
+                      (minibuffer . only)
+                      (fullscreen . 0) ; no fullscreen
+                      (undecorated . t) ; remove title bar
+                      ;;(auto-raise . t) ; focus on this frame
+                      ;;(tool-bar-lines . 0)
+                      ;;(menu-bar-lines . 0)
+                      (internal-border-width . 10)
+                      (width . 80)
+                      (height . 11)))
+                      (unwind-protect
+                        (laluxx/wal-set-solid)
+                        (delete-frame))))
+    ```
+
+4.  favourite
+
+    ```emacs-lisp
+    (defun emacs-run-wal-set-favourite ()
+      "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+      (interactive)
+      (with-selected-frame
+        (make-frame '((name . "emacs-run-wal-set-favourite")
+                      (minibuffer . only)
+                      (fullscreen . 0) ; no fullscreen
+                      (undecorated . t) ; remove title bar
+                      ;;(auto-raise . t) ; focus on this frame
+                      ;;(tool-bar-lines . 0)
+                      ;;(menu-bar-lines . 0)
+                      (internal-border-width . 10)
+                      (width . 80)
+                      (height . 11)))
+                      (unwind-protect
+                        (laluxx/wal-set-favourite)
+                        (delete-frame))))
+    ```
+
+5.  Set-wallpaper
+
+    ```emacs-lisp
+    (defun emacs-run-set-wallpaper ()
+      "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+      (interactive)
+      (with-selected-frame
+        (make-frame '((name . "emacs-run-set-wallpaper")
+                      (minibuffer . only)
+                      (fullscreen . 0) ; no fullscreen
+                      (undecorated . t) ; remove title bar
+                      ;;(auto-raise . t) ; focus on this frame
+                      ;;(tool-bar-lines . 0)
+                      ;;(menu-bar-lines . 0)
+                      (internal-border-width . 10)
+                      (width . 80)
+                      (height . 11)))
+                      (unwind-protect
+                        (laluxx/set-wallpaper)
+                        (delete-frame))))
+    ```
+
+6.  Set-animated-wallpaper
+
+    ```emacs-lisp
+    (defun emacs-run-set-animated-wallpaper ()
+      "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+      (interactive)
+      (with-selected-frame
+        (make-frame '((name . "emacs-run-set-animated-wallpaper")
+                      (minibuffer . only)
+                      (fullscreen . 0) ; no fullscreen
+                      (undecorated . t) ; remove title bar
+                      ;;(auto-raise . t) ; focus on this frame
+                      ;;(tool-bar-lines . 0)
+                      ;;(menu-bar-lines . 0)
+                      (internal-border-width . 10)
+                      (width . 80)
+                      (height . 11)))
+                      (unwind-protect
+                        (laluxx/set-animated-wallpaper)
+                        (delete-frame))))
+    ```
+
+
+<a id="org108fd2e"></a>
+
+### M-X
+
+```emacs-lisp
 (defun emacs-run-M-x ()
   "Create a new frame and prompt for an M-x command in it."
   (interactive)
@@ -2548,7 +3385,20 @@ However, don't toggle if which-key is currently displayed."
     (unwind-protect
         (call-interactively 'execute-extended-command)
       (delete-frame))))
+```
 
+
+<a id="orgf51350e"></a>
+
+### Info
+
+Open info inside xmonad DONE:
+
+-   remember last manual manual [x]
+-   Toggle [x]
+-   ewal break this []
+
+```emacs-lisp
 ;; TODO
 (defvar emacs-run-info-frame nil)
 
@@ -2577,6 +3427,16 @@ However, don't toggle if which-key is currently displayed."
         (delete-other-windows)
         (define-key Info-mode-map (kbd "<escape>") 'delete-frame)))))
 
+
+
+```
+
+
+<a id="org7cc79c2"></a>
+
+### Which-key
+
+```emacs-lisp
 ;; (defun emacs-run-which-key ()
 ;;   "Create a new frame and prompt for a which-key command in it."
 ;;   (interactive)
@@ -2590,7 +3450,19 @@ However, don't toggle if which-key is currently displayed."
 ;;     (with-selected-frame new-frame
 ;;       (which-key-mode 1)
 ;;       (call-interactively 'which-key-show-top-level))))
+```
 
+
+<a id="orgbda23a6"></a>
+
+### Dired
+
+TODO
+
+-   esc don't close the frame [x]
+-   hide modeline [x]
+
+```emacs-lisp
 (defun hide-mode-line-in-dired-frame (frame)
   "Hide the mode line in the 'emacs-run-dired' frame."
   (when (string-equal (frame-parameter frame 'name) "emacs-run-dired")
@@ -2615,7 +3487,14 @@ However, don't toggle if which-key is currently displayed."
       (dired "~"))  ;; opens dired in your home directory, change "~" to any directory you prefer
     (define-key dired-mode-map (kbd "<escape>") 'delete-frame)
     (select-frame-set-input-focus original-frame)))
+```
 
+
+<a id="org39a0b3c"></a>
+
+### Dired minubuffer
+
+```emacs-lisp
 ;; i have no idea how to do this TODO
 ;; (defun emacs-run-dired-minibuffer ()
 ;;   "Create a new frame with a minibuffer and open dired in the frame's buffer."
@@ -2632,7 +3511,14 @@ However, don't toggle if which-key is currently displayed."
 ;;     (with-selected-window (frame-selected-window new-frame)
 ;;       (dired dired-directory)  ;; opens dired in the specified directory
 ;;       (define-key (current-local-map) (kbd "<escape>") 'delete-frame))))
+```
 
+
+<a id="orga73431c"></a>
+
+### Clone-client-frame
+
+```emacs-lisp
 (defun hide-mode-line-in-frame (frame)
   "Hide the mode line in the specified frames."
   (when (string-match-p "^emacs-run-clone-client-frame" (frame-parameter frame 'name))
@@ -2669,21 +3555,38 @@ However, don't toggle if which-key is currently displayed."
       (which-key-mode 1)
       (minibuffer-keyboard-quit))))
 
-(defun emacs-run-dmenu ()
-  "Create a new frame and run dmenu in it."
-  (interactive)
-  (with-selected-frame
-      (make-frame '((name . "emacs-run-dmenu")
-                    (minibuffer . only)
-                    (fullscreen . 0)
-                    (undecorated . t)
-                    (internal-border-width . 10)
-                    (width . 80)
-                    (height . 11)))
-    (unwind-protect
-        (call-interactively 'dmenu)
-      (delete-frame))))
 
+```
+
+1.  Dmenu
+
+    ```emacs-lisp
+    (defun emacs-run-dmenu ()
+      "Create a new frame and run dmenu in it."
+      (interactive)
+      (with-selected-frame
+          (make-frame '((name . "emacs-run-dmenu")
+                        (minibuffer . only)
+                        (fullscreen . 0)
+                        (undecorated . t)
+                        (internal-border-width . 10)
+                        (width . 80)
+                        (height . 11)))
+        (unwind-protect
+            (call-interactively 'dmenu)
+          (delete-frame))))
+    
+    
+    ```
+
+
+<a id="org9b1f591"></a>
+
+## List Hooks
+
+This is old and probably make no sense TODO
+
+```emacs-lisp
 (defun laluxx/list-hooks ()
   "List all hooks in a completing-read interface."
   (interactive)
@@ -2697,7 +3600,45 @@ However, don't toggle if which-key is currently displayed."
          (selected-hook (completing-read "Hooks: " hooks)))
     (when selected-hook
       (describe-variable (intern selected-hook)))))
+```
 
+
+<a id="org3a13258"></a>
+
+## Region
+
+```emacs-lisp
+(defun format-selected-region ()
+  "Format the selected region to align the assignment operators."
+  (interactive)
+  (let* ((start (region-beginning))
+         (end (region-end))
+         (region-text (buffer-substring start end))
+         formatted-text max-length)
+    ;; Split the region into lines
+    (setq lines (split-string region-text "\n"))
+    ;; Calculate the maximum length of the variable names
+    (setq max-length (apply 'max (mapcar (lambda (line)
+                                           (length (car (split-string line "="))))
+                                         lines)))
+    ;; Construct the formatted text
+    (setq formatted-text 
+          (mapconcat (lambda (line)
+                       (if (string-match "\\(.*\\)=\\(.*\\)" line)
+                           (let ((var-name (match-string 1 line))
+                                 (rest (match-string 2 line)))
+                             (format "%s=%s" 
+                                     (concat var-name (make-string (- max-length (length var-name)) ? ))
+                                     rest))
+                         line))
+                     lines "\n"))
+    ;; Replace the region with the formatted text
+    (delete-region start end)
+    (goto-char start)
+    (insert formatted-text)))
+```
+
+```emacs-lisp
 (defun laluxx/stringify-selection (start end)
   "Put a double quote at the start and end of each line in the selection."
   (interactive "r") ; This line makes the function callable with a region selected
@@ -2710,7 +3651,9 @@ However, don't toggle if which-key is currently displayed."
       (insert "\"") ; Insert a quote at the end of the line
       (forward-line 1) ; Move to the next line
       (setq end (+ end 2))))) ; Adjust the end position for the inserted characters
+```
 
+```emacs-lisp
 (defun laluxx/kill-comments-in-region (start end)
   "Remove C-style comments in the selected region."
   (interactive "r")
@@ -2719,7 +3662,9 @@ However, don't toggle if which-key is currently displayed."
       (goto-char start)
       (while (re-search-forward "/\\*\\(.*?\\)\\*/\\|//.*" region-end t)
         (replace-match "")))))
+```
 
+```emacs-lisp
 (defun laluxx/kill-strings-in-region (start end)
   "Kill texts inside double quotes in the specified region."
   (interactive "r")
@@ -2727,7 +3672,9 @@ However, don't toggle if which-key is currently displayed."
     (goto-char start)
     (while (re-search-forward "\"\\([^\"]*\\)\"" end t)
       (replace-match "\"\"" nil nil))))
+```
 
+```emacs-lisp
 (defun laluxx/frame-region ()
   (interactive)
   (let ((original-buffer (current-buffer)))
@@ -2748,41 +3695,29 @@ However, don't toggle if which-key is currently displayed."
             (edwina-refresh))
           (switch-to-buffer original-buffer))
       (message "No region selected"))))
+```
 
-(defun laluxx/capitalize-all-begin-src ()
+
+<a id="org7d26e18"></a>
+
+## Random stuff
+
+```emacs-lisp
+(defun capitalize-all-begin-src ()
   "Capitalize all occurrences of '#+BEGIN_SRC' in the current buffer."
   (interactive)
   (save-excursion
     (goto-char (point-min))
     (while (search-forward "#+BEGIN_SRC" nil t)
       (replace-match "#+BEGIN_SRC" t t))))
+```
 
-(defun laluxx/random-numbers ()
-  "Replace all numbers in the current buffer or selected region with random numbers from 1 to 100, maintaining the format (integer or float)."
-  (interactive)
-  (save-excursion
-    (let (replacements
-          (start (if mark-active (region-beginning) (point-min)))
-          (end (if mark-active (region-end) (point-max))))
-      (goto-char start)
-      ;; Collect all numbers and their positions within the specified range
-      (while (and (< (point) end)
-                  (re-search-forward "\\b\\([0-9]+\\(?:\\.[0-9]+\\)?\\)\\b" end t))
-        (let* ((match-start (match-beginning 0))
-               (match-end (match-end 0))
-               (original (match-string 0))
-               (is-float (string-match "\\." original))
-               (random-number (1+ (random 100)))
-               (replacement (if is-float
-                                (format "%.1f" random-number)
-                              (number-to-string random-number))))
-          (push (list match-start match-end replacement) replacements)))
-      ;; Replace all collected numbers
-      (dolist (rep replacements)
-        (goto-char (car rep))
-        (delete-region (car rep) (cadr rep))
-        (insert (caddr rep))))))
 
+<a id="org2dc43b1"></a>
+
+## Disable ivy
+
+```emacs-lisp
 (defun ff ()
   "Open a file using the default Emacs method, without using Ivy for completion."
   (interactive)
@@ -2799,6 +3734,14 @@ However, don't toggle if which-key is currently displayed."
 
 (global-set-key (kbd "C-x C-f") 'ff)
 
+```
+
+
+<a id="orga5cc59f"></a>
+
+## Buffer
+
+```emacs-lisp
 (defun laluxx/kill-current-buffer-and-window ()
   "Kill the current buffer and close the window if there are other windows in the frame."
   (interactive)
@@ -2809,7 +3752,14 @@ However, don't toggle if which-key is currently displayed."
     ;; Close the window if there are other windows available
     (unless (one-window-p)
       (delete-window current-window))))
+```
 
+
+<a id="org9ccc7c6"></a>
+
+## Modeline
+
+```emacs-lisp
 (defun laluxx/toggle-modeline ()
   "Toggle the modeline on and off."
   (interactive)
@@ -2821,7 +3771,14 @@ However, don't toggle if which-key is currently displayed."
   ;; If you're using a window system, refresh the frame as well
   (when (display-graphic-p)
     (redraw-frame (selected-frame))))
+```
 
+
+<a id="org29017c5"></a>
+
+## Deadgrep
+
+```emacs-lisp
 (defun laluxx/find-TODOs ()
   "Search for TODOs using deadgrep."
   (interactive)
@@ -2832,6 +3789,14 @@ However, don't toggle if which-key is currently displayed."
   (interactive)
   (deadgrep "NOTE"))
 
+```
+
+
+<a id="org48f8bb7"></a>
+
+## Iedit
+
+```emacs-lisp
 (defun laluxx/iedit-insert()
   "Activate iedit-mode, switch to insert mode and go to the end of the current word."
   (interactive)
@@ -2846,6 +3811,14 @@ However, don't toggle if which-key is currently displayed."
   (when (bound-and-true-p iedit-mode)
     (iedit--quit)))
 
+```
+
+
+<a id="org2715b38"></a>
+
+## Counsel
+
+```emacs-lisp
 ;; TODO
 (defun laluxx/counsel-fonts ()
   "Display a list of fonts, with each font name styled in its own font."
@@ -2867,21 +3840,42 @@ However, don't toggle if which-key is currently displayed."
                       (with-selected-window (split-window-right)
                         (find-file f)))
             :caller 'counsel-recentf))
+```
 
+
+<a id="orge61ab2b"></a>
+
+## Dired
+
+```emacs-lisp
 (defun laluxx/dired-split-jump ()
   "Split the window vertically and open dired in the new window."
   (interactive)
   (split-window-right)       ;; Split the window vertically
   (other-window 1)           ;; Move to the new window
   (dired nil))               ;; Open dired
+```
 
+
+<a id="orgb218407"></a>
+
+## Toggle hl-line
+
+```emacs-lisp
 (defun laluxx/toggle-hl-line-mode ()
   "Toggle highlighting of the current line."
   (interactive)
   (if hl-line-mode
       (hl-line-mode -1)
     (hl-line-mode 1)))
+```
 
+
+<a id="orge24e9bc"></a>
+
+## Cycle line numbers
+
+```emacs-lisp
 (defun laluxx/cycle-line-numbers ()
   "Cycle between line number modes: absolute, relative, none."
   (interactive)
@@ -2900,7 +3894,19 @@ However, don't toggle if which-key is currently displayed."
    (t
     (setq display-line-numbers t)
     (message "Absolute line numbers enabled"))))
+```
 
+
+<a id="org58bab38"></a>
+
+## Prot
+
+
+<a id="org7d12562"></a>
+
+### Mark word
+
+```emacs-lisp
 (defun laluxx/mark-word (&optional arg allow-extend)
   "Mark the whole word at point. 
 This function is a modified version of the built-in `mark-word'."
@@ -2938,7 +3944,14 @@ This function is a modified version of `laluxx/mark-word' but moves backward."
 (with-eval-after-load 'evil
   (evil-define-key 'normal 'global "w" 'laluxx/mark-word)
   (evil-define-key 'normal 'global "W" 'laluxx/mark-word-backward))
+```
 
+
+<a id="org9a8de31"></a>
+
+### Monocle
+
+```emacs-lisp
 (defvar laluxx/window-configuration nil
   "Current window configuration.
 Intended for use by `laluxx/window-monocle'.")
@@ -2956,7 +3969,14 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
     (delete-other-windows)))
 
 (add-hook 'after-init-hook (lambda () (global-set-key (kbd "M-SPC") 'laluxx/window-single-toggle)))
+```
 
+
+<a id="orgdb3be48"></a>
+
+## Org jump
+
+```emacs-lisp
 (defun laluxx/org-move-to-begin-src ()
   "Move cursor to the line below #+BEGIN_SRC."
   (interactive)
@@ -2984,7 +4004,130 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
   (evil-define-key 'block org-mode-map (kbd "C-j") 'laluxx/org-move-to-end-src))
 
 (add-hook 'org-mode-hook 'laluxx/setup-org-evil-bindings)
+```
 
+
+<a id="orgb22e2b5"></a>
+
+## Theme
+
+```emacs-lisp
+(defvar laluxx/light-themes
+  '(doom-one-light doom-tomorrow-day doom-flatwhite doom-homage-white doom-plain whiteboard tsdh-light tango modus-operandi
+           leuven adwaita dichromacy  doom-bluloco-light doom-acario-light doom-ayu-light doom-feather-light doom-gruvbox-light
+           doom-nord-light doom-oksolar-light doom-opera-light doom-solarized-light doom-earl-grey ef-cyprus ef-day ef-deuteranopia-light
+           ef-duo-light ef-elea-light ef-frost ef-kassio ef-light ef-maris-light ef-melissa-light ef-spring ef-summer ef-trio-light ef-tritanopia-light, kaolin-breeze, kaolin-light,
+           kaolin-mono-light, kaolin-valley-light, moe-light)
+  "List of light themes.")
+
+(defvar laluxx/ugly-themes
+  '(wombat wheatgrass tsdh-dark tango-dark misterioso leuven-dark
+       deeper-blue doom-acario-dark doom-homage-black doom-ir-black doom-meltbus doom-oksolar-dark)
+  "List of themes that are considered ugly.")
+
+(defvar laluxx/current-theme nil
+  "The current theme used in the Emacs session.")
+
+(defun laluxx/save-current-theme ()
+  "Save the current theme name and its background color as a string to a file."
+  (when laluxx/current-theme
+    (let ((background-color (face-attribute 'default :background)))
+      (with-temp-file "~/.config/emacs/static-variables"
+        (insert (format "%s\n%s" (symbol-name laluxx/current-theme) background-color))))))
+
+
+
+(defun laluxx/load-theme-generic (theme-list prompt)
+  "Load a theme from THEME-LIST, with preview. Revert to original theme if canceled."
+  (let ((original-theme (car custom-enabled-themes))
+        selected-theme)
+    (ivy-read prompt (mapcar 'symbol-name theme-list)
+              :preselect (symbol-name original-theme)
+              :update-fn (lambda ()
+                           (let ((current-selection (intern (ivy-state-current ivy-last))))
+                             (when (and current-selection
+                                        (not (equal current-selection original-theme)))
+                               (mapc #'disable-theme custom-enabled-themes)
+                               (load-theme current-selection t)
+                               (if pulse-cursor
+                   (update-pulsing-cursor-color))))) ;; Preview theme
+              :action (lambda (theme)
+                        (setq selected-theme (intern theme))
+                        (when selected-theme
+                          (setq laluxx/current-theme selected-theme) ;; Update current theme
+                          (mapc #'disable-theme custom-enabled-themes)
+                          (load-theme selected-theme t)
+                          (laluxx/save-current-theme))
+                        (if pulse-cursor
+                            (update-pulsing-cursor-color))) ;; Save current theme
+              :unwind (lambda ()
+                        (unless selected-theme
+                          (mapc #'disable-theme custom-enabled-themes)
+                          (when original-theme
+                            (load-theme original-theme t)
+                            (laluxx/update-cursor-colors) ;; Update cursor colors
+                            (setq laluxx/current-theme original-theme)
+                            (laluxx/save-current-theme)
+                            (if pulse-cursor
+                                (update-pulsing-cursor-color)))))))) ;; Revert to original theme
+
+
+
+(defun laluxx/load-saved-theme ()
+  "Load the saved theme from the file."
+  (when (file-exists-p "~/.config/emacs/static-variables")
+    (with-temp-buffer
+      (insert-file-contents "~/.config/emacs/static-variables")
+      (goto-char (point-min)) ;; Move to the beginning of the buffer
+      (let ((theme-name (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+        (setq laluxx/current-theme (intern theme-name))
+        (load-theme laluxx/current-theme t)
+        (laluxx/update-cursor-colors) ;; Update cursor colors
+        (if pulse-cursor
+            (update-pulsing-cursor-color))))))
+
+
+
+(with-eval-after-load 'doom-themes
+  (with-eval-after-load 'ewal
+    (laluxx/load-saved-theme)))
+
+
+
+(defun laluxx/load-dark-theme ()
+  "Load a dark theme, excluding light and ugly themes."
+  (interactive)
+  (laluxx/load-theme-generic (seq-difference (custom-available-themes) (append laluxx/light-themes laluxx/ugly-themes))
+                             "Load dark theme: "))
+
+(defun laluxx/load-light-theme ()
+  "Load a light theme."
+  (interactive)
+  (laluxx/load-theme-generic laluxx/light-themes "Load light theme: "))
+
+(defun laluxx/load-ugly-theme ()
+  "Load an ugly theme."
+  (interactive)
+  (laluxx/load-theme-generic laluxx/ugly-themes "Load ugly theme: "))
+
+
+```
+
+
+<a id="org5a74913"></a>
+
+### Cursor
+
+```emacs-lisp
+
+```
+
+
+<a id="org909045f"></a>
+
+## Diff
+
+```emacs-lisp
 (defun laluxx/diff-buffer-with-file (&optional arg)
   "Compare buffer to its file, else run `vc-diff'.
 With \\[universal-argument] also enable highlighting of word-wise
@@ -3000,14 +4143,28 @@ changes, local to the current buffer."
     (when arg
       (with-current-buffer (get-buffer buf)
         (setq-local diff-refine 'font-lock)))))
+```
 
+
+<a id="org32e973f"></a>
+
+## Find header
+
+```emacs-lisp
 ;; (defun laluxx/find-header ()
 ;;   (interactive)
 ;;   (let* ((cmd "rg --files /usr/include --follow --hidden -g \"*.h\"")
 ;;          (headers (split-string (shell-command-to-string cmd) "\n" t)))
 ;;     (ivy-read "Choose header: " headers
 ;;               :action (lambda (x) (find-file-other-window x)))))
+```
 
+
+<a id="orgcb695d9"></a>
+
+## File jump
+
+```emacs-lisp
 (defun laluxx/file-jump ()
   "Open a file in a new split. Vertical split if one window, horizontal otherwise."
   (interactive)
@@ -3019,7 +4176,19 @@ changes, local to the current buffer."
       (switch-to-buffer current-buffer) ; Switch back to the original buffer
       (other-window 1)              ; Move to the newly created window
       (find-file selected-file))))
+```
 
+
+<a id="orgd075582"></a>
+
+## Wal-Set
+
+
+<a id="orgc8be69c"></a>
+
+### Default
+
+```emacs-lisp
 (defun laluxx/wal-set ()
   (interactive)
   (let* ((default-directory "~/xos/wallpapers/static")
@@ -3036,6 +4205,14 @@ changes, local to the current buffer."
                           (cond
                            ((string-equal wm-name "LG3D") (shell-command-to-string "xmonad --restart"))
                            ((string-equal wm-name "dwm") (shell-command-to-string "xdotool key super+F5"))))))))
+```
+
+
+<a id="org672c0ee"></a>
+
+### Animated
+
+```emacs-lisp
 
 (defun laluxx/wal-set-animated ()
   "Set an animated wallpaper and configure theme based on it."
@@ -3111,6 +4288,17 @@ changes, local to the current buffer."
 ;;                                            "--no-terminal" "--no-audio" "--no-input-default-bindings"
 ;;                                            "--no-border" "--no-window-dragging" "--no-osc" "--no-osd-bar" abs-video)))))))
 
+
+```
+
+
+<a id="org51ccda4"></a>
+
+### Favourite
+
+Set a wal paper from `~/xos/wallpapers/favourites`
+
+```emacs-lisp
 (defun laluxx/wal-set-favourite ()
   (interactive)
   (let* ((default-directory "~/xos/wallpapers/favourites")
@@ -3135,7 +4323,16 @@ changes, local to the current buffer."
                             (shell-command-to-string "dashboard-wal-gen")
                             ;; (laluxx/load-org-wal-colors)
                             (run-at-time "1 sec" nil 'spaceline-compile)))))))  ; Delay spaceline-compile
+```
 
+
+<a id="orgff62210"></a>
+
+### solid
+
+Choose a wal paper from `~/xos/wallpapers` and turn it solid
+
+```emacs-lisp
 (defun laluxx/wal-set-solid ()
   (interactive)
   (let* ((default-directory "~/xos/wallpapers/static")
@@ -3163,7 +4360,16 @@ changes, local to the current buffer."
                               (shell-command-to-string (concat "python3 " pywal-scripts-directory "/" script)))
                             (shell-command-to-string "xmonad --restart")
                             (run-at-time "1 sec" nil 'spaceline-compile)))))))  ; Delay spaceline-compile
+```
 
+
+<a id="org0fc4685"></a>
+
+### Set-wallpaper
+
+set system wallpaper
+
+```emacs-lisp
 (defun laluxx/set-wallpaper ()
   (interactive)
   (let* ((default-directory "~/xos/wallpapers/static")
@@ -3175,7 +4381,16 @@ changes, local to the current buffer."
                                    (file-exists-p wallpaper))
                           (let ((abs-wallpaper (expand-file-name wallpaper)))
                             (shell-command-to-string (concat "feh --bg-scale " abs-wallpaper))))))))
+```
 
+
+<a id="orgc19b731"></a>
+
+### set-animated-wallpaper
+
+simply set the video as the wallpaper without wal actions
+
+```emacs-lisp
 ;; work original
 (defvar laluxx/last-animated-wallpaper nil "Path to the last set animated wallpaper.")
 
@@ -3197,3 +4412,11 @@ changes, local to the current buffer."
                                            "mpv" "-wid" "WID" "--loop-file=inf" "--video-unscaled"
                                            "--no-terminal" "--no-audio" "--no-input-default-bindings"
                                            "--no-border" "--no-window-dragging" "--no-osc" "--no-osd-bar" abs-video)))))))
+```
+
+
+<a id="org6999eb9"></a>
+
+## Wal-watcher
+
+Setup file watcher for ~/.cache/wal/colors \#+BEGIN<sub>SRC</sub> emacs-lisp (run-with-idle-timer 1 nil (lambda () (file-notify-add-watch "~/.cache/wal/colors" '(change) (lambda (event) (mapc #'disable-theme custom-enabled-themes) ;; Disable all currently enabled themes (load-theme 'ewal-doom-one t) (enable-theme 'ewal-doom-one) (if pulse-cursor (update-pulsing-cursor-color)) (setq laluxx/current-theme 'ewal-doom-one) ;; Set the current theme variable (laluxx/save-current-theme)))))

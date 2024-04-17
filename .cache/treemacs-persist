@@ -1,6 +1,8 @@
 * No Tab
 ** emacs
  - path :: ~/.config/emacs
+** wave
+ - path :: ~/xos/projects/c/raylib/wave
 * Tab config.org
 ** emacs
  - path :: ~/.config/emacs
@@ -10,6 +12,6 @@
 * Tab  *company-box-12583088*
 ** ded
  - path :: ~/Desktop/test/ded
-* Tab main.py
-** anyline
- - path :: ~/xos/projects/anyline
+* Tab  *Treemacs-Scoped-Buffer-Tab wm.c*
+** emacs
+ - path :: ~/.config/emacs

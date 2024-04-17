@@ -5,13 +5,32 @@ TODO C-a to appen at the end of the paragraph.
 TODO shift+0 to go at the beginning of the paragraph.
 TODO open markdown files already rendered (keybind to edit them as text).
 TODO Toggle emacs scrolling function.
-TODO copy buffer,
-TODO olivetti mode and disable line number when entering messages buffer.
+TODO copy buffer function,
+TODO disable line number when entering messages buffer.
 TODO uncomment then eval region.
-TODO paste and immediate. 
 TODO enable flyspell in org buffer even tho its annoying, maybe add some words that he skip checking.
-TODO make eval region (SPC e r) move the point back like yanking does
-TODO map backspace in normal mode to hungry delete 
+TODO make eval region (SPC e r) move the point back like yanking does.
+TODO DOOM MODELINE.
+TODO Preattify org (bold, etc.. also when you close and heading that contain a src block).
+TODO enable and configure flymake.
+TODO Dired (g to redisplay in normal mode).
+TODO Custom mouse cursor in emacs.
+TODO M-n M-p M-b M-f to drag stuff.
+TODO Consult gotoline when the first character in evil command mode is a number.
+TODO add export dispatcher to the list of fake buffers for solaire.
+TODO Ctrl + shift + i (iedit line similar to shift+i).
+TODO When compiling run the process outside of emacs, so emacs doesn't freeze.
+TODO in evil mode when a character like "<([{" is replaced, replace the matching one aswell.
+TODO Ctrl + j and k to go to the next buttom in *helpful*.
+TODO [ORG] in insert mode bind "return" to maybe indent.
+TODO [ORG] press o or O should make a new heading based on the line we were.
+TODO [ESHELL] spc-e-S to open eshell on a new split window.
+TODO [ESHELL] M-tab doesn't work in eshell for some reason.
+TODO [C] copy-module (copy current c or h file and corresponding h or c file concatenate).
+TODO [C] the automatic indentation sometimes in 2, also make it smarter in general.
+TODO Move paragraph
+TODO ctrl+v to paste in minibuffer
+TODO Simple minibuffer calculator
 * Sourcing the scripts
 #+BEGIN_SRC emacs-lisp
 (defvar pulse-cursor nil
@@ -75,7 +94,7 @@ TODO map backspace in normal mode to hungry delete
   (setq pgtk-wait-for-event-timeout 0.001))
 
 ;; Increase how much is read from processes in a single chunk (default is 4kb).
-;; This could further increased where needed (like LSP TODO).
+;; This could be further increased where needed (like LSP TODO).
 (setq read-process-output-max (* 64 1024))  ; 64kb
 
 ;; Introduced in Emacs HEAD (b2f8c9f), this inhibits fontification while
@@ -215,6 +234,16 @@ tell you about it. Very annoying. This prevents that."
 #+begin_src emacs-lisp
 (defun display-startup-echo-area-message ()
   (message ""))
+
+(defun display-startup-echo-area-message ()
+  "Display a random message in the echo area at startup."
+  (let ((messages '("Welcome to Emacs!"
+                    "May the source be with you!"
+                    "Emacs is not a text editor."
+                    "Have a productive Emacs session!")))
+    (message "%s" (nth (random (length messages)) messages))))
+
+
 #+end_src
 ** All-the-icons-completion
 #+begin_src emacs-lisp
@@ -294,7 +323,11 @@ Add ':diminish' to any use-package block to hide that particular mode in the mod
   (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
   (evil-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file))
 
-(add-hook 'dired-mode-hook (lambda () (display-line-numbers-mode 0)))
+(add-hook 'dired-mode-hook 
+          (lambda () 
+            (display-line-numbers-mode 0)
+            (auto-revert-mode)))
+
 
 
 
@@ -347,7 +380,7 @@ Add ':diminish' to any use-package block to hide that particular mode in the mod
   (define-key evil-motion-state-map (kbd "RET") nil)
   (define-key evil-motion-state-map (kbd "TAB") nil))
 ;; Setting RETURN key in org-mode to follow links
-  (setq org-return-follows-link  t)
+(setq org-return-follows-link  t)
 
 (use-package evil-commentary
   :ensure t
@@ -355,9 +388,24 @@ Add ':diminish' to any use-package block to hide that particular mode in the mod
   :config
   (evil-commentary-mode))
 
+(use-package evil-surround
+  :ensure t
+  :config
+  (global-evil-surround-mode 1))
+
+;; (use-package evil-goggles
+;;   :ensure t)
+
+
 (add-hook 'evil-insert-state-entry-hook (lambda () (blink-cursor-mode 1)))
 (add-hook 'evil-emacs-state-entry-hook (lambda () (blink-cursor-mode 1)))
 (add-hook 'evil-normal-state-entry-hook (lambda () (blink-cursor-mode -1)))
+
+(setq evil-insert-state-message nil
+      evil-visual-state-message nil
+      evil-motion-state-message t)
+
+
 #+end_src
 *** Normal
 #+BEGIN_SRC emacs-lisp
@@ -365,11 +413,14 @@ Add ':diminish' to any use-package block to hide that particular mode in the mod
 
 (with-eval-after-load 'evil
   (define-key evil-normal-state-map (kbd "C-8") 'swiper-isearch-thing-at-point)
+  (define-key evil-normal-state-map (kbd "C-s") 'consult-line)
   (define-key evil-normal-state-map (kbd "g r") 'deadgrep)
-  (define-key evil-normal-state-map (kbd "DEL") 'evil-delete-backward-char-and-join)
-  (define-key evil-normal-state-map (kbd "H-i") 'laluxx/iedit-insert)
-  ;; (define-key evil-normal-state-map (kbd "C-i") 'laluxx/iedit-insert)
-)
+  (define-key evil-normal-state-map (kbd "M-o") 'open-line)
+  (define-key evil-normal-state-map (kbd "DEL") 'laluxx/smart-hungry-delete-backward)
+  (define-key evil-normal-state-map (kbd "H-i") 'laluxx/iedit-insert))
+
+;; (with-eval-after-load 'evil
+;;   (evil-define-key 'normal global-map (kbd "c s") 'laluxx/evil-change-inside-string))
 #+end_src
 *** Insert
 #+BEGIN_SRC emacs-lisp
@@ -381,16 +432,18 @@ Add ':diminish' to any use-package block to hide that particular mode in the mod
   (define-key evil-insert-state-map (kbd "C-l") 'forward-char)
   (define-key evil-insert-state-map (kbd "C-v") 'yank)
   (define-key evil-insert-state-map (kbd "C-s") 'save-buffer)
-  (define-key evil-insert-state-map (kbd "C-c") 'kill-ring-save)
-  (define-key evil-insert-state-map (kbd "C-x") 'kill-region)
+  ;; (define-key evil-insert-state-map (kbd "C-c") 'kill-ring-save)
+  ;; (define-key evil-insert-state-map (kbd "C-x") 'kill-region)
   (define-key evil-insert-state-map (kbd "C-z") 'undo)
-  (define-key evil-insert-state-map (kbd "C-a") 'mark-page)
+  (define-key evil-insert-state-map (kbd "M-o") 'open-line)
+  ;; (define-key evil-insert-state-map (kbd "C-a") 'mark-page)
   (define-key evil-insert-state-map (kbd "C-y") 'undo-redo))
 #+end_src
 *** Visual
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load 'evil
-  (define-key evil-visual-state-map (kbd "|") 'shell-command-on-region))
+  (define-key evil-visual-state-map (kbd "|") 'shell-command-on-region)
+  (define-key evil-visual-state-map (kbd "e") 'eval-region))
 #+end_src
 
 ** FLYCHECK
@@ -475,16 +528,12 @@ Then, while in normal mode, 'CTRL-j' and 'CTRL-k' to move backwards and forwards
 #+BEGIN_SRC emacs-lisp
 (use-package magit)
 
+(use-package magit-todos
+  :after magit
+  :config (magit-todos-mode 1))
 #+end_src
 
 ** NEOTREE
-Neotree is a file tree viewer.  When you open neotree, it jumps to the current file thanks to neo-smart-open.  The neo-window-fixed-size setting makes the neotree width be adjustable.  NeoTree provides following themes: classic, ascii, arrow, icons, and nerd.  Theme can be config'd by setting "two" themes for neo-theme: one for the GUI and one for the terminal.  I like to use 'SPC t' for 'toggle' keybindings, so I have used 'SPC t n' for toggle-neotree.
-
-| COMMAND        | DESCRIPTION               | KEYBINDING |
-|----------------+---------------------------+------------|
-| neotree-toggle | /Toggle neotree/            | SPC t n    |
-| neotree- dir   | /Open directory in neotree/ | SPC d n    |
-
 #+BEGIN_SRC emacs-lisp
 (use-package neotree
   :config
@@ -539,67 +588,6 @@ Neotree is a file tree viewer.  When you open neotree, it jumps to the current f
 (global-set-key [escape] 'keyboard-escape-quit)
 #+end_src
 
-** SHELLS AND TERMINALS
-In my configs, all of my shells (bash, fish, zsh and the ESHELL) require my shell-color-scripts-git package to be installed.  On Arch Linux, you can install it from the AUR.  Otherwise, go to my shell-color-scripts repository on GitLab to get it.
-
-*** Eshell
-Eshell is an Emacs 'shell' that is written in Elisp.
-
-#+BEGIN_SRC emacs-lisp
-(use-package eshell-toggle
-  :custom
-  (eshell-toggle-size-fraction 3)
-  (eshell-toggle-use-projectile-root t)
-  (eshell-toggle-run-command nil)
-  (eshell-toggle-init-function #'eshell-toggle-init-ansi-term))
-
-  (use-package eshell-syntax-highlighting
-    :after esh-mode
-    :config
-    (eshell-syntax-highlighting-global-mode +1))
-
-  ;; eshell-syntax-highlighting -- adds fish/zsh-like syntax highlighting.
-  ;; eshell-rc-script -- your profile for eshell; like a bashrc for eshell.
-  ;; eshell-aliases-file -- sets an aliases file for the eshell.
-
-  (setq eshell-rc-script (concat user-emacs-directory "eshell/profile")
-        eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
-        eshell-history-size 5000
-        eshell-buffer-maximum-lines 5000
-        eshell-hist-ignoredups t
-        eshell-scroll-to-bottom-on-input t
-        eshell-destroy-buffer-when-process-dies t
-        eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
-#+end_src
-
-*** Vterm-Toggle 
-[[https://github.com/jixiuf/vterm-toggle][vterm-toggle]] toggles between the vterm buffer and whatever buffer you are editing.
-
-#+BEGIN_SRC emacs-lisp
-(use-package vterm-toggle
-  :after vterm
-  :config
-  ;; When running programs in Vterm and in 'normal' mode, make sure that ESC
-  ;; kills the program as it would in most standard terminal programs.
-  (evil-define-key 'normal vterm-mode-map (kbd "<escape>") 'vterm--self-insert)
-  (setq vterm-toggle-fullscreen-p nil)
-  (setq vterm-toggle-scope 'project)
-  (add-to-list 'display-buffer-alist
-               '((lambda (buffer-or-name _)
-                     (let ((buffer (get-buffer buffer-or-name)))
-                       (with-current-buffer buffer
-                         (or (equal major-mode 'vterm-mode)
-                             (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
-                  (display-buffer-reuse-window display-buffer-at-bottom)
-                  ;;(display-buffer-reuse-window display-buffer-in-direction)
-                  ;;display-buffer-in-direction/direction/dedicated is added in emacs27
-                  ;;(direction . bottom)
-                  ;;(dedicated . t) ;dedicated is supported in emacs27
-                  (reusable-frames . visible)
-                  (window-height . 0.4))))
-
-#+end_src
-
 ** SUDO EDIT
 [[https://github.com/nflath/sudo-edit][sudo-edit]] gives us the ability to open files with sudo privileges or switch over to editing with sudo privileges if we initially opened the file without such privileges.
 
@@ -608,6 +596,15 @@ Eshell is an Emacs 'shell' that is written in Elisp.
 #+end_src
 
 * Completion
+** Consult
+#+begin_src emacs-lisp
+(use-package consult
+  :ensure t)
+
+(use-package consult-projectile
+  :ensure t)
+
+#+end_src
 ** Corfu TODO
 #+begin_src emacs-lisp
 ;; (use-package corfu
@@ -702,6 +699,7 @@ Eshell is an Emacs 'shell' that is written in Elisp.
 
 ** Vertico 
 #+BEGIN_SRC emacs-lisp
+
 ;; ;; Enable vertico
 ;; (use-package vertico
 ;;   :init
@@ -738,6 +736,7 @@ Eshell is an Emacs 'shell' that is written in Elisp.
 ;;         completion-category-overrides '((file (styles partial-completion)))))
 
 #+end_src
+
 ** Ivy
 #+BEGIN_SRC emacs-lisp
 ;; thanks DOOM
@@ -745,12 +744,12 @@ Eshell is an Emacs 'shell' that is written in Elisp.
   "Transform CANDS into a string for minibuffer.
 Uses an arrow in terminal and standard formatting in a GUI."
   (if (display-graphic-p)
-      (ivy-format-function-line cands)  ; GUI Emacs
+  (ivy-format-function-line cands)  ; GUI Emacs
     (ivy--format-function-generic
      (lambda (str)
-       (ivy--add-face (concat " " str "\n") 'ivy-current-match))  ; Selected candidate
+   (ivy--add-face (concat " " str "\n") 'ivy-current-match))  ; Selected candidate
      (lambda (str)
-       (concat "  " str "\n"))  ; Other candidates
+   (concat "  " str "\n"))  ; Other candidates
      cands
      "")))
 
@@ -769,7 +768,7 @@ Uses an arrow in terminal and standard formatting in a GUI."
   (setq ivy-format-functions-alist '((t . +ivy-format-function-line-or-arrow)))
 
   (setq ivy-sort-functions-alist
-        '((t . ivy--prefix-sort-recentf))) ;; prioritize recent items
+	'((t . ivy--prefix-sort-recentf))) ;; prioritize recent items
   (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
   (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)
   (define-key ivy-minibuffer-map (kbd "<up>") 'ivy-previous-line-or-history)
@@ -777,25 +776,25 @@ Uses an arrow in terminal and standard formatting in a GUI."
 
 
 
-(use-package counsel
-  :ensure t
-  ;; :after ivy
-  :config 
-  (counsel-mode 1)
+ (use-package counsel
+   :ensure t
+   ;; :after ivy
+   :config 
+   (counsel-mode 1)
 
-  ;; Integrate `helpful` with `counsel`
-  (setq counsel-describe-function-function #'helpful-callable)
-  (setq counsel-describe-variable-function #'helpful-variable)
+   ;; Integrate `helpful` with `counsel`
+   (setq counsel-describe-function-function #'helpful-callable)
+   (setq counsel-describe-variable-function #'helpful-variable)
 
 
-  (define-key counsel-mode-map [remap find-file] nil)
-  (setq ivy-initial-inputs-alist nil)) ;; removes starting ^ regex in M-x
+   (define-key counsel-mode-map [remap find-file] nil)
+   (setq ivy-initial-inputs-alist nil)) ;; removes starting ^ regex in M-x
 
-(use-package ivy-rich
-  :ensure t
-  ;; :after ivy
-  :config
-  (ivy-rich-mode 1))
+ (use-package ivy-rich
+   :ensure t
+    :after ivy
+   :config
+   (ivy-rich-mode 1))
 
 (use-package all-the-icons-ivy-rich
   :ensure t
@@ -803,32 +802,6 @@ Uses an arrow in terminal and standard formatting in a GUI."
   :config
   (all-the-icons-ivy-rich-mode 1))
 
-
-
-
-(defun laluxx/ivy-rich-header-icon (_candidate)
-  "Force the icon to always represent a .h file."
-  (all-the-icons-icon-for-file "dummy.h"))
-
-(defun laluxx/setup-ivy-rich-header-icon ()
-  (setq ivy-rich-display-transformers-list
-        (plist-put ivy-rich-display-transformers-list
-                   'laluxx/find-header
-                   '(:columns
-                     ((laluxx/ivy-rich-header-icon :width 2)
-                      (identity (:width 0.3 :face default)))))))
-
-(with-eval-after-load 'ivy-rich
-  (laluxx/setup-ivy-rich-header-icon))
-
-(defun laluxx/find-header ()
-  "Search for headers and open in a new window."
-  (interactive)
-  (let* ((cmd "rg --files /usr/include --follow --hidden -g \"*.h\"")
-         (headers (split-string (shell-command-to-string cmd) "\n" t)))
-    (ivy-read "Choose header: " headers
-              :action (lambda (x) (find-file-other-window x))
-              :caller 'laluxx/find-header)))
 #+end_src
 
 * Melpa
@@ -842,14 +815,80 @@ Uses an arrow in terminal and standard formatting in a GUI."
 #+end_src
 
 * New config 
-** TODO Move text
-TODO Visual line doesn't behave correctly 
-maybe fix it and make a pr
+** Nano
+*** SideFrame 
 #+begin_src emacs-lisp
-(use-package move-text
+
+;; (use-package sideframe
+;;   :ensure t)
+
+#+end_src
+*** Svg
+#+begin_src emacs-lisp
+(use-package svg-tag-mode
+  :ensure t  ; Aukomatically install the package if not already installed
+  :config
+  (setq svg-tag-tags
+        '(
+          (":TODO:" . ((lambda (tag) (svg-tag-make "TODO"
+                                                   :inverse t))))
+
+          (":HELLO:" . ((lambda (tag) (svg-tag-make "HELLO"))
+                        (lambda () (interactive) (message "Hello world!"))
+                        "Print a greeting message"))
+
+          ("\\(:[A-Z]+:\\)" . ((lambda (tag)
+                                 (svg-tag-make tag :beg 1 :end -1))))
+          ("\\(:[A-Z]+\\)\|[a-zA-Z#0-9]+:" . ((lambda (tag)
+                                                (svg-tag-make tag :beg 1 :inverse t
+                                                              :margin 0 :crop-right t))))
+          (":[A-Z]+\\(\|[a-zA-Z#0-9]+:\\)" . ((lambda (tag)
+                                                (svg-tag-make tag :beg 1 :end -1
+                                                              :margin 0 :crop-left t))))
+          ("\\(:#[A-Za-z0-9]+\\)" . ((lambda (tag)
+                                       (svg-tag-make tag :beg 2))))
+          ("\\(:#[A-Za-z0-9]+:\\)$" . ((lambda (tag)
+                                         (svg-tag-make tag :beg 2 :end -1))))
+
+        )
+))
+
+#+end_src
+** Markdown
+#+begin_src emacs-lisp
+;; (require 'ox-md)
+
+(use-package ox-gfm
+  :ensure t
+  :config 
+  (eval-after-load "org"
+    '(require 'ox-gfm nil t)))
+#+end_src
+** Yascroll
+Yet anoter scroll bar
+#+begin_src emacs-lisp
+(use-package yascroll
+  :ensure t)
+#+end_src
+** Anzu
+#+begin_src emacs-lisp
+(use-package anzu
   :ensure t
   :config
-  (move-text-default-bindings))
+  (global-anzu-mode +1)
+  (global-set-key [remap query-replace] 'anzu-query-replace)
+  (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp))
+
+(use-package evil-anzu
+  :ensure t)
+#+end_src
+** Drag stuff
+#+begin_src emacs-lisp
+(use-package drag-stuff
+  :ensure t
+  :config
+  (drag-stuff-global-mode 1)
+  (drag-stuff-define-keys))
 #+end_src
 ** Snipe
 #+begin_src emacs-lisp
@@ -863,13 +902,6 @@ maybe fix it and make a pr
 #+begin_src emacs-lisp
 (use-package devdocs
   :ensure t)
-#+end_src
-** Moody
-#+begin_src emacs-lisp
-
-(use-package moody
-  :ensure t)
-
 #+end_src
 ** Keycast
 #+begin_src emacs-lisp
@@ -886,11 +918,6 @@ maybe fix it and make a pr
 #+end_src
 ** Pdf-tools
 #+begin_src emacs-lisp
-;; (use-package pdf-tools
-;;   :ensure t)
-
-;; (setq pdf-view-midnight-colors '("#D6A0D1" . "#14171E"))
-
 (use-package pdf-tools
   :ensure t
   :config
@@ -899,8 +926,6 @@ maybe fix it and make a pr
   (add-hook 'pdf-view-mode-hook (lambda ()
                                   (pdf-view-midnight-minor-mode 1)
                                   (display-line-numbers-mode -1))))
-
-
 #+end_src
 ** Treesitter
 #+begin_src emacs-lisp
@@ -1001,6 +1026,112 @@ TODO change faces
               (evil-define-key 'normal deadgrep-mode-map (kbd "N") 'deadgrep-backward-filename))))
 )
 #+end_src
+** Eshell
+#+begin_src emacs-lisp
+    (with-no-warnings
+      (defun eshell/clear ()
+        "Clear the eshell buffer."
+        (interactive)
+        (let ((inhibit-read-only t))
+          (erase-buffer)
+          (eshell-send-input)))
+
+      (defun eshell/emacs (&rest args)
+        "Open a file (ARGS) in Emacs.  Some habits die hard."
+        (if (null args)
+            ;; If I just ran "emacs", I probably expect to be launching
+            ;; Emacs, which is rather silly since I'm already in Emacs.
+            ;; So just pretend to do what I ask.
+            (bury-buffer)
+          ;; We have to expand the file names or else naming a directory in an
+          ;; argument causes later arguments to be looked for in that directory,
+          ;; not the starting directory
+          (mapc #'find-file (mapcar #'expand-file-name (flatten-tree (reverse args))))))
+      (defalias 'eshell/e #'eshell/emacs)
+      (defalias 'eshell/ec #'eshell/emacs)
+
+      (defun eshell/ebc (&rest args)
+        "Compile a file (ARGS) in Emacs. Use `compile' to do background make."
+        (if (eshell-interactive-output-p)
+            (let ((compilation-process-setup-function
+                   (list 'lambda nil
+                         (list 'setq 'process-environment
+                               (list 'quote (eshell-copy-environment))))))
+              (compile (eshell-flatten-and-stringify args))
+              (pop-to-buffer compilation-last-buffer))
+          (throw 'eshell-replace-command
+                 (let ((l (eshell-stringify-list (flatten-tree args))))
+                   (eshell-parse-command (car l) (cdr l))))))
+      (put 'eshell/ebc 'eshell-no-numeric-conversions t)
+
+      (defun eshell-view-file (file)
+        "View FILE.  A version of `view-file' which properly rets the eshell prompt."
+        (interactive "fView file: ")
+        (unless (file-exists-p file) (error "%s does not exist" file))
+        (let ((buffer (find-file-noselect file)))
+          (if (eq (get (buffer-local-value 'major-mode buffer) 'mode-class)
+                  'special)
+              (progn
+                (switch-to-buffer buffer)
+                (message "Not using View mode because the major mode is special"))
+            (let ((undo-window (list (window-buffer) (window-start)
+                                     (+ (window-point)
+                                        (length (funcall eshell-prompt-function))))))
+              (switch-to-buffer buffer)
+              (view-mode-enter (cons (selected-window) (cons nil undo-window))
+                               'kill-buffer)))))
+
+      (defun eshell/less (&rest args)
+        "Invoke `view-file' on a file (ARGS).
+
+    \"less +42 foo\" will go to line 42 in the buffer for foo."
+        (while args
+          (if (string-match "\\`\\+\\([0-9]+\\)\\'" (car args))
+              (let* ((line (string-to-number (match-string 1 (pop args))))
+                     (file (pop args)))
+                (eshell-view-file file)
+                (forward-line line))
+            (eshell-view-file (pop args)))))
+      (defalias 'eshell/more #'eshell/less))
+
+    ;;  Display extra information for prompt
+    (use-package eshell-prompt-extras
+      :after esh-opt
+      :defines eshell-highlight-prompt
+      :autoload (epe-theme-lambda epe-theme-dakrone epe-theme-pipeline)
+      :init (setq eshell-highlight-prompt nil
+                  eshell-prompt-function #'epe-theme-lambda))
+
+    ;; `eldoc' support
+    (use-package esh-help
+      :init (setup-esh-help-eldoc))
+
+    ;; `cd' to frequent directory in `eshell'
+    (use-package eshell-z
+      :hook (eshell-mode . (lambda () (require 'eshell-z))))
+
+
+    (defun eshell-setup ()
+      (when (fboundp 'display-line-numbers-mode)
+        (display-line-numbers-mode -1))
+      ;; Clear eshell buffer
+      (eshell/clear)
+
+      (with-eval-after-load 'evil
+        (evil-define-key 'insert eshell-mode-map (kbd "C-l") #'eshell/clear)
+        (evil-define-key 'insert eshell-mode-map (kbd "C-j") #'eshell-send-input)
+        (define-key 'normal eshell-mode-map (kbd "M-TAB") 'eyebrowse-last-window-config)
+        (evil-define-key 'normal eshell-mode-map (kbd "G") #'laluxx/eshell-end-of-buffer-and-insert)))
+
+    (defun laluxx/eshell-end-of-buffer-and-insert ()
+      "Move to the end of the buffer and switch to insert mode."
+      (interactive)
+      (goto-char (point-max))
+      (evil-insert 1))
+
+    ;; HOOK
+    (add-hook 'eshell-mode-hook 'eshell-setup)
+#+end_src
 ** Vterm
 #+BEGIN_SRC emacs-lisp
 (use-package vterm
@@ -1008,6 +1139,31 @@ TODO change faces
 (setq shell-file-name "/bin/sh"
       vterm-max-scrollback 5000)
 (add-hook 'vterm-mode-hook (lambda () (display-line-numbers-mode 0))))
+#+end_src
+
+#+BEGIN_SRC emacs-lisp
+(use-package vterm-toggle
+  :after vterm
+  :config
+  ;; When running programs in Vterm and in 'normal' mode, make sure that ESC
+  ;; kills the program as it would in most standard terminal programs.
+  (evil-define-key 'normal vterm-mode-map (kbd "<escape>") 'vterm--self-insert)
+  (setq vterm-toggle-fullscreen-p nil)
+  (setq vterm-toggle-scope 'project)
+  (add-to-list 'display-buffer-alist
+               '((lambda (buffer-or-name _)
+                     (let ((buffer (get-buffer buffer-or-name)))
+                       (with-current-buffer buffer
+                         (or (equal major-mode 'vterm-mode)
+                             (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
+                  (display-buffer-reuse-window display-buffer-at-bottom)
+                  ;;(display-buffer-reuse-window display-buffer-in-direction)
+                  ;;display-buffer-in-direction/direction/dedicated is added in emacs27
+                  ;;(direction . bottom)
+                  ;;(dedicated . t) ;dedicated is supported in emacs27
+                  (reusable-frames . visible)
+                  (window-height . 0.4))))
+
 #+end_src
 ** Garbage collector
 #+begin_src emacs-lisp
@@ -1232,6 +1388,9 @@ history of commands and ranking them automagically.
 
   ;; Disable the LSP headerline (breadcrumb)
   (setq lsp-headerline-breadcrumb-enable nil))
+
+(use-package lsp-ui
+  :ensure t)
  #+end_src
 ** Dashboard
 Emacs Dashboard is an extensible startup screen showing you recent files, bookmarks, agenda items and an Emacs banner.
@@ -1246,6 +1405,7 @@ Emacs Dashboard is an extensible startup screen showing you recent files, bookma
   ;; (setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
   ;; (setq dashboard-startup-banner "~/.config/emacs/images/dtmacs-logo.png")
   (setq dashboard-startup-banner "~/xos/emacs/dashboard/xos-logo.png") ;; logo
+  ;; (setq dashboard-startup-banner "~/.config/emacs/images/emacs-fancy.png") ;; logo
   (setq dashboard-center-content t) ;; set to 't' for centered content
   (setq dashboard-items '((recents . 5)
                           (agenda . 5 )
@@ -1296,7 +1456,9 @@ Emacs Dashboard is an extensible startup screen showing you recent files, bookma
 	  which-key-allow-imprecise-window-fit nil
 	  which-key-separator " → " ))
 #+end_src
-*** Disable modeline
+
+
+Disable the modeline in which key buffer
 #+begin_src emacs-lisp
 (defun laluxx/hide-which-key-mode-line-and-line-numbers (&rest _)
   "Hide the mode line and line numbers in the `which-key' popup window."
@@ -1345,7 +1507,6 @@ However, don't toggle if which-key is currently displayed."
           (unless edwina-mode (edwina-mode 1)))))))
 
 (add-hook 'window-configuration-change-hook 'edwina-toggle-mode-based-on-window-count)
-
 #+end_src
 * ORG Mode
 ** Config
@@ -1394,8 +1555,11 @@ End the config https://systemcrafters.net/emacs-tips/presentations-with-org-pres
 ** Bullets
 #+BEGIN_SRC emacs-lisp
 (add-hook 'org-mode-hook 'org-indent-mode)
-(use-package org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+(use-package org-bullets
+  :hook (org-mode . org-bullets-mode)
+  :config
+  (setq org-bullets-bullet-list '("◉" "○" "●" "•")))
 
 (custom-set-faces
  '(org-level-1 ((t (:inherit outline-1 :height 1.7))))
@@ -1461,11 +1625,6 @@ open org bullets with =l= and close them with =h=
 #+end_src
 
 * Language Support
-** Ada
-#+begin_src emacs-lisp
-(use-package ada-mode
-  :ensure t)
-#+end_src
 ** C
 #+BEGIN_SRC emacs-lisp
 (defun my-insert-angle-brackets ()
@@ -1486,9 +1645,43 @@ open org bullets with =l= and close them with =h=
 
 
 
+
+
+(defun laluxx/evil-open-include-below ()
+  "In cc-modes, on pressing 'o' in Evil mode, copy the #include style from the current line to the newly opened line below."
+  (interactive)
+  (let ((current-line (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+    (evil-open-below 1)
+    (cond ((string-match "^#include[ \t]+\\(<\\).*?\\(>\\)[ \t]*\\(?:\/\/.*\\)?$" current-line)
+           ;; If the current line uses angle brackets, possibly followed by a comment, insert an empty system include.
+           (insert "#include <>")
+           (backward-char))
+          ((string-match "^#include[ \t]+\\(\"\\).*?\\(\"\\)[ \t]*\\(?:\/\/.*\\)?$" current-line)
+           ;; If the current line uses double quotes, possibly followed by a comment, insert an empty local include.
+           (insert "#include \"\"")
+           (backward-char)))))
+
+
+(add-hook 'c-mode-common-hook
+          (lambda ()
+            (evil-define-key 'normal c-mode-map (kbd "o") 'laluxx/evil-open-include-below)
+            (evil-define-key 'normal c++-mode-map (kbd "o") 'laluxx/evil-open-include-below)))
+
+
 (setq-default c-basic-offset 4
               tab-width 4
               indent-tabs-mode nil)
+#+end_src
+** Yaml
+#+begin_src emacs-lisp
+(use-package yaml-mode
+  :ensure t)
+
+#+end_src
+** Ada
+#+begin_src emacs-lisp
+(use-package ada-mode
+  :ensure t)
 #+end_src
 ** Zig
 #+begin_src emacs-lisp
@@ -1506,16 +1699,10 @@ open org bullets with =l= and close them with =h=
 ;;(use-package gleam-mode
 ;;  :load-path "~/.config/emaca/modules/gleam-mode")
 #+end_src
-** Arduino
-#+begin_src emacs-lisp
-;; (use-package arduino-mode
-;;   :ensure t)
-#+end_src
 ** Lua 
 #+begin_src emacs-lisp
 (use-package lua-mode
   :ensure t)
-
 #+end_src
 ** Haskell
 #+begin_src emacs-lisp
@@ -1544,8 +1731,6 @@ open org bullets with =l= and close them with =h=
 
 (use-package rustic
   :ensure t)
-
-
 #+end_src
 ** Ruby
 #+BEGIN_SRC emacs-lisp
@@ -1786,6 +1971,36 @@ open org bullets with =l= and close them with =h=
 (setq double-buffering t)
 #+end_src
 ** Theme
+*** MyThemes
+#+begin_src emacs-lisp
+(deftheme mycustomtheme "A brief description of your theme.")
+
+(custom-theme-set-faces
+ 'mycustomtheme
+ ;; Default colors
+ '(default ((t (:foreground "#F8F8F2" :background "#282A36"))))
+ '(cursor ((t (:background "#FF0000"))))
+
+ ;; Highlighting faces
+ '(highlight ((t (:background "#44475A"))))
+ '(region ((t (:background "#44475A"))))
+ '(mode-line ((t (:foreground "#F8F8F2" :background "#6272A4"))))
+ '(mode-line-inactive ((t (:foreground "#6272A4" :background "#282A36"))))
+
+ ;; Font lock faces
+ '(font-lock-builtin-face ((t (:foreground "#8BE9FD"))))
+ '(font-lock-comment-face ((t (:foreground "#6272A4"))))
+ '(font-lock-function-name-face ((t (:foreground "#50FA7B"))))
+ '(font-lock-keyword-face ((t (:foreground "#FF79C6"))))
+ '(font-lock-string-face ((t (:foreground "#F1FA8C"))))
+ '(font-lock-type-face ((t (:foreground "#BD93F9"))))
+ '(font-lock-variable-name-face ((t (:foreground "#FFB86C"))))
+ '(font-lock-constant-face ((t (:foreground "#8BE9FD"))))
+ '(font-lock-warning-face ((t (:foreground "#FFB86C" :bold t))))
+)
+
+(provide-theme 'mycustomtheme)
+#+end_src
 *** Catpuccin
 #+begin_src emacs-lisp
 (use-package catppuccin-theme
@@ -1950,7 +2165,6 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
     "b k" '(kill-current-buffer :wk "Kill current buffer")
     "b K" '(laluxx/kill-current-buffer-and-window :wk "Kill buffer and window")
     "b l" '(list-bookmarks :wk "List bookmarks")
-    ;; "b m" '(bookmark-set :wk "Set bookmark")
     "b m" '(counsel-bookmark :wk "Set bookmark")
     "b n" '(next-buffer :wk "Next buffer")
     "b p" '(previous-buffer :wk "Previous buffer")
@@ -1967,7 +2181,11 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
     "d J" '(laluxx/dired-split-jump :wk "Dired split jump ")
     "d n" '(neotree-dir :wk "Open directory in neotree")
     "d i" '(laluxx/diff-buffer-with-file :wk "Diff buffer with file")
-    "d p" '(peep-dired :wk "Peep-dired"))
+    "d p" '(projectile-find-dir :wk "Dired project"))
+
+  (laluxx/leader-keys
+    "C" '(compile :wk "Compile")
+    "c" '(shell-command :wk "Shell command"))
 
   (laluxx/leader-keys
     "e" '(:ignore t :wk "Eshell/Evaluate")    
@@ -1986,28 +2204,25 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
     "f c" '((lambda () (interactive)
               (find-file "~/.config/emacs/config.org")) 
             :wk "Open emacs config.org")
-    "f e" '((lambda () (interactive)
-              (dired "~/.config/emacs/")) 
-            :wk "Open user-emacs-directory in dired")
+    "f m" '(laluxx/find-module :wk "Find C module")
+    "f e" '(consult-flymake :wk "Find errors")
     "f d" '(find-grep-dired :wk "Search for string in files in DIR")
     "f g" '(counsel-grep-or-swiper :wk "Search for string current file")
-    ;; "f i" '((lambda () (interactive)
-    ;;           (find-file "~/.config/emacs/init.el")) 
-    ;;         :wk "Open emacs init.el")
     "f i" '(counsel-rg :wk "counsel-rg")
     "f w" '(swiper :wk "Swiper")
     "f j" '(laluxx/file-jump :wk "Jump to a file")
-    ;; "f l" '(counsel-locate :wk "Locate a file")
-    "f l" '(find-library :wk "Locate a file")
+    "f l" '(find-library :wk "Find emacs library")
     "f r" '(counsel-recentf :wk "File recent")
     "f R" '(laluxx/counsel-recentf-split :wk "File recent split")
     "f u" '(sudo-edit-find-file :wk "Sudo find file")
     "f f" '(counsel-find-file :wk "Find file")
-    "f F" '(laluxx/file-jump :wk "Find file split")
-    "f h" '(laluxx/find-header :wk "Find header")
+    "f F" '(find-function :wk "Find function")
+    "f H" '(laluxx/find-header-split :wk "Find header split")
+    "f h" '(laluxx/find-header :wk "Find matching header")
     "f t" '(laluxx/find-TODOs :wk "Find TODOs")
     "f n" '(laluxx/find-NOTES :wk "Find NOTES")
-    "f p" '(laluxx/find-package-source-code :wk "Find package source code")
+    "f p" '(projectile-switch-project :wk "Find project")
+    "f P" '(laluxx/find-package-source-code :wk "Find package source code")
     "f U" '(sudo-edit :wk "Sudo edit file"))
 
   (laluxx/leader-keys
@@ -2018,6 +2233,7 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
     "i" '(:ignore t :wk "Insert")
     "i i" '(all-the-icons-insert-faicon :wk "Insert FontAwesome")
     "i f" '(all-the-icons-insert-fileicon :wk "Insert file icon") ;
+    "i n" '(nerd-icons-insert :wk "Insert nerd icon") ;
     "i g" '(all-the-icons-insert-octicon :wk "Insert github icon"))
 
   (laluxx/leader-keys
@@ -2050,6 +2266,7 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
 
   (laluxx/leader-keys
     "h" '(:ignore t :wk "Help")
+    "h j" '(laluxx/header-jump :wk "Header jump")
     "h h" '(laluxx/list-hooks :wk "List all hooks")
     "h a" '(counsel-apropos :wk "Apropos")
     "h b" '(describe-bindings :wk "Describe bindings")
@@ -2133,12 +2350,14 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
 
   (laluxx/leader-keys
     "t" '(:ignore t :wk "Toggle")
+    "t s" '(yascroll-bar-mode :wk "Toggle yascroll")
+    "t c" '(calendar :wk "Toggle calendar")
     "t e" '(eshell-toggle :wk "Toggle eshell")
     "t m" '(laluxx/toggle-modeline :wk "Toggle modeline")
     "t f" '(flycheck-mode :wk "Toggle flycheck")
     "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
     "t n" '(neotree-toggle :wk "Toggle neotree file viewer")
-    "t o" '(org-mode :wk "Toggle org mode") ;; TODO Toggle opacity
+    "t o" '(olivetti-mode :wk "Toggle olivetti mode") ;; TODO Toggle opacity
     "t r" '(rainbow-mode :wk "Toggle rainbow mode")
     "t t" '(toggle-truncate-lines :wk "Toggle truncated lines")
     "t h" '(laluxx/toggle-hl-line-mode :wk "Toggle hl-line-mode")
@@ -2199,7 +2418,405 @@ TODO Those should also work -> (#RRGGBBAA 0xRRGGBBAA 0xRRGGBB)
 
 (provide 'my-modeline-mode)
 #+end_src
-* FUNCTIONS
+* Functions
+** C
+Functions tailored for C development
+
+#+begin_src emacs-lisp
+;; format equal
+(defun laluxx/format-assignment-operators-in-region ()
+  "Format the selected region to align the assignment operators."
+  (interactive)
+  (let* ((start (region-beginning))
+         (end (region-end))
+         (region-text (buffer-substring start end))
+         formatted-text max-length)
+    ;; Split the region into lines
+    (setq lines (split-string region-text "\n"))
+    ;; Calculate the maximum length of the variable names
+    (setq max-length (apply 'max (mapcar (lambda (line)
+                                           (length (car (split-string line "="))))
+                                         lines)))
+    ;; Construct the formatted text
+    (setq formatted-text 
+          (mapconcat (lambda (line)
+                       (if (string-match "\\(.*\\)=\\(.*\\)" line)
+                           (let ((var-name (match-string 1 line))
+                                 (rest (match-string 2 line)))
+                             (format "%s=%s" 
+                                     (concat var-name (make-string (- max-length (length var-name)) ? ))
+                                     rest))
+                         line))
+                     lines "\n"))
+    ;; Replace the region with the formatted text
+    (delete-region start end)
+    (goto-char start)
+    (insert formatted-text)))
+
+
+(defun laluxx/format-parameters-in-region ()
+  "Format the selected region to align keys, functions, descriptions, and categories while preserving existing indentation."
+  (interactive)
+  (let* ((start (region-beginning))
+         (end (region-end))
+         (region-text (buffer-substring start end))
+         formatted-text lines key-length func-length desc-length)
+    ;; Split the region into lines
+    (setq lines (split-string region-text "\n"))
+    ;; Initialize maximum lengths
+    (setq key-length 0 func-length 0 desc-length 0)
+    ;; Calculate the maximum lengths for each column
+    (dolist (line lines)
+      (when (string-match "^[ \t]*{\\\"\\([^\\\"]+\\)\\\", \\([^,]+\\), \\\"\\([^\\\"]+\\)\\\", \\([^}]+\\)}" line)
+        (setq key-length (max key-length (length (match-string 1 line))))
+        (setq func-length (max func-length (length (match-string 2 line))))
+        (setq desc-length (max desc-length (length (match-string 3 line))))))
+    ;; Construct the formatted text
+    (setq formatted-text 
+          (mapconcat (lambda (line)
+                       (if (string-match "^\\([ \t]*\\){\\\"\\([^\\\"]+\\)\\\", \\([^,]+\\), \\\"\\([^\\\"]+\\)\\\", \\([^}]+\\)}" line)
+                           (let ((indent (match-string 1 line))
+                                 (key (match-string 2 line))
+                                 (func (match-string 3 line))
+                                 (desc (match-string 4 line))
+                                 (cat (match-string 5 line)))
+                             (format "%s{\"%s\",%s %s,%s \"%s\",%s %s},"
+                                     indent
+                                     key
+                                     (make-string (- key-length (length key)) ? )
+                                     func
+                                     (make-string (- func-length (length func)) ? )
+                                     desc
+                                     (make-string (- desc-length (length desc)) ? )
+                                     cat))
+                         line))  ; Preserve lines that don't match
+                     lines "\n"))
+    ;; Replace the region with the formatted text
+    (delete-region start end)
+    (goto-char start)
+    (insert formatted-text)))
+
+;; TODO Make it smarter, call 'laluxx/format-assignment-operators-in-region' only if there is an '=' the same for parameters
+(defun laluxx/format-region ()
+  "Format region"
+  (interactive)
+  (laluxx/format-assignment-operators-in-region)
+  (laluxx/format-parameters-in-region))
+
+#+end_src
+
+#+begin_src emacs-lisp
+;; TODO
+(defun goto-implementation ()
+  (interactive)
+  ;; Extract the current line.
+  (let ((line (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+    ;; Extract the function name from the current line.
+    (if (string-match "\\b\\([_a-zA-Z][_a-zA-Z0-9]*\\) *(" line)
+        (let* ((function-name (match-string 1 line))
+               ;; Replace the extension of the current file from .h to .c
+               (source-file (concat (file-name-sans-extension (buffer-file-name)) ".c")))
+          (if (file-exists-p source-file)
+              (progn
+                ;; Open the .c file
+                (find-file source-file)
+                ;; Go to the beginning of the buffer to start the search
+                (goto-char (point-min))
+                ;; Search for the function implementation.
+                (unless (search-forward (concat function-name "(") nil t)
+                  (message "Function implementation not found for %s" function-name)))
+            (message "Source file does not exist: %s" source-file)))
+      (message "Could not extract function name from the current line."))))
+
+
+(defun laluxx/copy-project ()
+  "Concatenate the content of all .c and .h files in the current directory and copy to the clipboard."
+  (interactive)
+  (let ((files (directory-files "." t "\\.[ch]$"))
+        (content ""))
+    (dolist (file files)
+      (setq content (concat content (when (file-readable-p file)
+                                       (with-temp-buffer
+                                         (insert-file-contents file)
+                                         (buffer-string)))
+                             "\n\n"))) ; Add extra newlines between files for readability
+    (unless (string= content "")
+      (kill-new content)
+      (message "Copied content of .c and .h files to clipboard."))))
+
+
+
+
+(defun laluxx/ivy-rich-header-icon (_candidate)
+  "Force the icon to always represent a .h file."
+  (all-the-icons-icon-for-file "dummy.h"))
+
+(defun laluxx/setup-ivy-rich-header-icon ()
+  (setq ivy-rich-display-transformers-list
+        (plist-put ivy-rich-display-transformers-list
+                   'laluxx/find-header
+                   '(:columns
+                     ((laluxx/ivy-rich-header-icon :width 2)
+                      (identity (:width 0.3 :face default)))))))
+
+(with-eval-after-load 'ivy-rich
+  (laluxx/setup-ivy-rich-header-icon))
+
+(defun laluxx/header-jump ()
+  "Search for headers and open in a new window."
+  (interactive)
+  (let* ((cmd "rg --files /usr/include --follow --hidden -g \"*.h\"")
+         (headers (split-string (shell-command-to-string cmd) "\n" t)))
+    (ivy-read "Choose header: " headers
+              :action (lambda (x) (find-file-other-window x))
+              :caller 'laluxx/header-jump)))
+#+end_src
+
+
+
+#+begin_src emacs-lisp
+(defun laluxx/find-module ()
+  "Find modules in the current directory, close all other windows, and open selected .c and .h files side by side."
+  (interactive)
+  (let* ((files (directory-files default-directory nil "\\.\\(c\\|h\\)$"))
+         (base-names (laluxx/unique-base-names files))
+         (ivy-action (lambda (base-name)
+                       (delete-other-windows)  ; Close all other windows
+                       (find-file (concat base-name ".c")) ; Open .c file in the current window
+                       (split-window-right)    ; Split window to the right
+                       (other-window 1)        ; Move to the new window
+                       (find-file (concat base-name ".h"))  ; Open .h file
+                       (other-window -1))))    ; Return focus to the .c file
+    (ivy-read "Select a module: " base-names
+              :action ivy-action)))
+
+(defun laluxx/unique-base-names (files)
+  "Extract unique base names from a list of file names."
+  (let ((names (mapcar #'file-name-sans-extension files)))
+    (seq-uniq names)))
+#+end_src
+
+
+
+#+begin_src emacs-lisp
+(defun laluxx/find-header ()
+  "Toggle between a C source file and its corresponding header file."
+  (interactive)
+  (let* ((current-file (buffer-file-name))
+         (extension (file-name-extension current-file))
+         (base-name (file-name-sans-extension current-file))
+         target-file)
+    ;; Determine the target file based on the extension of the current file
+    (setq target-file
+          (cond ((string= extension "c") (concat base-name ".h"))
+                ((string= extension "h") (concat base-name ".c"))
+                (t (error "Not a C or Header file: %s" current-file))))
+    ;; Check if the target file exists and open it
+    (if (file-exists-p target-file)
+        (find-file target-file)
+      (message "File does not exist: %s" target-file))))
+
+(defun laluxx/find-header-split ()
+  "Toggle between a C source file and its corresponding header file in a new split window."
+  (interactive)
+  (let* ((current-file (buffer-file-name))
+         (extension (file-name-extension current-file))
+         (base-name (file-name-sans-extension current-file))
+         (target-file (cond ((string= extension "c") (concat base-name ".h"))
+                            ((string= extension "h") (concat base-name ".c"))
+                            (t (error "Not a C or Header file: %s" current-file)))))
+    ;; Check if the target file exists
+    (if (file-exists-p target-file)
+        (progn
+          ;; Split the window and find the file in the new window
+          (split-window-right) ;; or `split-window-below` to split horizontally
+          (other-window 1)
+          (find-file target-file))
+      (message "File does not exist: %s" target-file))))
+#+end_src
+** Theme
+#+begin_src emacs-lisp
+(defun laluxx/preatty-theme ()
+  "Load 'ewal-doom-one' theme and simulate pressing 'super+5'."
+  (interactive)
+  ;; Ensure theme-magic and ewal packages are loaded
+  (require 'theme-magic)
+  (require 'ewal)
+
+  ;; Apply the system theme to Emacs using theme-magic
+  (theme-magic-from-emacs)
+
+  ;; Load and enable the ewal-doom-one theme
+  (load-theme 'ewal-doom-one t)
+
+  ;; Simulate pressing 'super+5'
+ (shell-command "xdotool key super+F5"))
+
+
+(defun laluxx/preatty-theme-solid ()
+  "Load 'ewal-doom-one' theme, simulate pressing 'super+F5', and set a solid color wallpaper using ImageMagick."
+  (interactive)
+  ;; Call the existing function to apply theme and reload window manager colors
+  (laluxx/preatty-theme)
+
+  ;; Extract the background color from the current theme
+  (let* ((bg-color (face-background 'default nil t))
+         (directory "~/xos/wallpapers/solid")
+         (wallpaper-file (expand-file-name "solid-bg.png" directory)))
+    ;; Ensure the wallpaper directory exists
+    (unless (file-exists-p directory)
+      (make-directory directory t))
+
+    ;; Generate an image file with the extracted background color using ImageMagick
+    (shell-command (format "convert -size 1920x1080 xc:'%s' %s" bg-color wallpaper-file))
+
+    ;; Set the generated image as the wallpaper using feh
+    (shell-command (format "feh --bg-scale %s" wallpaper-file))))
+
+
+#+end_src
+*** Colors 
+#+BEGIN_SRC emacs-lisp
+(defvar laluxx/light-themes
+  '(doom-one-light doom-tomorrow-day doom-flatwhite doom-homage-white doom-plain whiteboard tsdh-light tango modus-operandi
+		   leuven adwaita dichromacy  doom-bluloco-light doom-acario-light doom-ayu-light doom-feather-light doom-gruvbox-light
+		   doom-nord-light doom-oksolar-light doom-opera-light doom-solarized-light doom-earl-grey ef-cyprus ef-day ef-deuteranopia-light
+		   ef-duo-light ef-elea-light ef-frost ef-kassio ef-light ef-maris-light ef-melissa-light ef-spring ef-summer ef-trio-light ef-tritanopia-light moe-light light-blue)
+  "List of light themes.")
+
+(defvar laluxx/ugly-themes
+  '(wombat wheatgrass tsdh-dark tango-dark misterioso leuven-dark
+	   deeper-blue doom-acario-dark doom-homage-black doom-ir-black doom-meltbus doom-oksolar-dark)
+  "List of themes that are considered ugly.")
+
+(defvar laluxx/current-theme nil
+  "The current theme used in the Emacs session.")
+
+(defun laluxx/save-current-theme ()
+  "Save the current theme name and its background color as a string to a file."
+  (when laluxx/current-theme
+    (let ((background-color (face-attribute 'default :background)))
+      (with-temp-file "~/.config/emacs/static-variables"
+        (insert (format "%s\n%s" (symbol-name laluxx/current-theme) background-color))))))
+
+
+
+(defun laluxx/load-theme-generic (theme-list prompt)
+  "Load a theme from THEME-LIST, with preview. Revert to original theme if canceled."
+  (let ((original-theme (car custom-enabled-themes))
+        selected-theme)
+    (ivy-read prompt (mapcar 'symbol-name theme-list)
+              :preselect (symbol-name original-theme)
+              :update-fn (lambda ()
+                           (let ((current-selection (intern (ivy-state-current ivy-last))))
+                             (when (and current-selection
+                                        (not (equal current-selection original-theme)))
+                               (mapc #'disable-theme custom-enabled-themes)
+                               (load-theme current-selection t)
+			                   (if pulse-cursor
+				   (update-pulsing-cursor-color))))) ;; Preview theme
+              :action (lambda (theme)
+                        (setq selected-theme (intern theme))
+                        (when selected-theme
+                          (setq laluxx/current-theme selected-theme) ;; Update current theme
+                          (mapc #'disable-theme custom-enabled-themes)
+                          (load-theme selected-theme t)
+                          (laluxx/save-current-theme))
+			            (if pulse-cursor
+                            (update-pulsing-cursor-color))) ;; Save current theme
+              :unwind (lambda ()
+                        (unless selected-theme
+                          (mapc #'disable-theme custom-enabled-themes)
+                          (when original-theme
+                            (load-theme original-theme t)
+                            (laluxx/update-cursor-colors) ;; Update cursor colors
+                            (setq laluxx/current-theme original-theme)
+                            (laluxx/save-current-theme)
+			                (if pulse-cursor
+                                (update-pulsing-cursor-color)))))))) ;; Revert to original theme
+
+
+
+(defun laluxx/load-saved-theme ()
+  "Load the saved theme from the file."
+  (when (file-exists-p "~/.config/emacs/static-variables")
+    (with-temp-buffer
+      (insert-file-contents "~/.config/emacs/static-variables")
+      (goto-char (point-min)) ;; Move to the beginning of the buffer
+      (let ((theme-name (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+        (setq laluxx/current-theme (intern theme-name))
+        (load-theme laluxx/current-theme t)
+        (laluxx/update-cursor-colors) ;; Update cursor colors
+	    (if pulse-cursor
+            (update-pulsing-cursor-color))))))
+
+
+
+(with-eval-after-load 'doom-themes
+  (with-eval-after-load 'ewal
+    (laluxx/load-saved-theme)))
+
+
+
+(defun laluxx/load-dark-theme ()
+  "Load a dark theme, excluding light and ugly themes."
+  (interactive)
+  (laluxx/load-theme-generic (seq-difference (custom-available-themes) (append laluxx/light-themes laluxx/ugly-themes))
+                             "Load dark theme: "))
+
+(defun laluxx/load-light-theme ()
+  "Load a light theme."
+  (interactive)
+  (laluxx/load-theme-generic laluxx/light-themes "Load light theme: "))
+
+(defun laluxx/load-ugly-theme ()
+  "Load an ugly theme."
+  (interactive)
+  (laluxx/load-theme-generic laluxx/ugly-themes "Load ugly theme: "))
+
+
+#+end_src
+*** Cursor
+#+BEGIN_SRC emacs-lisp
+#+end_src
+** Evil
+#+begin_src emacs-lisp
+(defun laluxx/change-string ()
+  "Simulate pressing `c i s` to change inside string, evil-surround needed."
+  (interactive)
+  (evil-normal-state)  ;; Ensure we're in normal mode
+  (evil-execute-key-sequence "cis" nil))
+#+end_src
+** Eval
+*** TODO Paste and eval
+bind this
+#+begin_src emacs-lisp
+(defun laluxx/paste-and-eval ()
+  "Yank text and evaluate it as Emacs Lisp code."
+  (interactive)
+  (yank) ;; Paste the text
+  (eval-last-sexp nil))
+#+end_src
+
+** Smart hungry delete
+How i want hungry delete to behave
+#+begin_src emacs-lisp
+(defun laluxx/smart-hungry-delete-backward ()
+  "Delete contiguous stream of whitespace backward, or a single character if no whitespace is found. Leaves a newline if whitespaces spans multiple lines."
+  (interactive)
+  (let ((start (point)))
+    (skip-chars-backward " \t\n")
+    (if (> (count-lines (point) start) 1)
+        (progn
+          ;; If spanning multiple lines, delete to just before the first newline encountered.
+          (re-search-forward "\n" start t)
+          (delete-region (point) start))
+      (if (= (point) start)
+          ;; If no whitespace is found, delete the previous character.
+          (delete-char -1)
+        ;; Otherwise, just delete the whitespace.
+        (delete-region (point) start)))))
+#+end_src
 ** Scratch buffer
 #+begin_src emacs-lisp
 (defun laluxx/split-scratch ()
@@ -2614,37 +3231,6 @@ This is old and probably make no sense TODO
 #+end_src
 ** Region
 #+begin_src emacs-lisp
-(defun format-selected-region ()
-  "Format the selected region to align the assignment operators."
-  (interactive)
-  (let* ((start (region-beginning))
-         (end (region-end))
-         (region-text (buffer-substring start end))
-         formatted-text max-length)
-    ;; Split the region into lines
-    (setq lines (split-string region-text "\n"))
-    ;; Calculate the maximum length of the variable names
-    (setq max-length (apply 'max (mapcar (lambda (line)
-                                           (length (car (split-string line "="))))
-                                         lines)))
-    ;; Construct the formatted text
-    (setq formatted-text 
-          (mapconcat (lambda (line)
-                       (if (string-match "\\(.*\\)=\\(.*\\)" line)
-                           (let ((var-name (match-string 1 line))
-                                 (rest (match-string 2 line)))
-                             (format "%s=%s" 
-                                     (concat var-name (make-string (- max-length (length var-name)) ? ))
-                                     rest))
-                         line))
-                     lines "\n"))
-    ;; Replace the region with the formatted text
-    (delete-region start end)
-    (goto-char start)
-    (insert formatted-text)))
-#+end_src
-
-#+begin_src emacs-lisp
 (defun laluxx/stringify-selection (start end)
   "Put a double quote at the start and end of each line in the selection."
   (interactive "r") ; This line makes the function callable with a region selected
@@ -2705,13 +3291,39 @@ This is old and probably make no sense TODO
 
 ** Random stuff
 #+BEGIN_SRC emacs-lisp
-(defun capitalize-all-begin-src ()
+(defun laluxx/capitalize-all-begin-src ()
   "Capitalize all occurrences of '#+BEGIN_SRC' in the current buffer."
   (interactive)
   (save-excursion
     (goto-char (point-min))
     (while (search-forward "#+BEGIN_SRC" nil t)
       (replace-match "#+BEGIN_SRC" t t))))
+
+(defun laluxx/random-numbers ()
+  "Replace all numbers in the current buffer or selected region with random numbers from 1 to 100, maintaining the format (integer or float)."
+  (interactive)
+  (save-excursion
+    (let (replacements
+          (start (if mark-active (region-beginning) (point-min)))
+          (end (if mark-active (region-end) (point-max))))
+      (goto-char start)
+      ;; Collect all numbers and their positions within the specified range
+      (while (and (< (point) end)
+                  (re-search-forward "\\b\\([0-9]+\\(?:\\.[0-9]+\\)?\\)\\b" end t))
+        (let* ((match-start (match-beginning 0))
+               (match-end (match-end 0))
+               (original (match-string 0))
+               (is-float (string-match "\\." original))
+               (random-number (1+ (random 100)))
+               (replacement (if is-float
+                                (format "%.1f" random-number)
+                              (number-to-string random-number))))
+          (push (list match-start match-end replacement) replacements)))
+      ;; Replace all collected numbers
+      (dolist (rep replacements)
+        (goto-char (car rep))
+        (delete-region (car rep) (cadr rep))
+        (insert (caddr rep))))))
 #+end_src
 ** Disable ivy
 #+BEGIN_SRC emacs-lisp
@@ -2943,111 +3555,6 @@ managers such as DWM, BSPWM refer to this state as 'monocle'."
   (evil-define-key 'block org-mode-map (kbd "C-j") 'laluxx/org-move-to-end-src))
 
 (add-hook 'org-mode-hook 'laluxx/setup-org-evil-bindings)
-#+end_src
-** Theme
-#+BEGIN_SRC emacs-lisp
-(defvar laluxx/light-themes
-  '(doom-one-light doom-tomorrow-day doom-flatwhite doom-homage-white doom-plain whiteboard tsdh-light tango modus-operandi
-		   leuven adwaita dichromacy  doom-bluloco-light doom-acario-light doom-ayu-light doom-feather-light doom-gruvbox-light
-		   doom-nord-light doom-oksolar-light doom-opera-light doom-solarized-light doom-earl-grey ef-cyprus ef-day ef-deuteranopia-light
-		   ef-duo-light ef-elea-light ef-frost ef-kassio ef-light ef-maris-light ef-melissa-light ef-spring ef-summer ef-trio-light ef-tritanopia-light, kaolin-breeze, kaolin-light,
-           kaolin-mono-light, kaolin-valley-light, moe-light)
-  "List of light themes.")
-
-(defvar laluxx/ugly-themes
-  '(wombat wheatgrass tsdh-dark tango-dark misterioso leuven-dark
-	   deeper-blue doom-acario-dark doom-homage-black doom-ir-black doom-meltbus doom-oksolar-dark)
-  "List of themes that are considered ugly.")
-
-(defvar laluxx/current-theme nil
-  "The current theme used in the Emacs session.")
-
-(defun laluxx/save-current-theme ()
-  "Save the current theme name and its background color as a string to a file."
-  (when laluxx/current-theme
-    (let ((background-color (face-attribute 'default :background)))
-      (with-temp-file "~/.config/emacs/static-variables"
-        (insert (format "%s\n%s" (symbol-name laluxx/current-theme) background-color))))))
-
-
-
-(defun laluxx/load-theme-generic (theme-list prompt)
-  "Load a theme from THEME-LIST, with preview. Revert to original theme if canceled."
-  (let ((original-theme (car custom-enabled-themes))
-        selected-theme)
-    (ivy-read prompt (mapcar 'symbol-name theme-list)
-              :preselect (symbol-name original-theme)
-              :update-fn (lambda ()
-                           (let ((current-selection (intern (ivy-state-current ivy-last))))
-                             (when (and current-selection
-                                        (not (equal current-selection original-theme)))
-                               (mapc #'disable-theme custom-enabled-themes)
-                               (load-theme current-selection t)
-			                   (if pulse-cursor
-				   (update-pulsing-cursor-color))))) ;; Preview theme
-              :action (lambda (theme)
-                        (setq selected-theme (intern theme))
-                        (when selected-theme
-                          (setq laluxx/current-theme selected-theme) ;; Update current theme
-                          (mapc #'disable-theme custom-enabled-themes)
-                          (load-theme selected-theme t)
-                          (laluxx/save-current-theme))
-			            (if pulse-cursor
-                            (update-pulsing-cursor-color))) ;; Save current theme
-              :unwind (lambda ()
-                        (unless selected-theme
-                          (mapc #'disable-theme custom-enabled-themes)
-                          (when original-theme
-                            (load-theme original-theme t)
-                            (laluxx/update-cursor-colors) ;; Update cursor colors
-                            (setq laluxx/current-theme original-theme)
-                            (laluxx/save-current-theme)
-			                (if pulse-cursor
-                                (update-pulsing-cursor-color)))))))) ;; Revert to original theme
-
-
-
-(defun laluxx/load-saved-theme ()
-  "Load the saved theme from the file."
-  (when (file-exists-p "~/.config/emacs/static-variables")
-    (with-temp-buffer
-      (insert-file-contents "~/.config/emacs/static-variables")
-      (goto-char (point-min)) ;; Move to the beginning of the buffer
-      (let ((theme-name (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
-        (setq laluxx/current-theme (intern theme-name))
-        (load-theme laluxx/current-theme t)
-        (laluxx/update-cursor-colors) ;; Update cursor colors
-	    (if pulse-cursor
-            (update-pulsing-cursor-color))))))
-
-
-
-(with-eval-after-load 'doom-themes
-  (with-eval-after-load 'ewal
-    (laluxx/load-saved-theme)))
-
-
-
-(defun laluxx/load-dark-theme ()
-  "Load a dark theme, excluding light and ugly themes."
-  (interactive)
-  (laluxx/load-theme-generic (seq-difference (custom-available-themes) (append laluxx/light-themes laluxx/ugly-themes))
-                             "Load dark theme: "))
-
-(defun laluxx/load-light-theme ()
-  "Load a light theme."
-  (interactive)
-  (laluxx/load-theme-generic laluxx/light-themes "Load light theme: "))
-
-(defun laluxx/load-ugly-theme ()
-  "Load an ugly theme."
-  (interactive)
-  (laluxx/load-theme-generic laluxx/ugly-themes "Load ugly theme: "))
-
-
-#+end_src
-*** Cursor
-#+BEGIN_SRC emacs-lisp
 #+end_src
 ** Diff
 #+BEGIN_SRC emacs-lisp
@@ -3308,4 +3815,3 @@ Setup file watcher for ~/.cache/wal/colors
       (update-pulsing-cursor-color))
       (setq laluxx/current-theme 'ewal-doom-one) ;; Set the current theme variable
       (laluxx/save-current-theme)))))
-#+end_src
